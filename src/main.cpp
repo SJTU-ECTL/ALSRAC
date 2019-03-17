@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include "cmdline.h"
 #include "cktNtk.h"
+#include "cktInter.h"
 
 using namespace std;
 using namespace abc;
@@ -20,6 +21,23 @@ parser Cmdline_Parser(int argc, char * argv[])
 }
 
 
+void MeasureErrorRate(string file, string approx, int nFrame)
+{
+    Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
+    string command = "read_blif " + file;
+    DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
+    shared_ptr <Ckt_Ntk_t> pCktNtkOri = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc));
+    pCktNtkOri->Init(nFrame);
+
+    command = "read_blif " + approx;
+    DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
+    shared_ptr <Ckt_Ntk_t> pCktNtkApp = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc));
+    pCktNtkApp->Init(nFrame);
+
+    cout << "error rate = " << pCktNtkApp->MeasureError(pCktNtkOri) << endl;
+}
+
+
 int main(int argc, char * argv[])
 {
     parser option = Cmdline_Parser(argc, argv);
@@ -34,19 +52,15 @@ int main(int argc, char * argv[])
     string command = "read_genlib -v " + genlib;
     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_genlib failed" );
 
-    if (approx != "") {
-        command = "read_blif " + file;
-        DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
-        shared_ptr <Ckt_Ntk_t> pCktNtkOri = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc));
-        pCktNtkOri->Init(nFrame);
+    // if (approx != "")
+    //     MeasureErrorRate(file, approx, nFrame);
 
-        command = "read_blif " + approx;
-        DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
-        shared_ptr <Ckt_Ntk_t> pCktNtkApp = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc));
-        pCktNtkApp->Init(nFrame);
+    command = "read_blif " + file;
+    DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
+    Ckt_MfsTest(Abc_FrameReadNtk(pAbc));
 
-        cout << "error rate = " << pCktNtkApp->MeasureError(pCktNtkOri) << endl;
-    }
+    command = "map -a; print_stats";
+    DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
 
     Abc_Stop();
 

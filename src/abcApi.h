@@ -13,6 +13,7 @@ namespace abc
 #include "base/cmd/cmd.h"
 #include "base/io/ioAbc.h"
 #include "base/abc/abc.h"
+#include "bool/bdc/bdc.h"
 #include "misc/util/abc_global.h"
 #include "misc/util/util_hack.h"
 #include "map/mio/mio.h"
@@ -20,6 +21,8 @@ namespace abc
 #include "map/mapper/mapper.h"
 #include "map/mapper/mapperInt.h"
 #include "opt/sim/sim.h"
+#include "opt/mfs/mfs.h"
+#include "opt/mfs/mfsInt.h"
 #include "proof/fraig/fraig.h"
 #include "proof/ssw/ssw.h"
 
