@@ -57,7 +57,13 @@ int main(int argc, char * argv[])
 
     command = "read_blif " + file;
     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
-    Ckt_MfsTest(Abc_FrameReadNtk(pAbc));
+
+    Ckt_DC_t dc(Abc_FrameReadNtk(pAbc));
+    cout << "# po = " << Abc_NtkPoNum(Abc_FrameReadNtk(pAbc)) << endl;
+    for (int i = 0; i < 1000; ++i)
+        dc.AddPatternR();
+    cout << dc;
+    Ckt_MfsTest(Abc_FrameReadNtk(pAbc), dc);
 
     command = "map -a; print_stats";
     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
