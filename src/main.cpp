@@ -15,7 +15,7 @@ parser Cmdline_Parser(int argc, char * argv[])
     option.add <string> ("approx",  'a', "Approxiamte Circuit file", false, "approx/alu4_0.0475.blif");
     option.add <string> ("genlib",  'g', "Map libarary file",        false, "data/genlib/mcnc.genlib");
     // option.add <float>  ("error",   'e', "Error rate",               false, 0.05f, range(0.0f, 1.0f));
-    option.add <int>    ("nFrame",  'n', "Frame nFrame",             false, 10000, range(1, INT_MAX));
+    option.add <int>    ("nFrame",  'n', "Frame nFrame",             false, 10000, range(0, INT_MAX));
     option.parse_check(argc, argv);
     return option;
 }
@@ -60,9 +60,9 @@ int main(int argc, char * argv[])
 
     Ckt_DC_t dc(Abc_FrameReadNtk(pAbc));
     cout << "# po = " << Abc_NtkPoNum(Abc_FrameReadNtk(pAbc)) << endl;
-    for (int i = 0; i < 1000; ++i)
+    for (int i = 0; i < nFrame; ++i)
         dc.AddPatternR();
-    cout << dc;
+    // cout << dc;
     Ckt_MfsTest(Abc_FrameReadNtk(pAbc), dc);
 
     command = "map -a; print_stats";
