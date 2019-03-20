@@ -537,7 +537,7 @@ void Ckt_Ntk_t::Init(int frame_number)
     // pMapType
     if (funcType == Ckt_Func_t::MAP) {
         for (auto & pCktObj : pCktObjs) {
-            if (pCktObj->IsNode())
+            if (pCktObj->IsInter())
                 pCktObj->RenewMapType();
         }
     }
@@ -727,4 +727,95 @@ float Ckt_Ntk_t::MeasureError(shared_ptr <Ckt_Ntk_t> pRefNtk)
         ret += Ckt_CountOneNum(temp);
     }
     return ret / 64.0 / static_cast<float> (nSim);
+}
+
+
+ostream & operator << (ostream & os, const shared_ptr <Ckt_Obj_t> pCktObj)
+{
+    cout << pCktObj->GetName() << "\t" << pCktObj->GetType();
+    return os;
+}
+
+
+ostream & operator << (ostream & os, const Ckt_MapType_t mapType)
+{
+    switch (mapType) {
+        case Ckt_MapType_t::BUF:
+            cout << "buf";
+        break;
+        case Ckt_MapType_t::INV:
+            cout << "inv";
+        break;
+        case Ckt_MapType_t::XOR:
+            cout << "xor";
+        break;
+        case Ckt_MapType_t::XNOR:
+            cout << "xnor";
+        break;
+        case Ckt_MapType_t::AND2:
+            cout << "and2";
+        break;
+        case Ckt_MapType_t::OR2:
+            cout << "or2";
+        break;
+        case Ckt_MapType_t::NAND2:
+            cout << "nand2";
+        break;
+        case Ckt_MapType_t::NAND3:
+            cout << "nand3";
+        break;
+        break;
+        case Ckt_MapType_t::NAND4:
+            cout << "nand4";
+        break;
+        case Ckt_MapType_t::NOR2:
+            cout << "nor2";
+        break;
+        case Ckt_MapType_t::NOR3:
+            cout << "nor3";
+        break;
+        case Ckt_MapType_t::NOR4:
+            cout << "nor4";
+        break;
+        case Ckt_MapType_t::AOI21:
+            cout << "aoi21";
+        break;
+        case Ckt_MapType_t::AOI22:
+            cout << "aoi22";
+        break;
+        case Ckt_MapType_t::OAI21:
+            cout << "oai21";
+        break;
+        case Ckt_MapType_t::OAI22:
+            cout << "oai22";
+        break;
+        default:
+            DEBUG_ASSERT(0, module_a{}, "unknown gate type");
+    }
+    return os;
+}
+
+
+ostream & operator << (ostream & os, const Ckt_ObjType_t objType)
+{
+    switch (objType) {
+        case Ckt_ObjType_t::PI:
+            cout << "PI";
+        break;
+        case Ckt_ObjType_t::PO:
+            cout << "PO";
+        break;
+        case Ckt_ObjType_t::CONST0:
+            cout << "CONST0";
+        break;
+        case Ckt_ObjType_t::CONST1:
+            cout << "CONST1";
+        break;
+        case Ckt_ObjType_t::INTER:
+            cout << "INTER";
+        break;
+        default:
+        DEBUG_ASSERT(0, module_a{}, "unknown object type");
+    }
+    return os;
 }

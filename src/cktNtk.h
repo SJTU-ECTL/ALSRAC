@@ -78,6 +78,7 @@ public:
     inline std::shared_ptr <Ckt_Ntk_t>          GetCktNtk   (void) const                                                    {return pCktNtk.lock();}
     inline abc::Abc_Obj_t *                     GetAbcObj   (void) const                                                    {return pAbcObj;}
     inline std::string                          GetName     (void) const                                                    {return std::string(Abc_ObjName(pAbcObj));}
+    inline Ckt_ObjType_t                        GetType     (void) const                                                    {return type;}
     inline std::shared_ptr <Ckt_MapType_t>      GetMapType  (void) const                                                    {return pMapType;}
     inline int                                  GetSimNum   (void) const                                                    {return nSim;}
     inline uint64_t                             GetSimVal   (int i) const                                                   {return simValue[i];}
@@ -92,10 +93,11 @@ public:
     inline bool                                 IsConst0    (void) const                                                    {return type == Ckt_ObjType_t::CONST0;}
     inline bool                                 IsConst1    (void) const                                                    {return type == Ckt_ObjType_t::CONST1;}
     inline bool                                 IsNode      (void) const                                                    {return type == Ckt_ObjType_t::CONST0 || type == Ckt_ObjType_t::CONST1 || type == Ckt_ObjType_t::INTER;}
+    inline bool                                 IsInter     (void) const                                                    {return type == Ckt_ObjType_t::INTER;}
     inline void                                 SetSimVal   (int i, uint64_t value)                                         {simValue[i] = value;}
     inline void                                 SetCktNtk   (std::shared_ptr <Ckt_Ntk_t> p_ckt_ntk)                         {pCktNtk = p_ckt_ntk;}
     inline void                                 SetUnvisited(void)                                                          {isVisited = false;}
-    inline void                                 SetVisited(void)                                                            {isVisited = true;}
+    inline void                                 SetVisited  (void)                                                            {isVisited = true;}
     inline void                                 ResizeSimVal(int len)                                                       {simValue.resize(len);}
     inline void                                 FlipSimVal  (int i)                                                         {simValue[i] = ~simValue[i];}
 };
@@ -142,7 +144,9 @@ public:
 };
 
 
-static inline std::ostream &                    operator << (std::ostream & os, const std::shared_ptr <Ckt_Obj_t> pCktObj)  {std::cout << pCktObj->GetName(); return os;}
+std::ostream &                                  operator << (std::ostream & os, const std::shared_ptr <Ckt_Obj_t> pCktObj);
+std::ostream &                                  operator << (std::ostream & os, const Ckt_MapType_t mapType);
+std::ostream &                                  operator << (std::ostream & os, const Ckt_ObjType_t objType);
 
 
 #endif
