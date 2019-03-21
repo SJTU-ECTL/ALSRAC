@@ -266,12 +266,15 @@ Aig_Man_t * Ckt_ConstructAppAig( Mfs_Man_t * p, Abc_Obj_t * pNode, Ckt_DC_t & dc
 {
     Aig_Man_t * pMan;
     Abc_Obj_t * pFanin;
-    Aig_Obj_t * pObjAig;
+    Aig_Obj_t * pObjAig, * pTmp;
     int i;
     // start the new manager
     pMan = Aig_ManStart( 1000 );
     // construct the root node's AIG cone
+    cout << Abc_ObjName(pNode) << "------------------------" << endl;
     pObjAig = Ckt_ConstructAppAig_rec( p, pNode, pMan, dc );
+    Aig_ManForEachObj( pMan, pTmp, i )
+        cout << pTmp->Id << "\t" << pTmp->Type << "\t" << Aig_ObjFaninId0(pTmp) <<"\t" << Aig_ObjFaninId1(pTmp) << endl;
 //    assert( Aig_ManConst1(pMan) == pObjAig );
     Aig_ObjCreateCo( pMan, pObjAig );
     if ( p->pCare )
@@ -328,18 +331,18 @@ Aig_Obj_t * Ckt_ConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t
         pRoot = Aig_Or( pMan, pRoot, pExor );
     }
     // add don't cares constraint
-    for (auto & pattern : dc.patterns) {
-        pDC = Aig_ManConst0(pMan);
-        Aig_ManForEachCi(pMan, pCi, i) {
-            if (pattern[indexes[i]]) {
-                pDC = Aig_Or(pMan, pDC, Aig_Not(pCi));
-            }
-            else {
-                pDC = Aig_Or(pMan, pDC, pCi);
-            }
-        }
-        pRoot = Aig_And(pMan, pRoot, pDC);
-    }
+    // for (auto & pattern : dc.patterns) {
+    //     pDC = Aig_ManConst0(pMan);
+    //     Aig_ManForEachCi(pMan, pCi, i) {
+    //         if (pattern[indexes[i]]) {
+    //             pDC = Aig_Or(pMan, pDC, Aig_Not(pCi));
+    //         }
+    //         else {
+    //             pDC = Aig_Or(pMan, pDC, pCi);
+    //         }
+    //     }
+    //     pRoot = Aig_And(pMan, pRoot, pDC);
+    // }
     return pRoot;
 }
 
