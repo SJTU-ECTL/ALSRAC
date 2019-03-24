@@ -331,18 +331,18 @@ Aig_Obj_t * Ckt_ConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t
         pRoot = Aig_Or( pMan, pRoot, pExor );
     }
     // add don't cares constraint
-    // for (auto & pattern : dc.patterns) {
-    //     pDC = Aig_ManConst0(pMan);
-    //     Aig_ManForEachCi(pMan, pCi, i) {
-    //         if (pattern[indexes[i]]) {
-    //             pDC = Aig_Or(pMan, pDC, Aig_Not(pCi));
-    //         }
-    //         else {
-    //             pDC = Aig_Or(pMan, pDC, pCi);
-    //         }
-    //     }
-    //     pRoot = Aig_And(pMan, pRoot, pDC);
-    // }
+    for (auto & pattern : dc.patterns) {
+        pDC = Aig_ManConst0(pMan);
+        Aig_ManForEachCi(pMan, pCi, i) {
+            if (pattern[indexes[i]]) {
+                pDC = Aig_Or(pMan, pDC, Aig_Not(pCi));
+            }
+            else {
+                pDC = Aig_Or(pMan, pDC, pCi);
+            }
+        }
+        pRoot = Aig_And(pMan, pRoot, pDC);
+    }
     return pRoot;
 }
 

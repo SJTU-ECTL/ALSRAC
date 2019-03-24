@@ -82,6 +82,7 @@ public:
     inline std::shared_ptr <Ckt_MapType_t>      GetMapType  (void) const                                                    {return pMapType;}
     inline int                                  GetSimNum   (void) const                                                    {return nSim;}
     inline uint64_t                             GetSimVal   (int i) const                                                   {return simValue[i];}
+    inline bool                                 GetSimVal   (int i, int j) const                                            {return Ckt_GetBit(simValue[i], j);}
     inline bool                                 GetVisited  (void) const                                                    {return isVisited;}
     inline std::shared_ptr <Ckt_Obj_t>          GetFanin    (int i = 0) const                                               {return pCktFanins[i];}
     inline int                                  GetFaninNum (void) const                                                    {return static_cast <int> (pCktFanins.size());}
@@ -141,6 +142,10 @@ public:
     inline Ckt_Func_t                           GetFuncType (void) const                                                    {return funcType;}
     inline int                                  GetSimNum   (void) const                                                    {return nSim;}
     inline int                                  GetObjNum   (void) const                                                    {return static_cast <int> (pCktObjs.size());}
+    inline int                                  GetPiNum    (void) const                                                    {return static_cast <int> (pCktPis.size());}
+    inline int                                  GetPoNum    (void) const                                                    {return static_cast <int> (pCktPos.size());}
+    inline std::shared_ptr <Ckt_Obj_t>          GetPi       (int i) const                                                   {return pCktPis[i];}
+    inline std::shared_ptr <Ckt_Obj_t>          GetPo       (int i) const                                                   {return pCktPos[i];}
 };
 
 
