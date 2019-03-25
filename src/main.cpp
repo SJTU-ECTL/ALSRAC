@@ -60,7 +60,6 @@ int main(int argc, char * argv[])
         MeasureErrorRate(file, approx, nFrame);
     }
     else {
-        // ALS(file, approx, error);
         ALS_Sim(file, approx, nFrame);
     }
 

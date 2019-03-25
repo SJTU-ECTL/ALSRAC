@@ -52,36 +52,47 @@ void ALS_Sim(string file, string approx, int nFrame)
             cout << pCktPi->GetName() << "\t";
         }
         cout << endl;
+        // for (int k = 0; k < pCktNtk->GetSimNum(); ++k) {
+        //     for (int l = 0; l < 64; ++l) {
+        //         Abc_NtkForEachPi(pAbcNtk, pAbcPi, j)
+        //             cout << pCktNtk->GetPi(j)->GetSimVal(k, l);
+        //         cout << " -> " << pCktPo->GetSimVal(k, l) << endl;
+        //     }
+        // }
         // create sum
         pAbcSum = Abc_NtkCreateNodeConst0(pAbcNtk);
         for (int k = 0; k < pCktNtk->GetSimNum(); ++k) {
-            for (int l = 0; l < 8; ++l) {
-                Abc_NtkForEachPi(pAbcNtk, pAbcPi, j)
-                    pfCompl[j] = !pCktNtk->GetPi(j)->GetSimVal(k, l);
-                // create product
-                pAbcProd = Abc_NtkCreateNode(pAbcNtk);
-                // assign fanins
-                Abc_NtkForEachPi(pAbcNtk, pAbcPi, j)
-                    Abc_ObjAddFanin(pAbcProd, pAbcPi);
-                // assign SOP
-                pAbcProd->pData = Abc_SopCreateAnd((Mem_Flex_t *)pAbcNtk->pManFunc, nPi, pfCompl);
+            for (int l = 0; l < 64; ++l) {
+                // only use "1" pattern
+                if (pCktPo->GetSimVal(k, l)) {
+                    // create product
+                    pAbcProd = Abc_NtkCreateNode(pAbcNtk);
+                    // assign fanins
+                    Abc_NtkForEachPi(pAbcNtk, pAbcPi, j)
+                        Abc_ObjAddFanin(pAbcProd, pAbcPi);
+                    // assign SOP
+                    Abc_NtkForEachPi(pAbcNtk, pAbcPi, j)
+                        pfCompl[j] = !pCktNtk->GetPi(j)->GetSimVal(k, l);
+                    pAbcProd->pData = Abc_SopCreateAnd((Mem_Flex_t *)pAbcNtk->pManFunc, nPi, pfCompl);
 
-                // create or
-                Abc_Obj_t * pAbcTmp = Abc_NtkCreateNode(pAbcNtk);
-                // assign fanins
-                Abc_ObjAddFanin(pAbcTmp, pAbcSum);
-                Abc_ObjAddFanin(pAbcTmp, pAbcProd);
-                // assign SOP
-                pAbcTmp->pData = Abc_SopCreateOr((Mem_Flex_t *)pAbcNtk->pManFunc, 2, nullptr);
-                // update sum
-                pAbcSum = pAbcTmp;
+                    // create or
+                    Abc_Obj_t * pAbcTmp = Abc_NtkCreateNode(pAbcNtk);
+                    // assign fanins
+                    Abc_ObjAddFanin(pAbcTmp, pAbcSum);
+                    Abc_ObjAddFanin(pAbcTmp, pAbcProd);
+                    // assign SOP
+                    pAbcTmp->pData = Abc_SopCreateOr((Mem_Flex_t *)pAbcNtk->pManFunc, 2, nullptr);
+                    // update sum
+                    pAbcSum = pAbcTmp;
+                }
             }
         }
         // connect PO
         Abc_ObjAddFanin(pAbcPo, pAbcSum);
     }
 
-    Ckt_Visualize(pAbcNtk, "test.dot");
+    // Ckt_Visualize(pAbcNtk, "test.dot");
+    Ckt_WriteBlif(pAbcNtk, "test.blif");
 
     // delete the ABC network
     Abc_NtkDelete(pAbcNtk);
