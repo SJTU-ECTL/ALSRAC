@@ -40,6 +40,18 @@ void MeasureErrorRate(string file, string approx, int nFrame)
 }
 
 
+void TestSimulator(string file, int nFrame)
+{
+    Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
+    string command = "read_blif " + file;
+    DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
+    shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc));
+    pCktNtk->Init(nFrame);
+    pCktNtk->TestSimSpeed();
+    // pCktNtk->CheckSim();
+}
+
+
 int main(int argc, char * argv[])
 {
     parser option = Cmdline_Parser(argc, argv);
@@ -61,6 +73,7 @@ int main(int argc, char * argv[])
     }
     else {
         ALS_Sim(file, approx, nFrame);
+        // TestSimulator(file, nFrame);
     }
 
     Abc_Stop();

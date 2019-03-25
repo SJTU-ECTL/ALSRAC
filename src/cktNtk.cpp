@@ -101,8 +101,21 @@ void Ckt_Obj_t::RenewSopFunc(void)
             else
                 DEBUG_ASSERT(0, module_a{}, "unknown sop symbol");
         }
-        DEBUG_ASSERT(pCube[v] == ' ', module_a{}, "sop form invalid");
-        DEBUG_ASSERT(pCube[v + 1] == '1', module_a{}, "only support minterm form sop");
+        DEBUG_ASSERT(pCube[v] == ' ', module_a{}, "invalid sop expression");
+        if (pCube[v + 1] == '0') {
+            if (isCompl)
+                DEBUG_ASSERT(*isCompl, module_a{}, "conflicting sop polarity");
+            else
+                isCompl = make_shared <bool> (true);
+        }
+        else if (pCube[v + 1] == '1') {
+            if (isCompl)
+                DEBUG_ASSERT(!(*isCompl), module_a{}, "conflicting sop polarity");
+            else
+                isCompl = make_shared <bool> (false);
+        }
+        else
+            DEBUG_ASSERT(0, module_a{}, "unknown sop polarity");
         sopFunc.emplace_back(s);
     }
 }
@@ -114,15 +127,15 @@ void Ckt_Obj_t::RenewSimValS(void)
         case Ckt_ObjType_t::PI:
         break;
         case Ckt_ObjType_t::CONST0:
-            for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+            for (int i = 0; i < nSim; ++i)
                 simValue[i] = 0;
         break;
         case Ckt_ObjType_t::CONST1:
-            for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+            for (int i = 0; i < nSim; ++i)
                 simValue[i] = static_cast <uint64_t> (ULLONG_MAX);
         break;
         case Ckt_ObjType_t::PO:
-            for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+            for (int i = 0; i < nSim; ++i)
                 simValue[i] = pCktFanins[0]->simValue[i];
         break;
         case Ckt_ObjType_t::INTER:
@@ -130,20 +143,24 @@ void Ckt_Obj_t::RenewSimValS(void)
                 vector <uint64_t> product(simValue.size(), static_cast <uint64_t> (ULLONG_MAX));
                 for (int j = 0; j < static_cast <int> (pCube->length()); ++j) {
                     if ((*pCube)[j] == '0') {
-                        for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                        for (int i = 0; i < nSim; ++i)
                             product[i] &= ~(pCktFanins[j]->simValue[i]);
                     }
                     else if ((*pCube)[j] == '1') {
-                        for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                        for (int i = 0; i < nSim; ++i)
                             product[i] &= pCktFanins[j]->simValue[i];
                     }
                 }
                 if (pCube == sopFunc.begin())
                     simValue.assign(product.begin(), product.end());
                 else {
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] |= product[i];
                 }
+            }
+            if (*isCompl) {
+                for (int i = 0; i < nSim; ++i)
+                    simValue[i] = ~simValue[i];
             }
         break;
         default:
@@ -158,81 +175,81 @@ void Ckt_Obj_t::RenewSimValM(void)
         case Ckt_ObjType_t::PI:
         break;
         case Ckt_ObjType_t::PO:
-            for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+            for (int i = 0; i < nSim; ++i)
                 simValue[i] = pCktFanins[0]->simValue[i];
         break;
         case Ckt_ObjType_t::CONST0:
-            for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+            for (int i = 0; i < nSim; ++i)
                 simValue[i] = 0;
         break;
         case Ckt_ObjType_t::CONST1:
-            for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+            for (int i = 0; i < nSim; ++i)
                 simValue[i] = static_cast <uint64_t> (ULLONG_MAX);
         break;
         case Ckt_ObjType_t::INTER:
             switch (*pMapType) {
                 case Ckt_MapType_t::BUF:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = pCktFanins[0]->simValue[i];
                 break;
                 case Ckt_MapType_t::INV:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = ~pCktFanins[0]->simValue[i];
                 break;
                 case Ckt_MapType_t::XOR:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = pCktFanins[0]->simValue[i] ^ pCktFanins[1]->simValue[i];
                 break;
                 case Ckt_MapType_t::XNOR:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = ~(pCktFanins[0]->simValue[i] ^ pCktFanins[1]->simValue[i]);
                 break;
                 case Ckt_MapType_t::AND2:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = pCktFanins[0]->simValue[i] & pCktFanins[1]->simValue[i];
                 break;
                 case Ckt_MapType_t::OR2:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = pCktFanins[0]->simValue[i] | pCktFanins[1]->simValue[i];
                 break;
                 case Ckt_MapType_t::NAND2:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = ~(pCktFanins[0]->simValue[i] & pCktFanins[1]->simValue[i]);
                 break;
                 case Ckt_MapType_t::NAND3:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = ~(pCktFanins[0]->simValue[i] & pCktFanins[1]->simValue[i] & pCktFanins[2]->simValue[i]);
                 break;
                 case Ckt_MapType_t::NAND4:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = ~(pCktFanins[0]->simValue[i] & pCktFanins[1]->simValue[i] & pCktFanins[2]->simValue[i] & pCktFanins[3]->simValue[i]);
                 break;
                 case Ckt_MapType_t::NOR2:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = ~(pCktFanins[0]->simValue[i] | pCktFanins[1]->simValue[i]);
                 break;
                 case Ckt_MapType_t::NOR3:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = ~(pCktFanins[0]->simValue[i] | pCktFanins[1]->simValue[i] | pCktFanins[2]->simValue[i]);
                 break;
                 case Ckt_MapType_t::NOR4:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = ~(pCktFanins[0]->simValue[i] | pCktFanins[1]->simValue[i] | pCktFanins[2]->simValue[i] | pCktFanins[3]->simValue[i]);
                 break;
                 case Ckt_MapType_t::AOI21:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = ~((pCktFanins[0]->simValue[i] & pCktFanins[1]->simValue[i]) | pCktFanins[2]->simValue[i]);
                 break;
                 case Ckt_MapType_t::AOI22:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = ~((pCktFanins[0]->simValue[i] & pCktFanins[1]->simValue[i]) | (pCktFanins[2]->simValue[i] & pCktFanins[3]->simValue[i]));
                 break;
                 case Ckt_MapType_t::OAI21:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = ~((pCktFanins[0]->simValue[i] | pCktFanins[1]->simValue[i]) & pCktFanins[2]->simValue[i]);
                 break;
                 case Ckt_MapType_t::OAI22:
-                    for (int i = 0; i < static_cast <int> (simValue.size()); ++i)
+                    for (int i = 0; i < nSim; ++i)
                         simValue[i] = ~((pCktFanins[0]->simValue[i] | pCktFanins[1]->simValue[i]) & (pCktFanins[2]->simValue[i] | pCktFanins[3]->simValue[i]));
                 break;
                 default:

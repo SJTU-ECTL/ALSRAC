@@ -92,7 +92,8 @@ void ALS_Sim(string file, string approx, int nFrame)
     }
 
     // Ckt_Visualize(pAbcNtk, "test.dot");
-    Ckt_WriteBlif(pAbcNtk, "test.blif");
+    Ckt_WriteBlif(pAbcNtk, "minterms.blif");
+    // Ckt_Synthesis(pAbcNtk, "test.blif");
 
     // delete the ABC network
     Abc_NtkDelete(pAbcNtk);

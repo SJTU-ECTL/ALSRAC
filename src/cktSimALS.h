@@ -8,6 +8,7 @@
 #include "cktNtk.h"
 #include "cktVisual.h"
 #include "cktBlif.h"
+#include "cktSynthesis.h"
 
 
 void ALS_Sim(std::string file, std::string approx, int nFrame);

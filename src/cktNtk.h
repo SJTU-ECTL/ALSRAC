@@ -46,6 +46,7 @@ private:
     std::vector < std::weak_ptr <Ckt_Obj_t> >   pCktFanouts;
     std::shared_ptr <Ckt_MapType_t>             pMapType;
     std::vector <std::string>                   sopFunc;
+    std::shared_ptr <bool>                      isCompl;
     std::vector <uint64_t>                      simValue;
 
     Ckt_Obj_t &                                 operator =  (const Ckt_Obj_t &);                                            // forbid assignment constructor
