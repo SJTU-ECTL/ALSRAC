@@ -6,9 +6,9 @@
 #include "debug_assert.hpp"
 #include "abcApi.h"
 #include "cktNtk.h"
+#include "cktVisual.h"
 
 
 void ALS_Sim(std::string file, std::string approx, int nFrame);
-
 
 #endif

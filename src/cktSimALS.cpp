@@ -21,7 +21,7 @@ void ALS_Sim(string file, string approx, int nFrame)
     Abc_Ntk_t * pAbcNtk = Abc_NtkAlloc(ABC_NTK_LOGIC, ABC_FUNC_SOP, 1);
 
     // copy PIs/POs
-    Abc_Obj_t * pAbcObj, * pAbcPi, * pAbcPo, * pAbcProd;
+    Abc_Obj_t * pAbcObj, * pAbcPi, * pAbcPo, * pAbcProd, * pAbcSum;
     int i;
     int j;
     Abc_NtkForEachPi(pCktNtk->GetAbcNtk(), pAbcObj, i)
@@ -38,6 +38,8 @@ void ALS_Sim(string file, string approx, int nFrame)
     // set functions
     DEBUG_ASSERT(Abc_NtkPoNum(pAbcNtk) == pCktNtk->GetPoNum(), module_a{}, "#POs are unequal");
     DEBUG_ASSERT(Abc_NtkPoNum(pAbcNtk), module_a{}, "#POs = 0");
+    int nPi = Abc_NtkPiNum(pAbcNtk);
+    int pfCompl[nPi];
     Abc_NtkForEachPo(pAbcNtk, pAbcPo, i) {
         shared_ptr <Ckt_Obj_t> pCktPo = pCktNtk->GetPo(i);
         DEBUG_ASSERT(pCktPo->GetName() == string(Abc_ObjName(pAbcPo)), module_a{}, "POs are unequal");
@@ -50,22 +52,36 @@ void ALS_Sim(string file, string approx, int nFrame)
             cout << pCktPi->GetName() << "\t";
         }
         cout << endl;
+        // create sum
+        pAbcSum = Abc_NtkCreateNodeConst0(pAbcNtk);
         for (int k = 0; k < pCktNtk->GetSimNum(); ++k) {
-            for (int l = 0; l < 64; ++l) {
-                if (pCktNtk->GetPi(0)->GetSimVal(k, l))
-                    pAbcProd = Abc_NtkPi(pAbcNtk, 0);
-                else
-                    pAbcProd = Abc_ObjNot(Abc_NtkPi(pAbcNtk, 0));
-                for ( j = 1; (j < Abc_NtkPiNum(pAbcNtk)) && (((pAbcPi) = Abc_NtkPi(pAbcNtk, j)), 1); j++ ) {
-                    // cout << pCktPi->GetSimVal(k, l);
-                    if (pCktNtk->GetPi(j)->GetSimVal(k, l)) {
-                    }
-                }
-                // cout << endl;
+            for (int l = 0; l < 8; ++l) {
+                Abc_NtkForEachPi(pAbcNtk, pAbcPi, j)
+                    pfCompl[j] = !pCktNtk->GetPi(j)->GetSimVal(k, l);
+                // create product
+                pAbcProd = Abc_NtkCreateNode(pAbcNtk);
+                // assign fanins
+                Abc_NtkForEachPi(pAbcNtk, pAbcPi, j)
+                    Abc_ObjAddFanin(pAbcProd, pAbcPi);
+                // assign SOP
+                pAbcProd->pData = Abc_SopCreateAnd((Mem_Flex_t *)pAbcNtk->pManFunc, nPi, pfCompl);
+
+                // create or
+                Abc_Obj_t * pAbcTmp = Abc_NtkCreateNode(pAbcNtk);
+                // assign fanins
+                Abc_ObjAddFanin(pAbcTmp, pAbcSum);
+                Abc_ObjAddFanin(pAbcTmp, pAbcProd);
+                // assign SOP
+                pAbcTmp->pData = Abc_SopCreateOr((Mem_Flex_t *)pAbcNtk->pManFunc, 2, nullptr);
+                // update sum
+                pAbcSum = pAbcTmp;
             }
         }
-        break;
+        // connect PO
+        Abc_ObjAddFanin(pAbcPo, pAbcSum);
     }
+
+    Ckt_Visualize(pAbcNtk, "test.dot");
 
     // delete the ABC network
     Abc_NtkDelete(pAbcNtk);
