@@ -5,31 +5,31 @@ using namespace std;
 using namespace abc;
 
 
-Ckt_DC_t::Ckt_DC_t(Abc_Ntk_t * p_abc_ntk)
+Ckt_Assignment_t::Ckt_Assignment_t(Abc_Ntk_t * p_abc_ntk)
     : pAbcNtk(p_abc_ntk)
 {
     Abc_Obj_t * pAbcObj;
     int i;
     patLen = Abc_NtkPiNum(pAbcNtk);
     Abc_NtkForEachPi(pAbcNtk, pAbcObj, i)
-        abc2DC[pAbcObj->Id] = i;
+        abc2AssId[pAbcObj] = i;
     DEBUG_ASSERT(i == patLen, module_a{}, "# pi != patLen");
 }
 
 
-Ckt_DC_t::~Ckt_DC_t (void)
+Ckt_Assignment_t::~Ckt_Assignment_t (void)
 {
 }
 
 
-void Ckt_DC_t::AddPattern(const std::vector <bool> & pattern)
+void Ckt_Assignment_t::AddPattern(const std::vector <bool> & pattern)
 {
     DEBUG_ASSERT(static_cast <int> (pattern.size()) == patLen, module_a{}, "pattern size != patLen");
     patterns.emplace_back(pattern);
 }
 
 
-void Ckt_DC_t::AddPatternR()
+void Ckt_Assignment_t::AddPatternR()
 {
     static unsigned seed;
     seed += 10;
@@ -45,14 +45,14 @@ void Ckt_DC_t::AddPatternR()
 }
 
 
-ostream & operator <<(ostream & os, const Ckt_DC_t & dc)
+ostream & operator <<(ostream & os, const Ckt_Assignment_t & assignments)
 {
     Abc_Obj_t * pAbcObj;
     int i;
-    Abc_NtkForEachPi(dc.pAbcNtk, pAbcObj, i)
+    Abc_NtkForEachPi(assignments.pAbcNtk, pAbcObj, i)
         cout << Abc_ObjName(pAbcObj) << "\t";
     cout << endl;
-    for (auto & pattern : dc.patterns)
+    for (auto & pattern : assignments.patterns)
         cout << pattern;
     return os;
 }
@@ -67,7 +67,7 @@ ostream & operator <<(ostream & os, const vector <bool> & pattern)
 }
 
 
-int Ckt_MfsTest( Abc_Ntk_t * pNtk, Ckt_DC_t & dc )
+int Ckt_MfsTest( Abc_Ntk_t * pNtk, Ckt_Assignment_t & assignments, bool isCareSet)
 {
     // set parameters
     Mfs_Par_t mfsPars, * pPars = &mfsPars;
@@ -137,7 +137,7 @@ int Ckt_MfsTest( Abc_Ntk_t * pNtk, Ckt_DC_t & dc )
             if ( !p->pPars->fVeryVerbose )
                 Extra_ProgressBarUpdate( pProgress, i, NULL );
             if ( pPars->fResub )
-                Ckt_MfsResub( p, pObj, dc );
+                Ckt_MfsResub( p, pObj, assignments, isCareSet );
             else {
                 DEBUG_ASSERT(0, module_a{}, "pPars->fResub = 0");
                 // Abc_NtkMfsNode( p, pObj );
@@ -168,7 +168,7 @@ int Ckt_MfsTest( Abc_Ntk_t * pNtk, Ckt_DC_t & dc )
 }
 
 
-int Ckt_MfsResub( Mfs_Man_t * p, Abc_Obj_t * pNode, Ckt_DC_t & dc )
+int Ckt_MfsResub( Mfs_Man_t * p, Abc_Obj_t * pNode, Ckt_Assignment_t & assignments, bool isCareSet )
 {
     abctime clk;
     p->nNodesTried++;
@@ -193,7 +193,7 @@ p->timeDiv += Abc_Clock() - clk;
     // construct AIG for the window
 clk = Abc_Clock();
     // p->pAigWin = Abc_NtkConstructAig( p, pNode );
-    p->pAigWin = Ckt_ConstructAppAig( p, pNode, dc );
+    p->pAigWin = Ckt_ConstructAppAig( p, pNode, assignments, isCareSet );
 p->timeAig += Abc_Clock() - clk;
     // translate it into CNF
 clk = Abc_Clock();
@@ -262,20 +262,19 @@ void Ckt_SetMfsPars( Mfs_Par_t * pPars )
 }
 
 
-Aig_Man_t * Ckt_ConstructAppAig( Mfs_Man_t * p, Abc_Obj_t * pNode, Ckt_DC_t & dc )
+Aig_Man_t * Ckt_ConstructAppAig( Mfs_Man_t * p, Abc_Obj_t * pNode, Ckt_Assignment_t & assignments, bool isCareSet )
 {
     Aig_Man_t * pMan;
     Abc_Obj_t * pFanin;
-    Aig_Obj_t * pObjAig, * pTmp;
+    Aig_Obj_t * pObjAig;
     int i;
     // start the new manager
     pMan = Aig_ManStart( 1000 );
     // construct the root node's AIG cone
-    cout << Abc_ObjName(pNode) << "------------------------" << endl;
-    pObjAig = Ckt_ConstructAppAig_rec( p, pNode, pMan, dc );
-    Aig_ManForEachObj( pMan, pTmp, i )
-        cout << pTmp->Id << "\t" << pTmp->Type << "\t" << Aig_ObjFaninId0(pTmp) <<"\t" << Aig_ObjFaninId1(pTmp) << endl;
-//    assert( Aig_ManConst1(pMan) == pObjAig );
+    if (!isCareSet)
+        pObjAig = Ckt_ConstructAppAig_rec( p, pNode, pMan, assignments );
+    else
+        pObjAig = Ckt_ConstructAppAig2_rec( p, pNode, pMan, assignments );
     Aig_ObjCreateCo( pMan, pObjAig );
     if ( p->pCare )
     {
@@ -302,19 +301,14 @@ Aig_Man_t * Ckt_ConstructAppAig( Mfs_Man_t * p, Abc_Obj_t * pNode, Ckt_DC_t & dc
 }
 
 
-Aig_Obj_t * Ckt_ConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t * pMan, Ckt_DC_t & dc )
+Aig_Obj_t * Ckt_ConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t * pMan, Ckt_Assignment_t & assignments )
 {
     Aig_Obj_t * pRoot, * pExor, * pDC, * pCi;
     Abc_Obj_t * pObj;
     int i;
     // assign AIG nodes to the leaves
-    vector <int> indexes;
-    indexes.reserve(Vec_PtrSize(p->vSupp));
-    Vec_PtrForEachEntry( Abc_Obj_t *, p->vSupp, pObj, i ) {
+    Abc_NtkForEachPi(pNode->pNtk, pObj, i)
         pObj->pCopy = pObj->pNext = (Abc_Obj_t *)Aig_ObjCreateCi( pMan );
-        indexes.emplace_back(dc.abc2DC[pObj->Id]);
-    }
-    DEBUG_ASSERT(Aig_ManCiNum(pMan) == Vec_PtrSize(p->vSupp), module_a{}, "# aig ci != # p->vSupp");
     // strash intermediate nodes
     Abc_NtkIncrementTravId( pNode->pNtk );
     Vec_PtrForEachEntry( Abc_Obj_t *, p->vNodes, pObj, i )
@@ -331,10 +325,12 @@ Aig_Obj_t * Ckt_ConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t
         pRoot = Aig_Or( pMan, pRoot, pExor );
     }
     // add don't cares constraint
-    for (auto & pattern : dc.patterns) {
+    for (auto & pattern : assignments.patterns) {
         pDC = Aig_ManConst0(pMan);
-        Aig_ManForEachCi(pMan, pCi, i) {
-            if (pattern[indexes[i]]) {
+        Abc_NtkForEachPi(pNode->pNtk, pObj, i) {
+        // Aig_ManForEachCi(pMan, pCi, i) {
+            pCi = Aig_ManCi(pMan, i);
+            if (pattern[assignments.abc2AssId[pObj]]) {
                 pDC = Aig_Or(pMan, pDC, Aig_Not(pCi));
             }
             else {
@@ -342,6 +338,37 @@ Aig_Obj_t * Ckt_ConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t
             }
         }
         pRoot = Aig_And(pMan, pRoot, pDC);
+    }
+    return pRoot;
+}
+
+
+Aig_Obj_t * Ckt_ConstructAppAig2_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t * pMan, Ckt_Assignment_t & assignments )
+{
+    Aig_Obj_t * pRoot, * pCare, * pCi;
+    Abc_Obj_t * pObj;
+    int i;
+
+    // assign AIG nodes to the leaves
+    Abc_NtkForEachPi(pNode->pNtk, pObj, i)
+        pObj->pCopy = (Abc_Obj_t *)Aig_ObjCreateCi( pMan );
+
+    // strash intermediate nodes
+    Abc_NtkIncrementTravId( pNode->pNtk );
+    Vec_PtrForEachEntry( Abc_Obj_t *, p->vNodes, pObj, i )
+        Abc_MfsConvertHopToAig2( pObj, pMan );
+
+    pRoot = Aig_ManConst0(pMan);
+    for (auto & pattern : assignments.patterns) {
+        pCare = Aig_ManConst1(pMan);
+        Abc_NtkForEachPi(pNode->pNtk, pObj, i) {
+            pCi = Aig_ManCi(pMan, i);
+            if (pattern[assignments.abc2AssId[pObj]])
+                pCare = Aig_And(pMan, pCare, pCi);
+            else
+                pCare = Aig_And(pMan, pCare, Aig_Not(pCi));
+        }
+        pRoot = Aig_Or(pMan, pRoot, pCare);
     }
     return pRoot;
 }
@@ -378,6 +405,32 @@ void Abc_MfsConvertHopToAig( Abc_Obj_t * pObjOld, Aig_Man_t * pMan )
     // construct the AIG
     Abc_MfsConvertHopToAig_rec( Hop_Regular(pRoot), pMan );
     pObjOld->pNext = (Abc_Obj_t *)Aig_NotCond( (Aig_Obj_t *)Hop_Regular(pRoot)->pData, Hop_IsComplement(pRoot) );
+    Hop_ConeUnmark_rec( Hop_Regular(pRoot) );
+}
+
+
+void Abc_MfsConvertHopToAig2( Abc_Obj_t * pObjOld, Aig_Man_t * pMan )
+{
+    Hop_Man_t * pHopMan;
+    Hop_Obj_t * pRoot;
+    Abc_Obj_t * pFanin;
+    int i;
+    // get the local AIG
+    pHopMan = (Hop_Man_t *)pObjOld->pNtk->pManFunc;
+    pRoot = (Hop_Obj_t *)pObjOld->pData;
+    // check the case of a constant
+    if ( Hop_ObjIsConst1( Hop_Regular(pRoot) ) )
+    {
+        pObjOld->pCopy = (Abc_Obj_t *)Aig_NotCond( Aig_ManConst1(pMan), Hop_IsComplement(pRoot) );
+        return;
+    }
+
+    // assign the fanin nodes
+    Abc_ObjForEachFanin( pObjOld, pFanin, i )
+        Hop_ManPi(pHopMan, i)->pData = pFanin->pCopy;
+    // construct the AIG
+    Abc_MfsConvertHopToAig_rec( Hop_Regular(pRoot), pMan );
+    pObjOld->pCopy = (Abc_Obj_t *)Aig_NotCond( (Aig_Obj_t *)Hop_Regular(pRoot)->pData, Hop_IsComplement(pRoot) );
     Hop_ConeUnmark_rec( Hop_Regular(pRoot) );
 }
 

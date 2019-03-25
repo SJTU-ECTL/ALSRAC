@@ -52,6 +52,72 @@ void TestSimulator(string file, int nFrame)
 }
 
 
+void ALS_DC(string file, string approx, uint64_t error)
+{
+    Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
+    string command = "read_blif " + file;
+    DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
+
+    Ckt_Assignment_t dc(Abc_FrameReadNtk(pAbc));
+    cout << "# pi = " << Abc_NtkPiNum(Abc_FrameReadNtk(pAbc)) << endl;
+    for (uint64_t i = 0; i < error; ++i)
+        dc.AddPatternR();
+    // cout << dc;
+    Ckt_MfsTest(Abc_FrameReadNtk(pAbc), dc, 0);
+
+    command = "map -a; print_stats";
+    DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
+
+    if (approx == "") {
+        string fileName("approx/" + string(Abc_FrameReadNtk(pAbc)->pName) + "-");
+        stringstream ss;
+        string str;
+        ss << error;
+        ss >> str;
+        fileName += str;
+        fileName += ".blif";
+        command = "write_blif " + fileName;
+    }
+    else
+        command = "write_blif " + approx;
+    DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "write_blif failed");
+}
+
+
+void ALS_CR(string file, string approx, int nFrame)
+{
+    Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
+    string command = "read_blif " + file;
+    DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
+
+    Ckt_Assignment_t cs(Abc_FrameReadNtk(pAbc));
+    cout << "# pi = " << Abc_NtkPiNum(Abc_FrameReadNtk(pAbc)) << endl;
+    for (int i = 0; i < nFrame; ++i)
+        cs.AddPatternR();
+    // cout << cs;
+    Ckt_MfsTest(Abc_FrameReadNtk(pAbc), cs, 1);
+
+    command = "map -a; print_stats";
+    DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{});
+
+    DEBUG_ASSERT(system("if [ ! -d approx ]; then mkdir approx; fi") != -1, module_a{}, "mkdir failed");
+    if (approx == "") {
+        string fileName("approx/" + string(Abc_FrameReadNtk(pAbc)->pName) + "-");
+        stringstream ss;
+        string str;
+        ss << nFrame;
+        ss >> str;
+        fileName += str;
+        fileName += ".blif";
+        command = "write_blif " + fileName;
+        cout << command << endl;
+    }
+    else
+        command = "write_blif " + approx;
+    DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "write_blif failed");
+}
+
+
 int main(int argc, char * argv[])
 {
     parser option = Cmdline_Parser(argc, argv);
@@ -60,7 +126,7 @@ int main(int argc, char * argv[])
     string genlib = option.get <string> ("genlib");
     int nFrame = option.get <int> ("nFrame");
     bool isMeasure = option.exist("measure");
-    uint64_t error = option.get <uint64_t> ("error");
+    // uint64_t error = option.get <uint64_t> ("error");
 
     Abc_Start();
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
@@ -72,44 +138,13 @@ int main(int argc, char * argv[])
         MeasureErrorRate(file, approx, nFrame);
     }
     else {
-        ALS_Sim(file, approx, nFrame);
-        // TestSimulator(file, nFrame);
+        // ALS_Sim(file, approx, nFrame);
+        ALS_CR(file, approx, nFrame);
+        // ALS_DC(file, approx, nFrame);
     }
 
     Abc_Stop();
 
     return 0;
 }
-
-
-// void ALS(string file, string approx, uint64_t error)
-// {
-//     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
-//     string command = "read_blif " + file;
-//     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
-//
-//     Ckt_DC_t dc(Abc_FrameReadNtk(pAbc));
-//     cout << "# pi = " << Abc_NtkPiNum(Abc_FrameReadNtk(pAbc)) << endl;
-//     for (uint64_t i = 0; i < error; ++i)
-//         dc.AddPatternR();
-//     cout << dc;
-//     Ckt_MfsTest(Abc_FrameReadNtk(pAbc), dc);
-//
-//     command = "map -a; print_stats";
-//     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
-//
-//     if (approx == "") {
-//         string fileName("approx/" + string(Abc_FrameReadNtk(pAbc)->pName) + "-");
-//         stringstream ss;
-//         string str;
-//         ss << error;
-//         ss >> str;
-//         fileName += str;
-//         fileName += ".blif";
-//         command = "write_blif " + fileName;
-//     }
-//     else
-//         command = "write_blif " + approx;
-//     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "write_blif failed");
-// }
 
