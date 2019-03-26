@@ -25,6 +25,7 @@ public:
                                                     ~Ckt_Set_t                (void);
     void                                            AddPattern                (const std::string & pattern);
     void                                            AddPatternR               (void);
+    void                                            AddPatternR2              (int nDC);
 };
 
 std::ostream &                                      operator <<               (std::ostream & os, const Ckt_Set_t & cktSet);

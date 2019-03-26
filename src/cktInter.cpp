@@ -45,6 +45,38 @@ void Ckt_Set_t::AddPatternR()
 }
 
 
+void Ckt_Set_t::AddPatternR2(int nDC)
+{
+    DEBUG_ASSERT(1 <= nDC && nDC <= patLen, module_a{}, "invalid don't care length");
+    static unsigned seed;
+
+    seed += 10;
+    string pattern;
+    pattern.resize(patLen);
+    for (int i = 0; i < patLen; ++i)
+        pattern[i] = '0';
+
+    boost::random::mt19937 gen0(seed);
+    boost::uniform_int <> dist0(0, patLen - 1);
+    boost::variate_generator <boost::mt19937 &, boost::uniform_int <> > coin0(gen0, dist0);
+    for (int i = 0; i < nDC; ++i) {
+        int pos = coin0();
+        while (pattern[pos] == '-')
+            pos = coin0();
+        pattern[pos] = '-';
+    }
+
+    boost::random::mt19937 gen(seed);
+    boost::uniform_int <> dist(0, 1);
+    boost::variate_generator <boost::mt19937 &, boost::uniform_int <> > coin(gen, dist);
+
+    for (int i = 0; i < patLen; ++i)
+        if (pattern[i] != '-')
+            pattern[i] = coin() + '0';
+    patterns.emplace_back(pattern);
+}
+
+
 ostream & operator <<(ostream & os, const Ckt_Set_t & cktSet)
 {
     Abc_Obj_t * pAbcObj;
@@ -321,12 +353,12 @@ Aig_Obj_t * Ckt_ConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t
         Abc_NtkForEachPi(pNode->pNtk, pObj, i) {
         // Aig_ManForEachCi(pMan, pCi, i) {
             pCi = Aig_ManCi(pMan, i);
-            if (pattern[cktSet.abc2PatId[pObj]] == '1') {
+            if (pattern[cktSet.abc2PatId[pObj]] == '1')
                 pDC = Aig_Or(pMan, pDC, Aig_Not(pCi));
-            }
-            else if (pattern[cktSet.abc2PatId[pObj]] == '0'){
+            else if (pattern[cktSet.abc2PatId[pObj]] == '0')
                 pDC = Aig_Or(pMan, pDC, pCi);
-            }
+            else if (pattern[cktSet.abc2PatId[pObj]] == '-')
+                continue;
             else
                 DEBUG_ASSERT(0, module_a{}, "invalid pattern");
         }
@@ -360,6 +392,8 @@ Aig_Obj_t * Ckt_ConstructAppAig2_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_
                 pCare = Aig_And(pMan, pCare, pCi);
             else if (pattern[cktSet.abc2PatId[pObj]] == '0')
                 pCare = Aig_And(pMan, pCare, Aig_Not(pCi));
+            else if (pattern[cktSet.abc2PatId[pObj]] == '-')
+                continue;
             else
                 DEBUG_ASSERT(0, module_a{}, "invalid pattern");
         }

@@ -51,7 +51,7 @@ void TestSimulator(string file, int nFrame)
 }
 
 
-void ALS_DC(string file, string approx, uint64_t error)
+void ALS_DC(string file, string approx, int nFrame)
 {
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
     string command = "read_blif " + file;
@@ -59,9 +59,9 @@ void ALS_DC(string file, string approx, uint64_t error)
 
     Ckt_Set_t dcs(Abc_FrameReadNtk(pAbc), 0);
     cout << "# pi = " << Abc_NtkPiNum(Abc_FrameReadNtk(pAbc)) << endl;
-    for (uint64_t i = 0; i < error; ++i)
-        dcs.AddPatternR();
-    // cout << dcs;
+    for (int i = 0; i < nFrame; ++i)
+        dcs.AddPatternR2(59);
+    cout << dcs;
     Ckt_MfsTest(Abc_FrameReadNtk(pAbc), dcs);
 
     command = "map -a; print_stats";
@@ -72,7 +72,7 @@ void ALS_DC(string file, string approx, uint64_t error)
         string fileName("approx/" + string(Abc_FrameReadNtk(pAbc)->pName) + "-");
         stringstream ss;
         string str;
-        ss << error;
+        ss << nFrame;
         ss >> str;
         fileName += str;
         fileName += ".blif";
@@ -139,8 +139,8 @@ int main(int argc, char * argv[])
     }
     else {
         // ALS_Sim(file, approx, nFrame);
-        ALS_CR(file, approx, nFrame);
-        // ALS_DC(file, approx, nFrame);
+        // ALS_CR(file, approx, nFrame);
+        ALS_DC(file, approx, nFrame);
     }
 
     Abc_Stop();
