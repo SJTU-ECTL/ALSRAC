@@ -19,16 +19,15 @@ public:
     int                                             patLen;
     bool                                            isCareSet;
     std::unordered_map <abc::Abc_Obj_t *, int>      abc2PatId;
-    std::vector < std::vector < bool > >            patterns;
+    std::vector < std::string >                     patterns;
 
     explicit                                        Ckt_Set_t                 (abc::Abc_Ntk_t * p_abc_ntk, bool is_care_set);
                                                     ~Ckt_Set_t                (void);
-    void                                            AddPattern                (const std::vector <bool> & pattern);
+    void                                            AddPattern                (const std::string & pattern);
     void                                            AddPatternR               (void);
 };
 
 std::ostream &                                      operator <<               (std::ostream & os, const Ckt_Set_t & cktSet);
-std::ostream &                                      operator <<               (std::ostream & os, const std::vector <bool> & pattern);
 int                                                 Ckt_MfsTest               (abc::Abc_Ntk_t * pNtk, Ckt_Set_t & cktSet);
 int                                                 Ckt_MfsResub              (abc::Mfs_Man_t * p, abc::Abc_Obj_t * pNode, Ckt_Set_t & cktSet);
 void                                                Ckt_SetMfsPars            (abc::Mfs_Par_t * pPars);

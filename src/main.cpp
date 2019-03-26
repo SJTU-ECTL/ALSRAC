@@ -94,7 +94,7 @@ void ALS_CR(string file, string approx, int nFrame)
     cout << "# pi = " << Abc_NtkPiNum(Abc_FrameReadNtk(pAbc)) << endl;
     for (int i = 0; i < nFrame; ++i)
         cs.AddPatternR();
-    // cout << cs;
+    cout << cs;
     Ckt_MfsTest(Abc_FrameReadNtk(pAbc), cs);
 
     command = "map -a; print_stats";

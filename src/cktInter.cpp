@@ -22,7 +22,7 @@ Ckt_Set_t::~Ckt_Set_t (void)
 }
 
 
-void Ckt_Set_t::AddPattern(const std::vector <bool> & pattern)
+void Ckt_Set_t::AddPattern(const string & pattern)
 {
     DEBUG_ASSERT(static_cast <int> (pattern.size()) == patLen, module_a{}, "pattern size != patLen");
     patterns.emplace_back(pattern);
@@ -37,10 +37,10 @@ void Ckt_Set_t::AddPatternR()
     boost::uniform_int <> dist(0, 1);
     boost::variate_generator <boost::mt19937 &, boost::uniform_int <> > coin(gen, dist);
 
-    vector <bool> pattern;
-    pattern.reserve(patLen);
+    string pattern;
+    pattern.resize(patLen);
     for (int i = 0; i < patLen; ++i)
-        pattern.emplace_back(static_cast <bool> (coin()));
+        pattern[i] = coin() + '0';
     patterns.emplace_back(pattern);
 }
 
@@ -53,16 +53,7 @@ ostream & operator <<(ostream & os, const Ckt_Set_t & cktSet)
         cout << Abc_ObjName(pAbcObj) << "\t";
     cout << endl;
     for (auto & pattern : cktSet.patterns)
-        cout << pattern;
-    return os;
-}
-
-
-ostream & operator <<(ostream & os, const vector <bool> & pattern)
-{
-    for (auto val : pattern)
-        cout << val;
-    cout << endl;
+        cout << pattern << endl;
     return os;
 }
 
@@ -330,12 +321,14 @@ Aig_Obj_t * Ckt_ConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t
         Abc_NtkForEachPi(pNode->pNtk, pObj, i) {
         // Aig_ManForEachCi(pMan, pCi, i) {
             pCi = Aig_ManCi(pMan, i);
-            if (pattern[cktSet.abc2PatId[pObj]]) {
+            if (pattern[cktSet.abc2PatId[pObj]] == '1') {
                 pDC = Aig_Or(pMan, pDC, Aig_Not(pCi));
             }
-            else {
+            else if (pattern[cktSet.abc2PatId[pObj]] == '0'){
                 pDC = Aig_Or(pMan, pDC, pCi);
             }
+            else
+                DEBUG_ASSERT(0, module_a{}, "invalid pattern");
         }
         pRoot = Aig_And(pMan, pRoot, pDC);
     }
@@ -363,10 +356,12 @@ Aig_Obj_t * Ckt_ConstructAppAig2_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_
         pCare = Aig_ManConst1(pMan);
         Abc_NtkForEachPi(pNode->pNtk, pObj, i) {
             pCi = Aig_ManCi(pMan, i);
-            if (pattern[cktSet.abc2PatId[pObj]])
+            if (pattern[cktSet.abc2PatId[pObj]] == '1')
                 pCare = Aig_And(pMan, pCare, pCi);
-            else
+            else if (pattern[cktSet.abc2PatId[pObj]] == '0')
                 pCare = Aig_And(pMan, pCare, Aig_Not(pCi));
+            else
+                DEBUG_ASSERT(0, module_a{}, "invalid pattern");
         }
         pRoot = Aig_Or(pMan, pRoot, pCare);
     }
