@@ -2,7 +2,6 @@
 #include "cmdline.h"
 #include "cktNtk.h"
 #include "cktInter.h"
-#include "cktSimALS.h"
 
 using namespace std;
 using namespace abc;
@@ -58,16 +57,17 @@ void ALS_DC(string file, string approx, uint64_t error)
     string command = "read_blif " + file;
     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
 
-    Ckt_Assignment_t dc(Abc_FrameReadNtk(pAbc));
+    Ckt_Set_t dcs(Abc_FrameReadNtk(pAbc), 0);
     cout << "# pi = " << Abc_NtkPiNum(Abc_FrameReadNtk(pAbc)) << endl;
     for (uint64_t i = 0; i < error; ++i)
-        dc.AddPatternR();
-    // cout << dc;
-    Ckt_MfsTest(Abc_FrameReadNtk(pAbc), dc, 0);
+        dcs.AddPatternR();
+    // cout << dcs;
+    Ckt_MfsTest(Abc_FrameReadNtk(pAbc), dcs);
 
     command = "map -a; print_stats";
-    DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
+    DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{});
 
+    DEBUG_ASSERT(system("if [ ! -d approx ]; then mkdir approx; fi") != -1, module_a{}, "mkdir failed");
     if (approx == "") {
         string fileName("approx/" + string(Abc_FrameReadNtk(pAbc)->pName) + "-");
         stringstream ss;
@@ -90,12 +90,12 @@ void ALS_CR(string file, string approx, int nFrame)
     string command = "read_blif " + file;
     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
 
-    Ckt_Assignment_t cs(Abc_FrameReadNtk(pAbc));
+    Ckt_Set_t cs(Abc_FrameReadNtk(pAbc), 1);
     cout << "# pi = " << Abc_NtkPiNum(Abc_FrameReadNtk(pAbc)) << endl;
     for (int i = 0; i < nFrame; ++i)
         cs.AddPatternR();
     // cout << cs;
-    Ckt_MfsTest(Abc_FrameReadNtk(pAbc), cs, 1);
+    Ckt_MfsTest(Abc_FrameReadNtk(pAbc), cs);
 
     command = "map -a; print_stats";
     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{});
@@ -147,4 +147,3 @@ int main(int argc, char * argv[])
 
     return 0;
 }
-
