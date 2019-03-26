@@ -135,7 +135,7 @@ public:
     void                                        FeedForward (std::vector < std::shared_ptr <Ckt_Obj_t> > & pTopoObjs);
     void                                        TestSimSpeed(void);
     void                                        CheckSim    (void);
-    float                                       MeasureError(std::shared_ptr <Ckt_Ntk_t> pRefNtk);
+    float                                       MeasureError(std::shared_ptr <Ckt_Ntk_t> pRefNtk, int seed = 314);
 
 
     inline std::string                          GetName     (void) const                                                    {return std::string(pAbcNtk->pName);}

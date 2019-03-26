@@ -36,7 +36,7 @@ void MeasureErrorRate(string file, string approx, int nFrame)
     shared_ptr <Ckt_Ntk_t> pCktNtkApp = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc));
     pCktNtkApp->Init(nFrame);
 
-    cout << "error rate = " << pCktNtkApp->MeasureError(pCktNtkOri) << endl;
+    cout << "error rate = " << pCktNtkApp->MeasureError(pCktNtkOri, 666) << endl;
 }
 
 

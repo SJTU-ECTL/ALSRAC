@@ -722,7 +722,7 @@ void Ckt_Ntk_t::CheckSim(void)
 }
 
 
-float Ckt_Ntk_t::MeasureError(shared_ptr <Ckt_Ntk_t> pRefNtk)
+float Ckt_Ntk_t::MeasureError(shared_ptr <Ckt_Ntk_t> pRefNtk, int seed)
 {
     // make sure POs are same
     DEBUG_ASSERT(pCktPos.size() == pRefNtk->pCktPos.size(), module_a{}, "# pos are not equal");
@@ -731,9 +731,9 @@ float Ckt_Ntk_t::MeasureError(shared_ptr <Ckt_Ntk_t> pRefNtk)
         DEBUG_ASSERT(pCktPos[i]->GetName() == pRefNtk->pCktPos[i]->GetName(), module_a{}, "pos are different");
     // logic simulation
     DEBUG_ASSERT(nSim == pRefNtk->GetSimNum(), module_a{}, "# pos are not equal");
-    GenInputDist(314);
+    GenInputDist(seed);
     FeedForward();
-    pRefNtk->GenInputDist(314);
+    pRefNtk->GenInputDist(seed);
     pRefNtk->FeedForward();
     // compare simulation value of POs
     int ret = 0;
