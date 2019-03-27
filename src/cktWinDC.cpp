@@ -1,100 +1,15 @@
-#include "cktInter.h"
+#include "cktWinDC.h"
 
 
 using namespace std;
 using namespace abc;
 
 
-Ckt_Set_t::Ckt_Set_t(Abc_Ntk_t * p_abc_ntk, bool is_care_set)
-    : pAbcNtk(p_abc_ntk), isCareSet(is_care_set)
-{
-    Abc_Obj_t * pAbcObj;
-    int i;
-    patLen = Abc_NtkPiNum(pAbcNtk);
-    Abc_NtkForEachPi(pAbcNtk, pAbcObj, i)
-        abc2PatId[pAbcObj] = i;
-    DEBUG_ASSERT(i == patLen, module_a{}, "# pi != patLen");
-}
-
-
-Ckt_Set_t::~Ckt_Set_t (void)
-{
-}
-
-
-void Ckt_Set_t::AddPattern(const string & pattern)
-{
-    DEBUG_ASSERT(static_cast <int> (pattern.size()) == patLen, module_a{}, "pattern size != patLen");
-    patterns.emplace_back(pattern);
-}
-
-
-void Ckt_Set_t::AddPatternR()
-{
-    static unsigned seed;
-    seed += 10;
-    boost::random::mt19937 gen(seed);
-    boost::uniform_int <> dist(0, 1);
-    boost::variate_generator <boost::mt19937 &, boost::uniform_int <> > coin(gen, dist);
-
-    string pattern;
-    pattern.resize(patLen);
-    for (int i = 0; i < patLen; ++i)
-        pattern[i] = coin() + '0';
-    patterns.emplace_back(pattern);
-}
-
-
-void Ckt_Set_t::AddPatternR2(int nDC)
-{
-    DEBUG_ASSERT(1 <= nDC && nDC <= patLen, module_a{}, "invalid don't care length");
-    static unsigned seed;
-
-    seed += 10;
-    string pattern;
-    pattern.resize(patLen);
-    for (int i = 0; i < patLen; ++i)
-        pattern[i] = '0';
-
-    boost::random::mt19937 gen0(seed);
-    boost::uniform_int <> dist0(0, patLen - 1);
-    boost::variate_generator <boost::mt19937 &, boost::uniform_int <> > coin0(gen0, dist0);
-    for (int i = 0; i < nDC; ++i) {
-        int pos = coin0();
-        while (pattern[pos] == '-')
-            pos = coin0();
-        pattern[pos] = '-';
-    }
-
-    boost::random::mt19937 gen(seed);
-    boost::uniform_int <> dist(0, 1);
-    boost::variate_generator <boost::mt19937 &, boost::uniform_int <> > coin(gen, dist);
-
-    for (int i = 0; i < patLen; ++i)
-        if (pattern[i] != '-')
-            pattern[i] = coin() + '0';
-    patterns.emplace_back(pattern);
-}
-
-
-ostream & operator <<(ostream & os, const Ckt_Set_t & cktSet)
-{
-    Abc_Obj_t * pAbcObj;
-    int i;
-    Abc_NtkForEachPi(cktSet.pAbcNtk, pAbcObj, i)
-        cout << Abc_ObjName(pAbcObj) << "\t";
-    cout << endl;
-    for (auto & pattern : cktSet.patterns)
-        cout << pattern << endl;
-    return os;
-}
-
-
-int Ckt_MfsTest( Abc_Ntk_t * pNtk, Ckt_Set_t & cktSet)
+int Ckt_WinMfsTest( Abc_Ntk_t * pNtk, int nWinTfiLevs)
 {
     // set parameters
     Mfs_Par_t mfsPars, * pPars = &mfsPars;
-    Ckt_SetMfsPars(pPars);
+    Ckt_WinSetMfsPars(pPars);
     DEBUG_ASSERT(pPars->fResub == 1, module_a{}, "pPars->fResub = 0");
     DEBUG_ASSERT(pPars->fPower == 0, module_a{}, "pPars->fPower = 1");
     DEBUG_ASSERT(pNtk->pExcare == nullptr, module_a{}, "pNtk->pExcare not empty");
@@ -160,10 +75,9 @@ int Ckt_MfsTest( Abc_Ntk_t * pNtk, Ckt_Set_t & cktSet)
             if ( !p->pPars->fVeryVerbose )
                 Extra_ProgressBarUpdate( pProgress, i, NULL );
             if ( pPars->fResub )
-                Ckt_MfsResub( p, pObj, cktSet);
+                Ckt_WinMfsResub(p, pObj, nWinTfiLevs);
             else {
                 DEBUG_ASSERT(0, module_a{}, "pPars->fResub = 0");
-                // Abc_NtkMfsNode( p, pObj );
             }
         }
         Extra_ProgressBarStop( pProgress );
@@ -191,7 +105,7 @@ int Ckt_MfsTest( Abc_Ntk_t * pNtk, Ckt_Set_t & cktSet)
 }
 
 
-int Ckt_MfsResub( Mfs_Man_t * p, Abc_Obj_t * pNode, Ckt_Set_t & cktSet)
+int Ckt_WinMfsResub(Mfs_Man_t * p, Abc_Obj_t * pNode, int nWinTfiLevs)
 {
     abctime clk;
     p->nNodesTried++;
@@ -199,9 +113,26 @@ int Ckt_MfsResub( Mfs_Man_t * p, Abc_Obj_t * pNode, Ckt_Set_t & cktSet)
     Mfs_ManClean( p );
     // compute window roots, window support, and window nodes
 clk = Abc_Clock();
-    p->vRoots = Abc_MfsComputeRoots( pNode, p->pPars->nWinTfoLevs, p->pPars->nFanoutsMax );
-    p->vSupp  = Abc_NtkNodeSupport( p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots) );
-    p->vNodes = Abc_NtkDfsNodes( p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots) );
+    p->vRoots = Abc_MfsComputeRoots(pNode, p->pPars->nWinTfoLevs, p->pPars->nFanoutsMax);
+    p->vSupp  = Ckt_WinNtkNodeSupport(p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots), Abc_ObjLevel(pNode) - nWinTfiLevs);
+    p->vNodes = Ckt_WinNtkDfsNodes(p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots), Abc_ObjLevel(pNode) - nWinTfiLevs);
+
+    Abc_Obj_t * pObj;
+    int i;
+    cout << Abc_ObjName(pNode) << "(" << Abc_ObjLevel(pNode) << ")" << "------------------" << endl;
+    cout << "vRoots : ";
+    Vec_PtrForEachEntry(Abc_Obj_t *, p->vRoots, pObj, i)
+        cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
+    cout << endl;
+    cout << "vSupp : ";
+    Vec_PtrForEachEntry(Abc_Obj_t *, p->vSupp, pObj, i)
+        cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
+    cout << endl;
+    cout << "vNodes : ";
+    Vec_PtrForEachEntry(Abc_Obj_t *, p->vNodes, pObj, i)
+        cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
+    cout << endl;
+
 p->timeWin += Abc_Clock() - clk;
     if ( p->pPars->nWinMax && Vec_PtrSize(p->vNodes) > p->pPars->nWinMax )
     {
@@ -215,9 +146,10 @@ clk = Abc_Clock();
 p->timeDiv += Abc_Clock() - clk;
     // construct AIG for the window
 clk = Abc_Clock();
-    // p->pAigWin = Abc_NtkConstructAig( p, pNode );
-    p->pAigWin = Ckt_ConstructAppAig( p, pNode, cktSet);
+    p->pAigWin = Ckt_WinConstructAppAig( p, pNode);
 p->timeAig += Abc_Clock() - clk;
+
+    // return 1;
     // translate it into CNF
 clk = Abc_Clock();
     p->pCnf = Cnf_DeriveSimple( p->pAigWin, 1 + Vec_PtrSize(p->vDivs) );
@@ -246,7 +178,7 @@ p->timeSat += Abc_Clock() - clk;
 }
 
 
-void Ckt_SetMfsPars( Mfs_Par_t * pPars )
+void Ckt_WinSetMfsPars( Mfs_Par_t * pPars )
 {
     memset( pPars, 0, sizeof(Mfs_Par_t) );
     pPars->nWinTfoLevs  =    2;
@@ -285,7 +217,7 @@ void Ckt_SetMfsPars( Mfs_Par_t * pPars )
 }
 
 
-Aig_Man_t * Ckt_ConstructAppAig( Mfs_Man_t * p, Abc_Obj_t * pNode, Ckt_Set_t & cktSet)
+Aig_Man_t * Ckt_WinConstructAppAig( Mfs_Man_t * p, Abc_Obj_t * pNode)
 {
     Aig_Man_t * pMan;
     Abc_Obj_t * pFanin;
@@ -294,10 +226,7 @@ Aig_Man_t * Ckt_ConstructAppAig( Mfs_Man_t * p, Abc_Obj_t * pNode, Ckt_Set_t & c
     // start the new manager
     pMan = Aig_ManStart( 1000 );
     // construct the root node's AIG cone
-    if (!cktSet.isCareSet)
-        pObjAig = Ckt_ConstructAppAig_rec( p, pNode, pMan, cktSet );
-    else
-        pObjAig = Ckt_ConstructAppAig2_rec( p, pNode, pMan, cktSet );
+    pObjAig = Ckt_WinConstructAppAig_rec(p, pNode, pMan);
     Aig_ObjCreateCo( pMan, pObjAig );
     if ( p->pCare )
     {
@@ -308,12 +237,16 @@ Aig_Man_t * Ckt_ConstructAppAig( Mfs_Man_t * p, Abc_Obj_t * pNode, Ckt_Set_t & c
         // construct the node
         pObjAig = (Aig_Obj_t *)pNode->pCopy;
         Aig_ObjCreateCo( pMan, pObjAig );
+
         // construct the divisors
+        cout << "vDivs : ";
         Vec_PtrForEachEntry( Abc_Obj_t *, p->vDivs, pFanin, i )
         {
+            cout << Abc_ObjName(pFanin) << "(" << Abc_ObjLevel(pFanin) << ")" << "\t";
             pObjAig = (Aig_Obj_t *)pFanin->pCopy;
             Aig_ObjCreateCo( pMan, pObjAig );
         }
+        cout << endl;
     }
     else
     {
@@ -324,19 +257,19 @@ Aig_Man_t * Ckt_ConstructAppAig( Mfs_Man_t * p, Abc_Obj_t * pNode, Ckt_Set_t & c
 }
 
 
-Aig_Obj_t * Ckt_ConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t * pMan, Ckt_Set_t & cktSet )
+Aig_Obj_t * Ckt_WinConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t * pMan)
 {
-    Aig_Obj_t * pRoot, * pExor, * pDC, * pCi;
+    Aig_Obj_t * pRoot, * pExor;
     Abc_Obj_t * pObj;
     int i;
     // assign AIG nodes to the leaves
-    Abc_NtkForEachPi(pNode->pNtk, pObj, i)
+    Vec_PtrForEachEntry( Abc_Obj_t *, p->vSupp, pObj, i )
         pObj->pCopy = pObj->pNext = (Abc_Obj_t *)Aig_ObjCreateCi( pMan );
     // strash intermediate nodes
     Abc_NtkIncrementTravId( pNode->pNtk );
     Vec_PtrForEachEntry( Abc_Obj_t *, p->vNodes, pObj, i )
     {
-        Abc_MfsConvertHopToAig( pObj, pMan );
+        Ckt_WinMfsConvertHopToAig( pObj, pMan );
         if ( pObj == pNode )
             pObj->pNext = Abc_ObjNot(pObj->pNext);
     }
@@ -347,63 +280,11 @@ Aig_Obj_t * Ckt_ConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t
         pExor = Aig_Exor( pMan, (Aig_Obj_t *)pObj->pCopy, (Aig_Obj_t *)pObj->pNext );
         pRoot = Aig_Or( pMan, pRoot, pExor );
     }
-    // add don't cares constraint
-    for (auto & pattern : cktSet.patterns) {
-        pDC = Aig_ManConst0(pMan);
-        Abc_NtkForEachPi(pNode->pNtk, pObj, i) {
-        // Aig_ManForEachCi(pMan, pCi, i) {
-            pCi = Aig_ManCi(pMan, i);
-            if (pattern[cktSet.abc2PatId[pObj]] == '1')
-                pDC = Aig_Or(pMan, pDC, Aig_Not(pCi));
-            else if (pattern[cktSet.abc2PatId[pObj]] == '0')
-                pDC = Aig_Or(pMan, pDC, pCi);
-            else if (pattern[cktSet.abc2PatId[pObj]] == '-')
-                continue;
-            else
-                DEBUG_ASSERT(0, module_a{}, "invalid pattern");
-        }
-        pRoot = Aig_And(pMan, pRoot, pDC);
-    }
     return pRoot;
 }
 
 
-Aig_Obj_t * Ckt_ConstructAppAig2_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t * pMan, Ckt_Set_t & cktSet )
-{
-    Aig_Obj_t * pRoot, * pCare, * pCi;
-    Abc_Obj_t * pObj;
-    int i;
-
-    // assign AIG nodes to the leaves
-    Abc_NtkForEachPi(pNode->pNtk, pObj, i)
-        pObj->pCopy = (Abc_Obj_t *)Aig_ObjCreateCi( pMan );
-
-    // strash intermediate nodes
-    Abc_NtkIncrementTravId( pNode->pNtk );
-    Vec_PtrForEachEntry( Abc_Obj_t *, p->vNodes, pObj, i )
-        Abc_MfsConvertHopToAig2( pObj, pMan );
-
-    pRoot = Aig_ManConst0(pMan);
-    for (auto & pattern : cktSet.patterns) {
-        pCare = Aig_ManConst1(pMan);
-        Abc_NtkForEachPi(pNode->pNtk, pObj, i) {
-            pCi = Aig_ManCi(pMan, i);
-            if (pattern[cktSet.abc2PatId[pObj]] == '1')
-                pCare = Aig_And(pMan, pCare, pCi);
-            else if (pattern[cktSet.abc2PatId[pObj]] == '0')
-                pCare = Aig_And(pMan, pCare, Aig_Not(pCi));
-            else if (pattern[cktSet.abc2PatId[pObj]] == '-')
-                continue;
-            else
-                DEBUG_ASSERT(0, module_a{}, "invalid pattern");
-        }
-        pRoot = Aig_Or(pMan, pRoot, pCare);
-    }
-    return pRoot;
-}
-
-
-void Abc_MfsConvertHopToAig( Abc_Obj_t * pObjOld, Aig_Man_t * pMan )
+void Ckt_WinMfsConvertHopToAig( Abc_Obj_t * pObjOld, Aig_Man_t * pMan )
 {
     Hop_Man_t * pHopMan;
     Hop_Obj_t * pRoot;
@@ -424,7 +305,7 @@ void Abc_MfsConvertHopToAig( Abc_Obj_t * pObjOld, Aig_Man_t * pMan )
     Abc_ObjForEachFanin( pObjOld, pFanin, i )
         Hop_ManPi(pHopMan, i)->pData = pFanin->pCopy;
     // construct the AIG
-    Abc_MfsConvertHopToAig_rec( Hop_Regular(pRoot), pMan );
+    Ckt_WinMfsConvertHopToAig_rec( Hop_Regular(pRoot), pMan );
     pObjOld->pCopy = (Abc_Obj_t *)Aig_NotCond( (Aig_Obj_t *)Hop_Regular(pRoot)->pData, Hop_IsComplement(pRoot) );
     Hop_ConeUnmark_rec( Hop_Regular(pRoot) );
 
@@ -432,46 +313,113 @@ void Abc_MfsConvertHopToAig( Abc_Obj_t * pObjOld, Aig_Man_t * pMan )
     Abc_ObjForEachFanin( pObjOld, pFanin, i )
         Hop_ManPi(pHopMan, i)->pData = pFanin->pNext;
     // construct the AIG
-    Abc_MfsConvertHopToAig_rec( Hop_Regular(pRoot), pMan );
+    Ckt_WinMfsConvertHopToAig_rec( Hop_Regular(pRoot), pMan );
     pObjOld->pNext = (Abc_Obj_t *)Aig_NotCond( (Aig_Obj_t *)Hop_Regular(pRoot)->pData, Hop_IsComplement(pRoot) );
     Hop_ConeUnmark_rec( Hop_Regular(pRoot) );
 }
 
 
-void Abc_MfsConvertHopToAig2( Abc_Obj_t * pObjOld, Aig_Man_t * pMan )
-{
-    Hop_Man_t * pHopMan;
-    Hop_Obj_t * pRoot;
-    Abc_Obj_t * pFanin;
-    int i;
-    // get the local AIG
-    pHopMan = (Hop_Man_t *)pObjOld->pNtk->pManFunc;
-    pRoot = (Hop_Obj_t *)pObjOld->pData;
-    // check the case of a constant
-    if ( Hop_ObjIsConst1( Hop_Regular(pRoot) ) )
-    {
-        pObjOld->pCopy = (Abc_Obj_t *)Aig_NotCond( Aig_ManConst1(pMan), Hop_IsComplement(pRoot) );
-        return;
-    }
-
-    // assign the fanin nodes
-    Abc_ObjForEachFanin( pObjOld, pFanin, i )
-        Hop_ManPi(pHopMan, i)->pData = pFanin->pCopy;
-    // construct the AIG
-    Abc_MfsConvertHopToAig_rec( Hop_Regular(pRoot), pMan );
-    pObjOld->pCopy = (Abc_Obj_t *)Aig_NotCond( (Aig_Obj_t *)Hop_Regular(pRoot)->pData, Hop_IsComplement(pRoot) );
-    Hop_ConeUnmark_rec( Hop_Regular(pRoot) );
-}
-
-
-void Abc_MfsConvertHopToAig_rec( Hop_Obj_t * pObj, Aig_Man_t * pMan )
+void Ckt_WinMfsConvertHopToAig_rec( Hop_Obj_t * pObj, Aig_Man_t * pMan )
 {
     assert( !Hop_IsComplement(pObj) );
     if ( !Hop_ObjIsNode(pObj) || Hop_ObjIsMarkA(pObj) )
         return;
-    Abc_MfsConvertHopToAig_rec( Hop_ObjFanin0(pObj), pMan );
-    Abc_MfsConvertHopToAig_rec( Hop_ObjFanin1(pObj), pMan );
+    Ckt_WinMfsConvertHopToAig_rec( Hop_ObjFanin0(pObj), pMan );
+    Ckt_WinMfsConvertHopToAig_rec( Hop_ObjFanin1(pObj), pMan );
     pObj->pData = Aig_And( pMan, (Aig_Obj_t *)Hop_ObjChild0Copy(pObj), (Aig_Obj_t *)Hop_ObjChild1Copy(pObj) );
     assert( !Hop_ObjIsMarkA(pObj) ); // loop detection
     Hop_ObjSetMarkA( pObj );
+}
+
+
+Vec_Ptr_t * Ckt_WinNtkNodeSupport(Abc_Ntk_t * pNtk, Abc_Obj_t ** ppNodes, int nNodes, int minLevel)
+{
+    Vec_Ptr_t * vNodes;
+    int i;
+    // set the traversal ID
+    Abc_NtkIncrementTravId( pNtk );
+    // start the array of nodes
+    vNodes = Vec_PtrAlloc( 100 );
+    // go through the PO nodes and call for each of them
+    for ( i = 0; i < nNodes; i++ )
+        if ( Abc_ObjIsCo(ppNodes[i]) )
+            Ckt_WinNtkNodeSupport_rec( Abc_ObjFanin0(ppNodes[i]), vNodes, minLevel );
+        else
+            Ckt_WinNtkNodeSupport_rec( ppNodes[i], vNodes, minLevel );
+    return vNodes;
+}
+
+
+void Ckt_WinNtkNodeSupport_rec( Abc_Obj_t * pNode, Vec_Ptr_t * vNodes, int minLevel )
+{
+    Abc_Obj_t * pFanin;
+    int i;
+    assert( !Abc_ObjIsNet(pNode) );
+    // if this node is already visited, skip
+    if ( Abc_NodeIsTravIdCurrent( pNode ) )
+        return;
+    // mark the node as visited
+    Abc_NodeSetTravIdCurrent( pNode );
+    // collect the CI
+    if ( Abc_ObjIsCi(pNode) || (Abc_NtkIsStrash(pNode->pNtk) && Abc_ObjFaninNum(pNode) == 0) || Abc_ObjLevel(pNode) <= minLevel )
+    // if ( Abc_ObjIsCi(pNode) || (Abc_NtkIsStrash(pNode->pNtk) && Abc_ObjFaninNum(pNode) == 0) )
+    {
+        Vec_PtrPush( vNodes, pNode );
+        return;
+    }
+    assert( Abc_ObjIsNode( pNode ) );
+    // visit the transitive fanin of the node
+    Abc_ObjForEachFanin( pNode, pFanin, i )
+        Ckt_WinNtkNodeSupport_rec( Abc_ObjFanin0Ntk(pFanin), vNodes, minLevel );
+}
+
+
+Vec_Ptr_t * Ckt_WinNtkDfsNodes( Abc_Ntk_t * pNtk, Abc_Obj_t ** ppNodes, int nNodes, int minLevel )
+{
+    Vec_Ptr_t * vNodes;
+    int i;
+    // set the traversal ID
+    Abc_NtkIncrementTravId( pNtk );
+    // start the array of nodes
+    vNodes = Vec_PtrAlloc( 100 );
+    // go through the PO nodes and call for each of them
+    for ( i = 0; i < nNodes; i++ )
+    {
+        if ( Abc_NtkIsStrash(pNtk) && Abc_AigNodeIsConst(ppNodes[i]) )
+            continue;
+        if ( Abc_ObjIsCo(ppNodes[i]) )
+        {
+            Abc_NodeSetTravIdCurrent(ppNodes[i]);
+            Ckt_WinNtkDfs_rec( Abc_ObjFanin0Ntk(Abc_ObjFanin0(ppNodes[i])), vNodes, minLevel );
+        }
+        else if ( Abc_ObjIsNode(ppNodes[i]) || Abc_ObjIsCi(ppNodes[i]) )
+            Ckt_WinNtkDfs_rec( ppNodes[i], vNodes, minLevel );
+    }
+    return vNodes;
+}
+
+
+void Ckt_WinNtkDfs_rec( Abc_Obj_t * pNode, Vec_Ptr_t * vNodes, int minLevel )
+{
+    Abc_Obj_t * pFanin;
+    int i;
+    assert( !Abc_ObjIsNet(pNode) );
+    // if this node is already visited, skip
+    if ( Abc_NodeIsTravIdCurrent( pNode ) )
+        return;
+    // mark the node as visited
+    Abc_NodeSetTravIdCurrent( pNode );
+    // skip the CI
+    if ( Abc_ObjIsCi(pNode) || (Abc_NtkIsStrash(pNode->pNtk) && Abc_AigNodeIsConst(pNode)) || Abc_ObjLevel(pNode) <= minLevel )
+    // if ( Abc_ObjIsCi(pNode) || (Abc_NtkIsStrash(pNode->pNtk) && Abc_AigNodeIsConst(pNode)) )
+        return;
+    assert( Abc_ObjIsNode( pNode ) || Abc_ObjIsBox( pNode ) );
+    // visit the transitive fanin of the node
+    Abc_ObjForEachFanin( pNode, pFanin, i )
+    {
+//        pFanin = Abc_ObjFanin( pNode, Abc_ObjFaninNum(pNode)-1-i );
+        Ckt_WinNtkDfs_rec( Abc_ObjFanin0Ntk(pFanin), vNodes, minLevel );
+    }
+    // add the node after the fanins have been added
+    Vec_PtrPush( vNodes, pNode );
 }
