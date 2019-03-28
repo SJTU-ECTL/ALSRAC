@@ -167,10 +167,10 @@ int main(int argc, char * argv[])
         MeasureErrorRate(file, approx, nFrame);
     }
     else {
-        // ALS_Sim(file, approx, nFrame);
         // ALS_CR(file, approx, nFrame);
         // ALS_DC(file, approx, nFrame);
-        ALS_WinDC(file, approx, nFrame);
+        // ALS_WinDC(file, approx, nFrame);
+        TestSimulator(file, nFrame);
     }
 
     Abc_Stop();

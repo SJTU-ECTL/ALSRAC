@@ -99,7 +99,7 @@ public:
     inline void                                 SetSimVal   (int i, uint64_t value)                                         {simValue[i] = value;}
     inline void                                 SetCktNtk   (std::shared_ptr <Ckt_Ntk_t> p_ckt_ntk)                         {pCktNtk = p_ckt_ntk;}
     inline void                                 SetUnvisited(void)                                                          {isVisited = false;}
-    inline void                                 SetVisited  (void)                                                            {isVisited = true;}
+    inline void                                 SetVisited  (void)                                                          {isVisited = true;}
     inline void                                 ResizeSimVal(int len)                                                       {simValue.resize(len);}
     inline void                                 FlipSimVal  (int i)                                                         {simValue[i] = ~simValue[i];}
 };
@@ -110,6 +110,7 @@ class Ckt_Ntk_t
 {
 private:
     abc::Abc_Ntk_t *                            pAbcNtk;                                                                    // the ABC network
+    bool                                        isDupAbcNtk;
     int                                         nSim;
     Ckt_Func_t                                  funcType;
     std::vector < std::shared_ptr <Ckt_Obj_t> > pCktObjs;                                                                   // CKT objects
@@ -121,7 +122,7 @@ private:
                                                 Ckt_Ntk_t   (const Ckt_Ntk_t & other);                                      // forbid copy constructor
 
 public:
-    explicit                                    Ckt_Ntk_t   (abc::Abc_Ntk_t * p_abc_ntk);
+    explicit                                    Ckt_Ntk_t   (abc::Abc_Ntk_t * p_abc_ntk, bool is_dup_abc_ntk = true);
                                                 ~Ckt_Ntk_t  (void);
 
     void                                        Init        (int frame_number = 10240);

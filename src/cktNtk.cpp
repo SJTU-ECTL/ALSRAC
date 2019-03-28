@@ -500,16 +500,23 @@ bool Ckt_Obj_t::NodeIsOAI22(void)
 }
 
 
-Ckt_Ntk_t::Ckt_Ntk_t(Abc_Ntk_t * p_abc_ntk)
+Ckt_Ntk_t::Ckt_Ntk_t(Abc_Ntk_t * p_abc_ntk, bool is_dup_abc_ntk)
+    : isDupAbcNtk(is_dup_abc_ntk)
 {
-    pAbcNtk = Abc_NtkDup(p_abc_ntk);
+    DEBUG_ASSERT(p_abc_ntk != nullptr, module_a{}, "empty network!");
+    if (isDupAbcNtk)
+        pAbcNtk = Abc_NtkDup(p_abc_ntk);
+    else
+        pAbcNtk = p_abc_ntk;
 }
 
 
 Ckt_Ntk_t::~Ckt_Ntk_t(void)
 {
-    if (pAbcNtk != nullptr)
+    if (isDupAbcNtk) {
+        DEBUG_ASSERT(pAbcNtk != nullptr, module_a{}, "empty network!");
         Abc_NtkDelete(pAbcNtk);
+    }
 }
 
 

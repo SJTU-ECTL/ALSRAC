@@ -21,5 +21,4 @@ abc::Vec_Ptr_t *                                    Ckt_WinNtkDfsNodes          
 void                                                Ckt_WinNtkDfs_rec               (abc::Abc_Obj_t * pNode, abc::Vec_Ptr_t * vNodes, int minLevel);
 
 
-
 #endif
