@@ -15,7 +15,6 @@ parser Cmdline_Parser(int argc, char * argv[])
     option.add <string>    ("file",    'f', "Original Circuit file",    true);
     option.add <string>    ("approx",  'a', "Approximate Circuit file", false);
     option.add <string>    ("genlib",  'g', "Map libarary file",        false, "data/genlib/mcnc.genlib");
-    option.add <uint64_t>  ("error",   'e', "Approximate EXDC number",  false, 100, range(static_cast<uint64_t>(0), static_cast<uint64_t>(ULLONG_MAX)));
     option.add <int>       ("nFrame",  'n', "Simulation Frame number",  false, 10240, range(1, INT_MAX));
     option.add             ("measure", 'm', "enable measuring the ER");
     option.parse_check(argc, argv);
@@ -47,8 +46,8 @@ void TestSimulator(string file, int nFrame)
     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
     shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc));
     pCktNtk->Init(nFrame);
-    pCktNtk->TestSimSpeed();
-    // pCktNtk->CheckSim();
+    pCktNtk->LogicSim(true);
+    pCktNtk->CheckSim();
 }
 
 
@@ -155,7 +154,6 @@ int main(int argc, char * argv[])
     string genlib = option.get <string> ("genlib");
     int nFrame = option.get <int> ("nFrame");
     bool isMeasure = option.exist("measure");
-    // uint64_t error = option.get <uint64_t> ("error");
 
     Abc_Start();
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();

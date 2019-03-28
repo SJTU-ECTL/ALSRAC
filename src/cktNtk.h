@@ -11,13 +11,13 @@
 
 enum class Ckt_Func_t
 {
-    SOP, MAP
+    SOP, MAP, AIG
 };
 
 
 enum class Ckt_ObjType_t
 {
-    PI,   PO,    CONST0, CONST1, INTER
+    PI, PO, CONST0, CONST1, INTER
 };
 
 
@@ -45,7 +45,6 @@ private:
     std::vector < std::shared_ptr <Ckt_Obj_t> > pCktFanins;
     std::vector < std::weak_ptr <Ckt_Obj_t> >   pCktFanouts;
     std::shared_ptr <Ckt_MapType_t>             pMapType;
-    std::vector <std::string>                   sopFunc;
     std::shared_ptr <bool>                      isCompl;
     std::vector <uint64_t>                      simValue;
 
@@ -59,7 +58,7 @@ public:
     void                                        AddFanin    (std::shared_ptr <Ckt_Obj_t> pCktFanin);
     Ckt_ObjType_t                               RenewObjType(void);
     Ckt_MapType_t                               RenewMapType(void);
-    void                                        RenewSopFunc(void);
+    bool                                        RenewIsCompl(void);
     void                                        RenewSimValS(void);
     void                                        RenewSimValM(void);
     bool                                        NodeIsBuf   (void);
@@ -134,7 +133,7 @@ public:
     void                                        DFS         (std::shared_ptr <Ckt_Obj_t> pCktObj, std::vector < std::shared_ptr <Ckt_Obj_t> > & pTopoObjs);
     void                                        FeedForward (void);
     void                                        FeedForward (std::vector < std::shared_ptr <Ckt_Obj_t> > & pTopoObjs);
-    void                                        TestSimSpeed(void);
+    void                                        LogicSim    (bool isVerbose = true);
     void                                        CheckSim    (void);
     float                                       MeasureError(std::shared_ptr <Ckt_Ntk_t> pRefNtk, int seed = 314);
 

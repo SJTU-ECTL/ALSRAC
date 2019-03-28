@@ -107,6 +107,12 @@ int Ckt_WinMfsTest( Abc_Ntk_t * pNtk, int nWinTfiLevs)
 
 int Ckt_WinMfsResub(Mfs_Man_t * p, Abc_Obj_t * pNode, int nWinTfiLevs)
 {
+    // perform logic simulation
+    // shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pNode->pNtk, false);
+    // pCktNtk->Init(1000);
+    // pCktNtk->LogicSim(false);
+    // pCktNtk.reset();
+
     abctime clk;
     p->nNodesTried++;
     // prepare data structure for this node

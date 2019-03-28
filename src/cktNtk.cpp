@@ -83,46 +83,19 @@ Ckt_MapType_t Ckt_Obj_t::RenewMapType(void)
 }
 
 
-void Ckt_Obj_t::RenewSopFunc(void)
+bool Ckt_Obj_t::RenewIsCompl()
 {
-    if (IsPI() || IsPO() || IsConst())
-        return;
-    char * pCube, * pSop = (char *)pAbcObj->pData;
-    int Value, v;
-    DEBUG_ASSERT(pSop && !Abc_SopIsExorType(pSop), module_a{});
-    int nVars = Abc_SopGetVarNum(pSop);
-    sopFunc.clear();
-    Abc_SopForEachCube(pSop, nVars, pCube) {
-        string s = "";
-        // for ( v = 0; (pCube[v] != ' ') && (Value = pCube[v]); v++ ) {
-        Abc_CubeForEachVar(pCube, Value, v) {
-            if (Value == '0' || Value == '1' || Value == '-')
-                s += static_cast<char>(Value);
-            else
-                DEBUG_ASSERT(0, module_a{}, "unknown sop symbol");
-        }
-        DEBUG_ASSERT(pCube[v] == ' ', module_a{}, "invalid sop expression");
-        if (pCube[v + 1] == '0') {
-            if (isCompl)
-                DEBUG_ASSERT(*isCompl, module_a{}, "conflicting sop polarity");
-            else
-                isCompl = make_shared <bool> (true);
-        }
-        else if (pCube[v + 1] == '1') {
-            if (isCompl)
-                DEBUG_ASSERT(!(*isCompl), module_a{}, "conflicting sop polarity");
-            else
-                isCompl = make_shared <bool> (false);
-        }
-        else
-            DEBUG_ASSERT(0, module_a{}, "unknown sop polarity");
-        sopFunc.emplace_back(s);
-    }
+    char * pSop = static_cast <char *> (GetAbcObj()->pData);
+    DEBUG_ASSERT(GetFaninNum() == Abc_SopGetVarNum(pSop), module_a{}, "# sop var != # fanin");
+    isCompl = make_shared <bool> ( Abc_SopIsComplement(pSop) );
+    return *isCompl;
 }
 
 
 void Ckt_Obj_t::RenewSimValS(void)
 {
+    char * pCube, * pCur, * pSop;
+    int j, nVars;
     switch (type) {
         case Ckt_ObjType_t::PI:
         break;
@@ -139,28 +112,31 @@ void Ckt_Obj_t::RenewSimValS(void)
                 simValue[i] = pCktFanins[0]->simValue[i];
         break;
         case Ckt_ObjType_t::INTER:
-            for (auto pCube = sopFunc.begin(); pCube != sopFunc.end(); ++pCube) {
-                vector <uint64_t> product(simValue.size(), static_cast <uint64_t> (ULLONG_MAX));
-                for (int j = 0; j < static_cast <int> (pCube->length()); ++j) {
-                    if ((*pCube)[j] == '0') {
+            pSop = static_cast <char *> (pAbcObj->pData);
+            nVars = GetFaninNum();
+            Abc_SopForEachCube( pSop, nVars, pCube )
+            {
+                vector <uint64_t> product(nSim, static_cast <uint64_t> (ULLONG_MAX));
+                for (pCur = pCube, j = 0; j < nVars; ++pCur, ++j) {
+                    if (*pCur == '0') {
                         for (int i = 0; i < nSim; ++i)
                             product[i] &= ~(pCktFanins[j]->simValue[i]);
                     }
-                    else if ((*pCube)[j] == '1') {
+                    else if (*pCur == '1') {
                         for (int i = 0; i < nSim; ++i)
                             product[i] &= pCktFanins[j]->simValue[i];
                     }
                 }
-                if (pCube == sopFunc.begin())
+                if (pSop == pCube)
                     simValue.assign(product.begin(), product.end());
                 else {
                     for (int i = 0; i < nSim; ++i)
                         simValue[i] |= product[i];
                 }
-            }
-            if (*isCompl) {
-                for (int i = 0; i < nSim; ++i)
-                    simValue[i] = ~simValue[i];
+                if (*isCompl) {
+                    for (int i = 0; i < nSim; ++i)
+                        simValue[i] = ~simValue[i];
+                }
             }
         break;
         default:
@@ -527,6 +503,8 @@ void Ckt_Ntk_t::Init(int frame_number)
         funcType = Ckt_Func_t::SOP;
     else if (Abc_NtkIsMappedLogic(pAbcNtk))
         funcType = Ckt_Func_t::MAP;
+    else if (Abc_NtkIsAigLogic(pAbcNtk))
+        funcType = Ckt_Func_t::AIG;
     else
         DEBUG_ASSERT(0, module_a{}, "unknown function type");
 
@@ -558,20 +536,20 @@ void Ckt_Ntk_t::Init(int frame_number)
         }
     }
 
-    // pMapType
+    // function init
     if (funcType == Ckt_Func_t::MAP) {
         for (auto & pCktObj : pCktObjs) {
             if (pCktObj->IsInter())
                 pCktObj->RenewMapType();
         }
     }
-
-    // sopFunc
-    if (funcType == Ckt_Func_t::SOP) {
+    else if (funcType == Ckt_Func_t::SOP) {
         for (auto & pCktObj : pCktObjs) {
             if (pCktObj->IsNode())
-                pCktObj->RenewSopFunc();
+                pCktObj->RenewIsCompl();
         }
+    }
+    else if (funcType == Ckt_Func_t::AIG) {
     }
 
     // simValue
@@ -680,7 +658,7 @@ void Ckt_Ntk_t::FeedForward(vector < shared_ptr <Ckt_Obj_t> > & pTopoObjs)
 }
 
 
-void Ckt_Ntk_t::TestSimSpeed(void)
+void Ckt_Ntk_t::LogicSim(bool isVerbose)
 {
     GenInputDist();
     vector < shared_ptr <Ckt_Obj_t> > pTopoObjs;
@@ -688,9 +666,11 @@ void Ckt_Ntk_t::TestSimSpeed(void)
     clock_t st = clock();
     FeedForward(pTopoObjs);
     clock_t ed = clock();
-    cout << "circuit = " << GetName() << endl;
-    cout << "frame number = " << nSim * 64 << endl;
-    cout << "time = " << ed - st << " us" << endl;
+    if (isVerbose) {
+        cout << "circuit = " << GetName() << endl;
+        cout << "frame number = " << nSim * 64 << endl;
+        cout << "time = " << ed - st << " us" << endl;
+    }
 }
 
 
