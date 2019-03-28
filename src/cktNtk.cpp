@@ -92,6 +92,19 @@ bool Ckt_Obj_t::RenewIsCompl()
 }
 
 
+void Ckt_Obj_t::GetSubCktRec( Hop_Obj_t * pObj, vector < Hop_Obj_t *> & vNodes )
+{
+    assert( !Hop_IsComplement(pObj) );
+    if ( !Hop_ObjIsNode(pObj) || Hop_ObjIsMarkA(pObj) )
+        return;
+    GetSubCktRec( Hop_ObjFanin0(pObj), vNodes );
+    GetSubCktRec( Hop_ObjFanin1(pObj), vNodes );
+    assert( !Hop_ObjIsMarkA(pObj) ); // loop detection
+    Hop_ObjSetMarkA(pObj);
+    vNodes.emplace_back(pObj);
+}
+
+
 void Ckt_Obj_t::RenewSimValS(void)
 {
     char * pCube, * pCur, * pSop;
@@ -498,6 +511,8 @@ Ckt_Ntk_t::~Ckt_Ntk_t(void)
 
 void Ckt_Ntk_t::Init(int frame_number)
 {
+    nSim = frame_number >> 6;
+
     // funcType
     if (Abc_NtkIsSopLogic(pAbcNtk))
         funcType = Ckt_Func_t::SOP;
@@ -511,12 +526,10 @@ void Ckt_Ntk_t::Init(int frame_number)
     // pCktObjs
     Abc_Obj_t * pAbcObj;
     int i;
-    typedef unordered_map < Abc_Obj_t *, shared_ptr <Ckt_Obj_t> > umap;
-    umap m;
     Abc_NtkForEachObj(pAbcNtk, pAbcObj, i) {
         shared_ptr <Ckt_Obj_t> pCktObj = make_shared <Ckt_Obj_t> (pAbcObj);
         AddObj(pCktObj);
-        m.insert(umap::value_type(pAbcObj, pCktObj));
+        abcId2Ckt.insert(unordered_map < int, shared_ptr <Ckt_Obj_t> >::value_type(pAbcObj->Id, pCktObj));
     }
 
     // pCktPis / pCktPos
@@ -530,11 +543,15 @@ void Ckt_Ntk_t::Init(int frame_number)
     // pCktFanins / pCktFanouts
     for (auto & pCktObj : pCktObjs) {
         Abc_ObjForEachFanin(pCktObj->GetAbcObj(), pAbcObj, i) {
-            umap::const_iterator ppCktObj = m.find(pAbcObj);
-            DEBUG_ASSERT(ppCktObj != m.end(), module_a{}, "object not found");
+            unordered_map < int, shared_ptr <Ckt_Obj_t> >::const_iterator ppCktObj = abcId2Ckt.find(pAbcObj->Id);
+            DEBUG_ASSERT(ppCktObj != abcId2Ckt.end(), module_a{}, "object not found");
             pCktObj->AddFanin(ppCktObj->second);
         }
     }
+
+    // simValue
+    for (auto & pCktObj : pCktObjs)
+        pCktObj->InitSim(nSim);
 
     // function init
     if (funcType == Ckt_Func_t::MAP) {
@@ -549,13 +566,8 @@ void Ckt_Ntk_t::Init(int frame_number)
                 pCktObj->RenewIsCompl();
         }
     }
-    else if (funcType == Ckt_Func_t::AIG) {
-    }
-
-    // simValue
-    nSim = frame_number >> 6;
-    for (auto & pCktObj : pCktObjs)
-        pCktObj->InitSim(nSim);
+    else if (funcType != Ckt_Func_t::AIG)
+        DEBUG_ASSERT(0, module_a{}, "unknown function type");
 }
 
 
