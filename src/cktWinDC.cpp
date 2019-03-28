@@ -114,24 +114,9 @@ int Ckt_WinMfsResub(Mfs_Man_t * p, Abc_Obj_t * pNode, int nWinTfiLevs)
     // compute window roots, window support, and window nodes
 clk = Abc_Clock();
     p->vRoots = Abc_MfsComputeRoots(pNode, p->pPars->nWinTfoLevs, p->pPars->nFanoutsMax);
-    p->vSupp  = Ckt_WinNtkNodeSupport(p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots), Abc_ObjLevel(pNode) - nWinTfiLevs);
-    p->vNodes = Ckt_WinNtkDfsNodes(p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots), Abc_ObjLevel(pNode) - nWinTfiLevs);
-
-    Abc_Obj_t * pObj;
-    int i;
-    cout << Abc_ObjName(pNode) << "(" << Abc_ObjLevel(pNode) << ")" << "------------------" << endl;
-    cout << "vRoots : ";
-    Vec_PtrForEachEntry(Abc_Obj_t *, p->vRoots, pObj, i)
-        cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
-    cout << endl;
-    cout << "vSupp : ";
-    Vec_PtrForEachEntry(Abc_Obj_t *, p->vSupp, pObj, i)
-        cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
-    cout << endl;
-    cout << "vNodes : ";
-    Vec_PtrForEachEntry(Abc_Obj_t *, p->vNodes, pObj, i)
-        cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
-    cout << endl;
+    p->vSupp  = Abc_NtkNodeSupport(p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots));
+    p->vNodes = Abc_NtkDfsNodes(p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots));
+    Vec_Ptr_t * vWinPIs = Ckt_WinNtkNodeSupport(p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots), Abc_ObjLevel(pNode) - nWinTfiLevs);
 
 p->timeWin += Abc_Clock() - clk;
     if ( p->pPars->nWinMax && Vec_PtrSize(p->vNodes) > p->pPars->nWinMax )
@@ -143,13 +128,36 @@ p->timeWin += Abc_Clock() - clk;
 clk = Abc_Clock();
     p->vDivs  = Abc_MfsComputeDivisors( p, pNode, Abc_ObjRequiredLevel(pNode) - 1 );
     p->nTotalDivs += Vec_PtrSize(p->vDivs) - Abc_ObjFaninNum(pNode);
+
+    {
+        // Abc_Obj_t * pObj;
+        // int i;
+        cout << Abc_ObjName(pNode) << " : ";
+        cout << "vRoots (" << Vec_PtrSize(p->vRoots) << ")\t";
+        // Vec_PtrForEachEntry(Abc_Obj_t *, p->vRoots, pObj, i)
+        //     cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
+        // cout << endl;
+        cout << "vSupp (" << Vec_PtrSize(p->vSupp) << ")\t";
+        // Vec_PtrForEachEntry(Abc_Obj_t *, p->vSupp, pObj, i)
+        //     cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
+        // cout << endl;
+        cout << "vNodes (" << Vec_PtrSize(p->vNodes) << ")\t";
+        // Vec_PtrForEachEntry(Abc_Obj_t *, p->vNodes, pObj, i)
+        //     cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
+        // cout << endl;
+        cout << "vWinPIs (" << Vec_PtrSize(vWinPIs) << ")\t";
+        // Vec_PtrForEachEntry(Abc_Obj_t *, vWinPIs, pObj, i)
+        //     cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
+        // cout << endl;
+        cout << "vDivs (" << Vec_PtrSize(p->vDivs) << ")" << endl;
+    }
+
 p->timeDiv += Abc_Clock() - clk;
     // construct AIG for the window
 clk = Abc_Clock();
-    p->pAigWin = Ckt_WinConstructAppAig( p, pNode);
+    p->pAigWin = Ckt_WinConstructAppAig(p, pNode, vWinPIs);
 p->timeAig += Abc_Clock() - clk;
 
-    // return 1;
     // translate it into CNF
 clk = Abc_Clock();
     p->pCnf = Cnf_DeriveSimple( p->pAigWin, 1 + Vec_PtrSize(p->vDivs) );
@@ -174,6 +182,8 @@ clk = Abc_Clock();
             Abc_NtkMfsResubNode2( p, pNode );
     }
 p->timeSat += Abc_Clock() - clk;
+
+    Vec_PtrFree(vWinPIs);
     return 1;
 }
 
@@ -217,7 +227,7 @@ void Ckt_WinSetMfsPars( Mfs_Par_t * pPars )
 }
 
 
-Aig_Man_t * Ckt_WinConstructAppAig( Mfs_Man_t * p, Abc_Obj_t * pNode)
+Aig_Man_t * Ckt_WinConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode, Vec_Ptr_t * vWinPIs)
 {
     Aig_Man_t * pMan;
     Abc_Obj_t * pFanin;
@@ -226,7 +236,7 @@ Aig_Man_t * Ckt_WinConstructAppAig( Mfs_Man_t * p, Abc_Obj_t * pNode)
     // start the new manager
     pMan = Aig_ManStart( 1000 );
     // construct the root node's AIG cone
-    pObjAig = Ckt_WinConstructAppAig_rec(p, pNode, pMan);
+    pObjAig = Ckt_WinConstructAppAig_rec(p, pNode, pMan, vWinPIs);
     Aig_ObjCreateCo( pMan, pObjAig );
     if ( p->pCare )
     {
@@ -239,14 +249,11 @@ Aig_Man_t * Ckt_WinConstructAppAig( Mfs_Man_t * p, Abc_Obj_t * pNode)
         Aig_ObjCreateCo( pMan, pObjAig );
 
         // construct the divisors
-        cout << "vDivs : ";
         Vec_PtrForEachEntry( Abc_Obj_t *, p->vDivs, pFanin, i )
         {
-            cout << Abc_ObjName(pFanin) << "(" << Abc_ObjLevel(pFanin) << ")" << "\t";
             pObjAig = (Aig_Obj_t *)pFanin->pCopy;
             Aig_ObjCreateCo( pMan, pObjAig );
         }
-        cout << endl;
     }
     else
     {
@@ -257,7 +264,7 @@ Aig_Man_t * Ckt_WinConstructAppAig( Mfs_Man_t * p, Abc_Obj_t * pNode)
 }
 
 
-Aig_Obj_t * Ckt_WinConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t * pMan)
+Aig_Obj_t * Ckt_WinConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t * pMan, Vec_Ptr_t * vWinPIs)
 {
     Aig_Obj_t * pRoot, * pExor;
     Abc_Obj_t * pObj;
@@ -410,8 +417,8 @@ void Ckt_WinNtkDfs_rec( Abc_Obj_t * pNode, Vec_Ptr_t * vNodes, int minLevel )
     // mark the node as visited
     Abc_NodeSetTravIdCurrent( pNode );
     // skip the CI
-    if ( Abc_ObjIsCi(pNode) || (Abc_NtkIsStrash(pNode->pNtk) && Abc_AigNodeIsConst(pNode)) || Abc_ObjLevel(pNode) <= minLevel )
-    // if ( Abc_ObjIsCi(pNode) || (Abc_NtkIsStrash(pNode->pNtk) && Abc_AigNodeIsConst(pNode)) )
+    // if ( Abc_ObjIsCi(pNode) || (Abc_NtkIsStrash(pNode->pNtk) && Abc_AigNodeIsConst(pNode)) || Abc_ObjLevel(pNode) <= minLevel )
+    if ( Abc_ObjIsCi(pNode) || (Abc_NtkIsStrash(pNode->pNtk) && Abc_AigNodeIsConst(pNode)) )
         return;
     assert( Abc_ObjIsNode( pNode ) || Abc_ObjIsBox( pNode ) );
     // visit the transitive fanin of the node
