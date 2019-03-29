@@ -64,9 +64,9 @@ public:
     Ckt_ObjType_t                                           RenewObjType(void);
     Ckt_MapType_t                                           RenewMapType(void);
     bool                                                    RenewIsCompl(void);
-    void                                                    GetSubCktRec(abc::Hop_Obj_t * pObj, std::vector <abc::Hop_Obj_t *> & vNodes, std::set <int> & sTerNodes);
     void                                                    RenewSimValS(void);
     void                                                    RenewSimValM(void);
+    void                                                    RenewSimValA(void);
     bool                                                    NodeIsBuf   (void);
     bool                                                    NodeIsInv   (void);
     bool                                                    NodeIsAnd   (void);
@@ -154,6 +154,9 @@ public:
     inline int                                              GetPoNum    (void) const                                                    {return static_cast <int> (pCktPos.size());}
     inline std::shared_ptr <Ckt_Obj_t>                      GetPi       (int i) const                                                   {return pCktPis[i];}
     inline std::shared_ptr <Ckt_Obj_t>                      GetPo       (int i) const                                                   {return pCktPos[i];}
+    inline bool                                             IsSop       (void) const                                                    {return funcType == Ckt_Func_t::SOP;}
+    inline bool                                             IsMap       (void) const                                                    {return funcType == Ckt_Func_t::MAP;}
+    inline bool                                             IsAig       (void) const                                                    {return funcType == Ckt_Func_t::AIG;}
 };
 
 

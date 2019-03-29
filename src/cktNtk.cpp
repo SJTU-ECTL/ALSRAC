@@ -92,23 +92,6 @@ bool Ckt_Obj_t::RenewIsCompl()
 }
 
 
-void Ckt_Obj_t::GetSubCktRec( Hop_Obj_t * pObj, vector < Hop_Obj_t *> & vNodes, set <int> & sTerNodes )
-{
-    assert( !Hop_IsComplement(pObj) );
-    if ( !Hop_ObjIsNode(pObj) || Hop_ObjIsMarkA(pObj) )
-        return;
-    if (sTerNodes.count(pObj->Id)) {
-        vNodes.emplace_back(pObj);
-        return;
-    }
-    GetSubCktRec( Hop_ObjFanin0(pObj), vNodes, sTerNodes );
-    GetSubCktRec( Hop_ObjFanin1(pObj), vNodes, sTerNodes );
-    assert( !Hop_ObjIsMarkA(pObj) ); // loop detection
-    Hop_ObjSetMarkA(pObj);
-    vNodes.emplace_back(pObj);
-}
-
-
 void Ckt_Obj_t::RenewSimValS(void)
 {
     char * pCube, * pCur, * pSop;
@@ -251,6 +234,92 @@ void Ckt_Obj_t::RenewSimValM(void)
         break;
         default:
             DEBUG_ASSERT(0, module_a{}, "unknown object type");
+    }
+}
+
+
+void Ckt_Obj_t::RenewSimValA(void)
+{
+    switch (type) {
+        case Ckt_ObjType_t::PI:
+        break;
+        case Ckt_ObjType_t::CONST0:
+            for (int i = 0; i < nSim; ++i)
+                simValue[i] = 0;
+        break;
+        case Ckt_ObjType_t::CONST1:
+            for (int i = 0; i < nSim; ++i)
+                simValue[i] = static_cast <uint64_t> (ULLONG_MAX);
+        break;
+        case Ckt_ObjType_t::PO:
+            for (int i = 0; i < nSim; ++i)
+                simValue[i] = pCktFanins[0]->simValue[i];
+        break;
+        case Ckt_ObjType_t::INTER:
+            {
+            // get hop order
+            Hop_Man_t * pMan = static_cast <Hop_Man_t *> (pAbcObj->pNtk->pManFunc);
+            Hop_Obj_t * pRoot = static_cast <Hop_Obj_t *> (pAbcObj->pData);
+            Hop_Obj_t * pRootR = Hop_Regular(pRoot);
+            Vec_Ptr_t * vNodes = Hop_ManDfsNode(pMan, pRootR);
+            // init hopSimValue
+            int maxHopId = -1;
+            Hop_Obj_t * pHopObj;
+            int i;
+            Vec_PtrForEachEntry( Hop_Obj_t *, vNodes, pHopObj, i )
+                maxHopId = max(maxHopId, pHopObj->Id);
+            Hop_ManForEachPi(pMan, pHopObj, i)
+                maxHopId = max(maxHopId, pHopObj->Id);
+            vector < vector <uint64_t> > hopSimValue;
+            hopSimValue.resize(maxHopId + 1);
+            Vec_PtrForEachEntry( Hop_Obj_t *, vNodes, pHopObj, i )
+                hopSimValue[pHopObj->Id].resize(nSim);
+            for (int i = 0; i < GetFaninNum(); ++i) {
+                pHopObj = Hop_ManPi(pMan, i);
+                hopSimValue[pHopObj->Id].assign(pCktFanins[i]->simValue.begin(), pCktFanins[i]->simValue.end());
+            }
+            // simulate
+            Vec_PtrForEachEntry( Hop_Obj_t *, vNodes, pHopObj, i ) {
+                if (Hop_ObjType(pHopObj) == AIG_AND) {
+                    Hop_Obj_t * pHopFanin0 = Hop_ObjFanin0(pHopObj);
+                    Hop_Obj_t * pHopFanin1 = Hop_ObjFanin1(pHopObj);
+                    bool isFanin0C = Hop_ObjFaninC0(pHopObj);
+                    bool isFanin1C = Hop_ObjFaninC1(pHopObj);
+                    if (!isFanin0C && !isFanin1C) {
+                        for (int j = 0; j < nSim; ++j)
+                            hopSimValue[pHopObj->Id][j] = hopSimValue[pHopFanin0->Id][j] &  hopSimValue[pHopFanin1->Id][j];
+                    }
+                    else if (!isFanin0C && isFanin1C) {
+                        for (int j = 0; j < nSim; ++j)
+                            hopSimValue[pHopObj->Id][j] = hopSimValue[pHopFanin0->Id][j] &  (~hopSimValue[pHopFanin1->Id][j]);
+                    }
+                    else if (isFanin0C && !isFanin1C) {
+                        for (int j = 0; j < nSim; ++j)
+                            hopSimValue[pHopObj->Id][j] = (~hopSimValue[pHopFanin0->Id][j]) &  hopSimValue[pHopFanin1->Id][j];
+                    }
+                    else if (isFanin0C && isFanin1C) {
+                        for (int j = 0; j < nSim; ++j)
+                            hopSimValue[pHopObj->Id][j] = ~(hopSimValue[pHopFanin0->Id][j] |  hopSimValue[pHopFanin1->Id][j]);
+                    }
+                }
+                else
+                    DEBUG_ASSERT(0, module_a{}, "unknown hop type");
+            }
+            // record
+            if (Hop_IsComplement(pRoot)) {
+                for (int j = 0; j < nSim; ++j)
+                    simValue[j] = ~hopSimValue[pRootR->Id][j];
+            }
+            else {
+                for (int j = 0; j < nSim; ++j)
+                    simValue[j] = hopSimValue[pRootR->Id][j];
+            }
+            // free
+            Vec_PtrFree(vNodes);
+            }
+        break;
+        default:
+        DEBUG_ASSERT(0, module_a{}, "unknown object type");
     }
 }
 
@@ -558,19 +627,21 @@ void Ckt_Ntk_t::Init(int frame_number)
         pCktObj->InitSim(nSim);
 
     // function init
-    if (funcType == Ckt_Func_t::MAP) {
+    if (IsMap()) {
         for (auto & pCktObj : pCktObjs) {
             if (pCktObj->IsInter())
                 pCktObj->RenewMapType();
         }
     }
-    else if (funcType == Ckt_Func_t::SOP) {
+    else if (IsSop()) {
         for (auto & pCktObj : pCktObjs) {
-            if (pCktObj->IsNode())
+            if (pCktObj->IsInter())
                 pCktObj->RenewIsCompl();
         }
     }
-    else if (funcType != Ckt_Func_t::AIG)
+    else if (IsAig()) {
+    }
+    else
         DEBUG_ASSERT(0, module_a{}, "unknown function type");
 }
 
@@ -650,27 +721,39 @@ void Ckt_Ntk_t::FeedForward(void)
     vector < shared_ptr <Ckt_Obj_t> > pTopoObjs;
     SortObjects(pTopoObjs);
     // update
-    if (funcType == Ckt_Func_t::SOP) {
+    if (IsSop()) {
         for (auto & pCktObj : pTopoObjs)
             pCktObj->RenewSimValS();
     }
-    else if (funcType == Ckt_Func_t::MAP) {
+    else if (IsMap()) {
         for (auto & pCktObj : pTopoObjs)
             pCktObj->RenewSimValM();
     }
+    else if (IsAig()) {
+        for (auto & pCktObj : pTopoObjs)
+            pCktObj->RenewSimValA();
+    }
+    else
+        DEBUG_ASSERT(0, module_a{}, "unknown function type");
 }
 
 
 void Ckt_Ntk_t::FeedForward(vector < shared_ptr <Ckt_Obj_t> > & pTopoObjs)
 {
-    if (funcType == Ckt_Func_t::SOP) {
+    if (IsSop()) {
         for (auto & pCktObj : pTopoObjs)
             pCktObj->RenewSimValS();
     }
-    else if (funcType == Ckt_Func_t::MAP) {
+    else if (IsMap()) {
         for (auto & pCktObj : pTopoObjs)
             pCktObj->RenewSimValM();
     }
+    else if (IsAig()) {
+        for (auto & pCktObj : pTopoObjs)
+            pCktObj->RenewSimValA();
+    }
+    else
+        DEBUG_ASSERT(0, module_a{}, "unknown function type");
 }
 
 
