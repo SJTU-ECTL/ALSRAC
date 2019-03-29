@@ -49,7 +49,7 @@ void TestSimulator(string file, int nFrame)
     shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc));
     pCktNtk->Init(nFrame);
     pCktNtk->LogicSim(true);
-    pCktNtk->CheckSim();
+    // pCktNtk->CheckSim();
 }
 
 

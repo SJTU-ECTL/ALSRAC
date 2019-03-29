@@ -64,7 +64,7 @@ public:
     Ckt_ObjType_t                                           RenewObjType(void);
     Ckt_MapType_t                                           RenewMapType(void);
     bool                                                    RenewIsCompl(void);
-    void                                                    GetSubCktRec(abc::Hop_Obj_t * pObj, std::vector <abc::Hop_Obj_t *> & vNodes);
+    void                                                    GetSubCktRec(abc::Hop_Obj_t * pObj, std::vector <abc::Hop_Obj_t *> & vNodes, std::set <int> & sTerNodes);
     void                                                    RenewSimValS(void);
     void                                                    RenewSimValM(void);
     bool                                                    NodeIsBuf   (void);

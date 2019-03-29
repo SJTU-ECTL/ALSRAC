@@ -92,13 +92,17 @@ bool Ckt_Obj_t::RenewIsCompl()
 }
 
 
-void Ckt_Obj_t::GetSubCktRec( Hop_Obj_t * pObj, vector < Hop_Obj_t *> & vNodes )
+void Ckt_Obj_t::GetSubCktRec( Hop_Obj_t * pObj, vector < Hop_Obj_t *> & vNodes, set <int> & sTerNodes )
 {
     assert( !Hop_IsComplement(pObj) );
     if ( !Hop_ObjIsNode(pObj) || Hop_ObjIsMarkA(pObj) )
         return;
-    GetSubCktRec( Hop_ObjFanin0(pObj), vNodes );
-    GetSubCktRec( Hop_ObjFanin1(pObj), vNodes );
+    if (sTerNodes.count(pObj->Id)) {
+        vNodes.emplace_back(pObj);
+        return;
+    }
+    GetSubCktRec( Hop_ObjFanin0(pObj), vNodes, sTerNodes );
+    GetSubCktRec( Hop_ObjFanin1(pObj), vNodes, sTerNodes );
     assert( !Hop_ObjIsMarkA(pObj) ); // loop detection
     Hop_ObjSetMarkA(pObj);
     vNodes.emplace_back(pObj);
