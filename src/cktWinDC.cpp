@@ -108,10 +108,9 @@ int Ckt_WinMfsTest( Abc_Ntk_t * pNtk, int nWinTfiLevs)
 int Ckt_WinMfsResub(Mfs_Man_t * p, Abc_Obj_t * pNode, int nWinTfiLevs)
 {
     // perform logic simulation
-    // shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pNode->pNtk, false);
-    // pCktNtk->Init(1000);
-    // pCktNtk->LogicSim(false);
-    // pCktNtk.reset();
+    shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pNode->pNtk, false);
+    pCktNtk->Init(64);
+    pCktNtk->LogicSim(false);
 
     abctime clk;
     p->nNodesTried++;
@@ -138,30 +137,30 @@ clk = Abc_Clock();
     {
         // Abc_Obj_t * pObj;
         // int i;
-        cout << Abc_ObjName(pNode) << " : ";
-        cout << "vRoots (" << Vec_PtrSize(p->vRoots) << ")\t";
+        // cout << Abc_ObjName(pNode) << " : ";
+        // cout << "vRoots (" << Vec_PtrSize(p->vRoots) << ")\t";
         // Vec_PtrForEachEntry(Abc_Obj_t *, p->vRoots, pObj, i)
         //     cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
         // cout << endl;
-        cout << "vSupp (" << Vec_PtrSize(p->vSupp) << ")\t";
+        // cout << "vSupp (" << Vec_PtrSize(p->vSupp) << ")\t";
         // Vec_PtrForEachEntry(Abc_Obj_t *, p->vSupp, pObj, i)
         //     cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
         // cout << endl;
-        cout << "vNodes (" << Vec_PtrSize(p->vNodes) << ")\t";
+        // cout << "vNodes (" << Vec_PtrSize(p->vNodes) << ")\t";
         // Vec_PtrForEachEntry(Abc_Obj_t *, p->vNodes, pObj, i)
         //     cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
         // cout << endl;
-        cout << "vWinPIs (" << Vec_PtrSize(vWinPIs) << ")\t";
+        // cout << "vWinPIs (" << Vec_PtrSize(vWinPIs) << ")\t";
         // Vec_PtrForEachEntry(Abc_Obj_t *, vWinPIs, pObj, i)
         //     cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
         // cout << endl;
-        cout << "vDivs (" << Vec_PtrSize(p->vDivs) << ")" << endl;
+        // cout << "vDivs (" << Vec_PtrSize(p->vDivs) << ")" << endl;
     }
 
 p->timeDiv += Abc_Clock() - clk;
     // construct AIG for the window
 clk = Abc_Clock();
-    p->pAigWin = Ckt_WinConstructAppAig(p, pNode, vWinPIs);
+    p->pAigWin = Ckt_WinConstructAppAig(p, pNode, vWinPIs, pCktNtk);
 p->timeAig += Abc_Clock() - clk;
 
     // translate it into CNF
@@ -233,7 +232,7 @@ void Ckt_WinSetMfsPars( Mfs_Par_t * pPars )
 }
 
 
-Aig_Man_t * Ckt_WinConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode, Vec_Ptr_t * vWinPIs)
+Aig_Man_t * Ckt_WinConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode, Vec_Ptr_t * vWinPIs, shared_ptr <Ckt_Ntk_t> pCktNtk)
 {
     Aig_Man_t * pMan;
     Abc_Obj_t * pFanin;
@@ -242,7 +241,7 @@ Aig_Man_t * Ckt_WinConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode, Vec_Ptr_t *
     // start the new manager
     pMan = Aig_ManStart( 1000 );
     // construct the root node's AIG cone
-    pObjAig = Ckt_WinConstructAppAig_rec(p, pNode, pMan, vWinPIs);
+    pObjAig = Ckt_WinConstructAppAig_rec(p, pNode, pMan, vWinPIs, pCktNtk);
     Aig_ObjCreateCo( pMan, pObjAig );
     if ( p->pCare )
     {
@@ -270,11 +269,11 @@ Aig_Man_t * Ckt_WinConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode, Vec_Ptr_t *
 }
 
 
-Aig_Obj_t * Ckt_WinConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t * pMan, Vec_Ptr_t * vWinPIs)
+Aig_Obj_t * Ckt_WinConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t * pMan, Vec_Ptr_t * vWinPIs, shared_ptr <Ckt_Ntk_t> pCktNtk)
 {
-    Aig_Obj_t * pRoot, * pExor;
+    Aig_Obj_t * pRoot, * pExor, * pDC;
     Abc_Obj_t * pObj;
-    int i;
+    int i, k;
     // assign AIG nodes to the leaves
     Vec_PtrForEachEntry( Abc_Obj_t *, p->vSupp, pObj, i )
         pObj->pCopy = pObj->pNext = (Abc_Obj_t *)Aig_ObjCreateCi( pMan );
@@ -292,6 +291,22 @@ Aig_Obj_t * Ckt_WinConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Ma
     {
         pExor = Aig_Exor( pMan, (Aig_Obj_t *)pObj->pCopy, (Aig_Obj_t *)pObj->pNext );
         pRoot = Aig_Or( pMan, pRoot, pExor );
+    }
+    // add approximate SDCs
+    cout << Abc_ObjName(pNode) << "\t" << Vec_PtrSize(vWinPIs) << endl;
+    for (int i = 0; i < pCktNtk->GetSimNum(); ++i) {
+        for (int j = 0; j < 64; ++j) {
+            pDC = Aig_ManConst0(pMan);
+            Vec_PtrForEachEntry(Abc_Obj_t *, vWinPIs, pObj, k) {
+                shared_ptr <Ckt_Obj_t> pCktObj = pCktNtk->GetCktObj(pObj->Id);
+                // DEBUG_ASSERT(pCktObj->GetAbcObj() == pObj, module_a{}, "object does not match");
+                if (pCktObj->GetSimVal(i, j))
+                    pDC = Aig_Or(pMan, pDC, Aig_Not((Aig_Obj_t *)pObj->pCopy));
+                else
+                    pDC = Aig_Or(pMan, pDC, (Aig_Obj_t *)pObj->pCopy);
+            }
+            pRoot = Aig_And(pMan, pRoot, pDC);
+        }
     }
     return pRoot;
 }

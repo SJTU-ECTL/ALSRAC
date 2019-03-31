@@ -123,7 +123,6 @@ private:
     std::vector < std::shared_ptr <Ckt_Obj_t> >             pCktPos;
     std::unordered_map < int, std::shared_ptr <Ckt_Obj_t> > abcId2Ckt;
 
-
     Ckt_Ntk_t &                                             operator =  (const Ckt_Ntk_t &);                                            // forbid assignment constructor
                                                             Ckt_Ntk_t   (const Ckt_Ntk_t & other);                                      // forbid copy constructor
 
@@ -143,12 +142,14 @@ public:
     void                                                    LogicSim    (bool isVerbose = true);
     void                                                    CheckSim    (void);
     float                                                   MeasureError(std::shared_ptr <Ckt_Ntk_t> pRefNtk, int seed = 314);
+    std::shared_ptr <Ckt_Obj_t>                             GetCktObj   (int id) const;
 
 
     inline std::string                                      GetName     (void) const                                                    {return std::string(pAbcNtk->pName);}
     inline abc::Abc_Ntk_t *                                 GetAbcNtk   (void) const                                                    {return pAbcNtk;}
     inline Ckt_Func_t                                       GetFuncType (void) const                                                    {return funcType;}
     inline int                                              GetSimNum   (void) const                                                    {return nSim;}
+    inline int                                              GetSimNumS  (void) const                                                    {return (nSim << 6);}
     inline int                                              GetObjNum   (void) const                                                    {return static_cast <int> (pCktObjs.size());}
     inline int                                              GetPiNum    (void) const                                                    {return static_cast <int> (pCktPis.size());}
     inline int                                              GetPoNum    (void) const                                                    {return static_cast <int> (pCktPos.size());}

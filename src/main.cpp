@@ -92,7 +92,7 @@ void ALS_WinDC(string file, string approx, int nFrame)
     string command = "read_blif " + file;
     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
 
-    Ckt_WinMfsTest(Abc_FrameReadNtk(pAbc), 5);
+    Ckt_WinMfsTest(Abc_FrameReadNtk(pAbc), 3);
 
     command = "map -a; print_stats";
     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{});
@@ -169,8 +169,8 @@ int main(int argc, char * argv[])
     else {
         // ALS_CR(file, approx, nFrame);
         // ALS_DC(file, approx, nFrame);
-        // ALS_WinDC(file, approx, nFrame);
-        TestSimulator(file, nFrame);
+        ALS_WinDC(file, approx, nFrame);
+        // TestSimulator(file, nFrame);
     }
 
     Abc_Stop();
