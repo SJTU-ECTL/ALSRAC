@@ -7,6 +7,8 @@
 #include "abcApi.h"
 #include "debug_assert.hpp"
 #include "cktNtk.h"
+#include "cktVisual.h"
+#include "cktBlif.h"
 
 
 int                                                 Ckt_WinMfsTest                  (abc::Abc_Ntk_t * pNtk, int nWinTfiLevs);

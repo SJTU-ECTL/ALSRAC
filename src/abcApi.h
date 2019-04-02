@@ -8,6 +8,7 @@ namespace abc
 #include "aig/aig/aig.h"
 #include "aig/saig/saig.h"
 #include "aig/gia/gia.h"
+#include "aig/hop/hop.h"
 #include "base/main/main.h"
 #include "base/main/mainInt.h"
 #include "base/cmd/cmd.h"

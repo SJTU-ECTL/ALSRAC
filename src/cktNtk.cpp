@@ -29,13 +29,26 @@ Ckt_ObjType_t Ckt_Obj_t::RenewObjType(void)
         return Ckt_ObjType_t::PI;
     if (Abc_ObjIsPo(pAbcObj))
         return Ckt_ObjType_t::PO;
+
     DEBUG_ASSERT(Abc_ObjIsNode(pAbcObj), module_a{}, "object is not node");
+
     if ( Abc_NodeIsConst0(pAbcObj) )
         return Ckt_ObjType_t::CONST0;
-    else if ( Abc_NodeIsConst1(pAbcObj) )
+    if ( Abc_NodeIsConst1(pAbcObj) )
         return Ckt_ObjType_t::CONST1;
-    else
-        return Ckt_ObjType_t::INTER;
+
+    // special case for aig
+    if (Abc_NtkIsAigLogic(pAbcObj->pNtk)) {
+        Hop_Obj_t * pHopObj = static_cast <Hop_Obj_t *> (pAbcObj->pData);
+        if (Hop_ObjFanin0(pHopObj) == nullptr && Hop_ObjFanin1(pHopObj) == nullptr) {
+            if (Hop_ObjIsConst1(pHopObj))
+                return Ckt_ObjType_t::CONST1;
+            else
+                return Ckt_ObjType_t::CONST0;
+        }
+    }
+
+    return Ckt_ObjType_t::INTER;
 }
 
 
@@ -257,15 +270,16 @@ void Ckt_Obj_t::RenewSimValA(void)
         break;
         case Ckt_ObjType_t::INTER:
             {
+            int maxHopId = -1;
+            Hop_Obj_t * pHopObj;
+            int i;
             // get hop order
             Hop_Man_t * pMan = static_cast <Hop_Man_t *> (pAbcObj->pNtk->pManFunc);
             Hop_Obj_t * pRoot = static_cast <Hop_Obj_t *> (pAbcObj->pData);
             Hop_Obj_t * pRootR = Hop_Regular(pRoot);
             Vec_Ptr_t * vNodes = Hop_ManDfsNode(pMan, pRootR);
+
             // init hopSimValue
-            int maxHopId = -1;
-            Hop_Obj_t * pHopObj;
-            int i;
             Vec_PtrForEachEntry( Hop_Obj_t *, vNodes, pHopObj, i )
                 maxHopId = max(maxHopId, pHopObj->Id);
             Hop_ManForEachPi(pMan, pHopObj, i)
@@ -655,8 +669,12 @@ void Ckt_Ntk_t::AddObj(shared_ptr <Ckt_Obj_t> pCktObj)
 
 void Ckt_Ntk_t::PrintObjs(void) const
 {
-    for (auto & pCktObj : pCktObjs)
-        cout << pCktObj << endl;
+    for (auto & pCktObj : pCktObjs) {
+        cout << pCktObj << "\t" << pCktObj->GetType() << "\t" << Abc_ObjIsNode(pCktObj->GetAbcObj()) << "\t" << Abc_ObjFaninNum(pCktObj->GetAbcObj()) << "\tFI\t";
+        for (int i = 0; i < pCktObj->GetFaninNum(); ++i)
+            cout << pCktObj->GetFanin(i) << "\t";
+        cout << endl;
+    }
 }
 
 
@@ -844,7 +862,7 @@ std::shared_ptr <Ckt_Obj_t> Ckt_Ntk_t::GetCktObj(int id) const
 
 ostream & operator << (ostream & os, const shared_ptr <Ckt_Obj_t> pCktObj)
 {
-    cout << pCktObj->GetName() << "\t" << pCktObj->GetType();
+    cout << pCktObj->GetName() << "(" << pCktObj->GetAbcObj()->Id << ")";
     return os;
 }
 

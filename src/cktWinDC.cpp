@@ -107,9 +107,12 @@ int Ckt_WinMfsTest( Abc_Ntk_t * pNtk, int nWinTfiLevs)
 
 int Ckt_WinMfsResub(Mfs_Man_t * p, Abc_Obj_t * pNode, int nWinTfiLevs)
 {
+    // cout << Abc_ObjName(pNode) << "---------------------------" << endl;
+    // Ckt_Visualize(pNode->pNtk, string(Abc_ObjName(pNode)) + ".dot");
     // perform logic simulation
     shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pNode->pNtk, false);
     pCktNtk->Init(64);
+    pCktNtk->PrintObjs();
     pCktNtk->LogicSim(false);
 
     abctime clk;
@@ -209,7 +212,7 @@ void Ckt_WinSetMfsPars( Mfs_Par_t * pPars )
     pPars->fSwapEdge    =    0;
     pPars->fOneHotness  =    0;
     pPars->fVerbose     =    1;
-    pPars->fVeryVerbose =    0;
+    pPars->fVeryVerbose =    1;
     // Abc_Print( -2, "usage: mfs [-WFDMLC <num>] [-draestpgvh]\n" );
     // Abc_Print( -2, "\t           performs don't-care-based optimization of logic networks\n" );
     // Abc_Print( -2, "\t-W <num> : the number of levels in the TFO cone (0 <= num) [default = %d]\n", pPars->nWinTfoLevs );
@@ -293,13 +296,12 @@ Aig_Obj_t * Ckt_WinConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Ma
         pRoot = Aig_Or( pMan, pRoot, pExor );
     }
     // add approximate SDCs
-    cout << Abc_ObjName(pNode) << "\t" << Vec_PtrSize(vWinPIs) << endl;
     for (int i = 0; i < pCktNtk->GetSimNum(); ++i) {
         for (int j = 0; j < 64; ++j) {
             pDC = Aig_ManConst0(pMan);
             Vec_PtrForEachEntry(Abc_Obj_t *, vWinPIs, pObj, k) {
                 shared_ptr <Ckt_Obj_t> pCktObj = pCktNtk->GetCktObj(pObj->Id);
-                // DEBUG_ASSERT(pCktObj->GetAbcObj() == pObj, module_a{}, "object does not match");
+                DEBUG_ASSERT(pCktObj->GetAbcObj() == pObj, module_a{}, "object does not match");
                 if (pCktObj->GetSimVal(i, j))
                     pDC = Aig_Or(pMan, pDC, Aig_Not((Aig_Obj_t *)pObj->pCopy));
                 else

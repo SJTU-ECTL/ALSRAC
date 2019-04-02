@@ -5,7 +5,7 @@ using namespace abc;
 using namespace std;
 
 
-void WriteDotNtk(Abc_Ntk_t * pNtk, Vec_Ptr_t * vNodes, Vec_Ptr_t * vNodesShow, char * pFileName, int fGateNames, int fUseReverse )
+void WriteDotNtk(Abc_Ntk_t * pNtk, Vec_Ptr_t * vNodes, char * pFileName, int fGateNames)
 {
     FILE * pFile;
     abc::Abc_Obj_t * pNode, * pFanin;
@@ -44,23 +44,8 @@ void WriteDotNtk(Abc_Ntk_t * pNtk, Vec_Ptr_t * vNodes, Vec_Ptr_t * vNodesShow, c
         }
     }
 
-    // mark the nodes from the set
-    Vec_PtrForEachEntry( abc::Abc_Obj_t *, vNodes, pNode, i )
-        pNode->fMarkC = 1;
-    if ( vNodesShow )
-        Vec_PtrForEachEntry( abc::Abc_Obj_t *, vNodesShow, pNode, i )
-            pNode->fMarkB = 1;
-
     // get the levels of nodes
     LevelMax = Abc_NtkLevel( pNtk );
-    if ( fUseReverse )
-    {
-        LevelMin = Abc_NtkLevelReverse( pNtk );
-        assert( LevelMax == LevelMin );
-        Vec_PtrForEachEntry( abc::Abc_Obj_t *, vNodes, pNode, i )
-            if ( Abc_ObjIsNode(pNode) )
-                pNode->Level = LevelMax - pNode->Level + 1;
-    }
 
     // find the largest and the smallest levels
     LevelMin = 10000;
@@ -95,15 +80,7 @@ void WriteDotNtk(Abc_Ntk_t * pNtk, Vec_Ptr_t * vNodes, Vec_Ptr_t * vNodesShow, c
     fprintf( pFile, "\n" );
     fprintf( pFile, "digraph network {\n" );
     fprintf( pFile, "size = \"7.5,10\";\n" );
-//    fprintf( pFile, "size = \"10,8.5\";\n" );
-//    fprintf( pFile, "size = \"14,11\";\n" );
-//    fprintf( pFile, "page = \"8,11\";\n" );
-//  fprintf( pFile, "ranksep = 0.5;\n" );
-//  fprintf( pFile, "nodesep = 0.5;\n" );
     fprintf( pFile, "center = true;\n" );
-//    fprintf( pFile, "orientation = landscape;\n" );
-//  fprintf( pFile, "edge [fontsize = 10];\n" );
-//  fprintf( pFile, "edge [dir = none];\n" );
     fprintf( pFile, "edge [dir = back];\n" );
     fprintf( pFile, "\n" );
 
@@ -196,8 +173,6 @@ void WriteDotNtk(Abc_Ntk_t * pNtk, Vec_Ptr_t * vNodes, Vec_Ptr_t * vNodesShow, c
                 (Abc_ObjIsBi(pNode)? Abc_ObjName(Abc_ObjFanout0(pNode)):Abc_ObjName(pNode)),
                 (Abc_ObjIsBi(pNode)? "_in":"") );
             fprintf( pFile, ", shape = %s", (Abc_ObjIsBi(pNode)? "box":"invtriangle") );
-            if ( pNode->fMarkB )
-                fprintf( pFile, ", style = filled" );
             fprintf( pFile, ", color = coral, fillcolor = coral" );
             fprintf( pFile, "];\n" );
         }
@@ -219,20 +194,6 @@ void WriteDotNtk(Abc_Ntk_t * pNtk, Vec_Ptr_t * vNodes, Vec_Ptr_t * vNodesShow, c
                 continue;
             if ( Abc_ObjFaninNum(pNode) == 0 )
                 continue;
-
-/*
-            int SuppSize;
-            Vec_Ptr_t * vSupp;
-            if ( (int)pNode->Level != Level )
-                continue;
-            if ( Abc_ObjFaninNum(pNode) == 0 )
-                continue;
-            vSupp = Abc_NtkNodeSupport( pNtk, &pNode, 1 );
-            SuppSize = Vec_PtrSize( vSupp );
-            Vec_PtrFree( vSupp );
-*/
-
-//            fprintf( pFile, "  Node%d [label = \"%d\"", pNode->Id, pNode->Id );
             if ( Abc_NtkIsStrash(pNtk) ) {}
                 //pSopString = "";
             else if ( Abc_NtkHasMapping(pNtk) && fGateNames )
@@ -241,15 +202,8 @@ void WriteDotNtk(Abc_Ntk_t * pNtk, Vec_Ptr_t * vNodes, Vec_Ptr_t * vNodesShow, c
                 pSopString = NtkPrintSop(abc::Mio_GateReadSop((abc::Mio_Gate_t *)pNode->pData));
             else
                 pSopString = NtkPrintSop((char *)pNode->pData);
-            //fprintf( pFile, "  Node%d [label = \"%d\\n%s\"", pNode->Id, pNode->Id, pSopString );
             fprintf( pFile, "  Node%d [label = \"%s\\n%s\"", pNode->Id, Abc_ObjName(pNode), pSopString );
-//            fprintf( pFile, "  Node%d [label = \"%d\\n%s\"", pNode->Id,
-//                SuppSize,
-//                pSopString );
-
             fprintf( pFile, ", shape = ellipse" );
-            if ( pNode->fMarkB )
-                fprintf( pFile, ", style = filled" );
             fprintf( pFile, "];\n" );
         }
         fprintf( pFile, "}" );
@@ -274,8 +228,6 @@ void WriteDotNtk(Abc_Ntk_t * pNtk, Vec_Ptr_t * vNodes, Vec_Ptr_t * vNodesShow, c
                 {
                     fprintf( pFile, "  Node%d [label = \"Const%d %s\"", pNode->Id, Abc_NtkIsStrash(pNode->pNtk) || Abc_NodeIsConst1(pNode), Abc_ObjName(pNode) );
                     fprintf( pFile, ", shape = ellipse" );
-                    if ( pNode->fMarkB )
-                        fprintf( pFile, ", style = filled" );
                     fprintf( pFile, ", color = coral, fillcolor = coral" );
                     fprintf( pFile, "];\n" );
                 }
@@ -285,8 +237,6 @@ void WriteDotNtk(Abc_Ntk_t * pNtk, Vec_Ptr_t * vNodes, Vec_Ptr_t * vNodesShow, c
                 pNode->Id,
                 (Abc_ObjIsBo(pNode)? Abc_ObjName(Abc_ObjFanin0(pNode)):Abc_ObjName(pNode)) );
             fprintf( pFile, ", shape = %s", (Abc_ObjIsBo(pNode)? "box":"triangle") );
-            if ( pNode->fMarkB )
-                fprintf( pFile, ", style = filled" );
             fprintf( pFile, ", color = coral, fillcolor = coral" );
             fprintf( pFile, "];\n" );
         }
@@ -333,7 +283,6 @@ void WriteDotNtk(Abc_Ntk_t * pNtk, Vec_Ptr_t * vNodes, Vec_Ptr_t * vNodesShow, c
             fprintf( pFile, " -> " );
             fprintf( pFile, "Node%d",  pFanin->Id );
             fprintf( pFile, " [style = %s", fCompl? "dotted" : "solid" );
-//            fprintf( pFile, ", label = \"%c\"", 'a' + k );
             fprintf( pFile, "]" );
             fprintf( pFile, ";\n" );
         }
@@ -343,13 +292,6 @@ void WriteDotNtk(Abc_Ntk_t * pNtk, Vec_Ptr_t * vNodes, Vec_Ptr_t * vNodesShow, c
     fprintf( pFile, "\n" );
     fprintf( pFile, "\n" );
     fclose( pFile );
-
-    // unmark the nodes from the set
-    Vec_PtrForEachEntry( abc::Abc_Obj_t *, vNodes, pNode, i )
-        pNode->fMarkC = 0;
-    if ( vNodesShow )
-        Vec_PtrForEachEntry( abc::Abc_Obj_t *, vNodesShow, pNode, i )
-            pNode->fMarkB = 0;
 
     // convert the network back into BDDs if this is how it was
     if ( fHasBdds )
@@ -428,7 +370,7 @@ void Ckt_Visualize(Abc_Ntk_t * pAbcNtk, string fileName)
     // write the DOT file
     nBarBufs = pNtk->nBarBufs;
     pNtk->nBarBufs = 0;
-    WriteDotNtk( pNtk, vNodes, nullptr, const_cast<char *>(fileName.c_str()), 1, 0 );
+    WriteDotNtk( pNtk, vNodes, const_cast<char *>(fileName.c_str()), 1);
     pNtk->nBarBufs = nBarBufs;
     abc::Vec_PtrFree( vNodes );
 
