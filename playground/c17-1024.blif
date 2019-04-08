@@ -1,8 +1,0 @@
-# Benchmark "c17" written by ABC on Tue Apr  2 23:23:03 2019
-.model c17
-.inputs G1gat G2gat G3gat G6gat G7gat
-.outputs G22gat G23gat
-.gate inv1   a=G7gat O=n8
-.gate nor2   a=n8 b=G3gat O=G23gat
-.gate buf    a=G1gat O=G22gat
-.end

@@ -16,7 +16,8 @@ parser Cmdline_Parser(int argc, char * argv[])
     option.add <string>    ("approx",  'a', "Approximate Circuit file", false);
     option.add <string>    ("genlib",  'g', "Map libarary file",        false, "data/genlib/mcnc.genlib");
     option.add <int>       ("nFrame",  'n', "Simulation Frame number",  false, 10240, range(1, INT_MAX));
-    option.add             ("measure", 'm', "enable measuring the ER");
+    option.add <int>       ("level",   'l', "Window level",             false, 3,     range(1, INT_MAX));
+    option.add             ("measure", 'm', "Enable measuring the ER");
     option.parse_check(argc, argv);
     return option;
 }
@@ -86,27 +87,25 @@ void ALS_DC(string file, string approx, int nFrame)
 }
 
 
-void ALS_WinDC(string file, string approx, int nFrame)
+void ALS_WinDC(string file, string approx, int nFrame, int level)
 {
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
     string command = "read_blif " + file;
     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
 
-    Ckt_WinMfsTest(Abc_FrameReadNtk(pAbc), 3);
+    Ckt_WinMfsTest(Abc_FrameReadNtk(pAbc), level);
 
     command = "map -a; print_stats";
     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{});
 
     DEBUG_ASSERT(system("if [ ! -d playground ]; then mkdir playground; fi") != -1, module_a{}, "mkdir failed");
     if (approx == "") {
-        string fileName("playground/" + string(Abc_FrameReadNtk(pAbc)->pName) + "-");
         stringstream ss;
-        string str;
-        ss << nFrame;
-        ss >> str;
-        fileName += str;
-        fileName += ".blif";
+        string fileName;
+        ss << "playground/" << Abc_FrameReadNtk(pAbc)->pName << "-" << nFrame << '-' << level << ".blif";
+        ss >> fileName;
         command = "write_blif " + fileName;
+        cout << command << endl;
     }
     else
         command = "write_blif " + approx;
@@ -155,6 +154,7 @@ int main(int argc, char * argv[])
     string approx = option.get <string> ("approx");
     string genlib = option.get <string> ("genlib");
     int nFrame = option.get <int> ("nFrame");
+    int level = option.get <int> ("level");
     bool isMeasure = option.exist("measure");
 
     Abc_Start();
@@ -169,7 +169,7 @@ int main(int argc, char * argv[])
     else {
         // ALS_CR(file, approx, nFrame);
         // ALS_DC(file, approx, nFrame);
-        ALS_WinDC(file, approx, nFrame);
+        ALS_WinDC(file, approx, nFrame, level);
         // TestSimulator(file, nFrame);
     }
 

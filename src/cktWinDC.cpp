@@ -107,12 +107,10 @@ int Ckt_WinMfsTest( Abc_Ntk_t * pNtk, int nWinTfiLevs)
 
 int Ckt_WinMfsResub(Mfs_Man_t * p, Abc_Obj_t * pNode, int nWinTfiLevs)
 {
-    // cout << Abc_ObjName(pNode) << "---------------------------" << endl;
-    // Ckt_Visualize(pNode->pNtk, string(Abc_ObjName(pNode)) + ".dot");
     // perform logic simulation
     shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pNode->pNtk, false);
     pCktNtk->Init(64);
-    pCktNtk->PrintObjs();
+    // pCktNtk->PrintObjs();
     pCktNtk->LogicSim(false);
 
     abctime clk;
@@ -140,7 +138,8 @@ clk = Abc_Clock();
     {
         // Abc_Obj_t * pObj;
         // int i;
-        // cout << Abc_ObjName(pNode) << " : ";
+        cout << Abc_ObjName(pNode) << " : ";
+        cout << "vWinPIs (" << Vec_PtrSize(vWinPIs) << ")\n";
         // cout << "vRoots (" << Vec_PtrSize(p->vRoots) << ")\t";
         // Vec_PtrForEachEntry(Abc_Obj_t *, p->vRoots, pObj, i)
         //     cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
@@ -212,7 +211,7 @@ void Ckt_WinSetMfsPars( Mfs_Par_t * pPars )
     pPars->fSwapEdge    =    0;
     pPars->fOneHotness  =    0;
     pPars->fVerbose     =    1;
-    pPars->fVeryVerbose =    1;
+    pPars->fVeryVerbose =    0;
     // Abc_Print( -2, "usage: mfs [-WFDMLC <num>] [-draestpgvh]\n" );
     // Abc_Print( -2, "\t           performs don't-care-based optimization of logic networks\n" );
     // Abc_Print( -2, "\t-W <num> : the number of levels in the TFO cone (0 <= num) [default = %d]\n", pPars->nWinTfoLevs );
@@ -244,7 +243,8 @@ Aig_Man_t * Ckt_WinConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode, Vec_Ptr_t *
     // start the new manager
     pMan = Aig_ManStart( 1000 );
     // construct the root node's AIG cone
-    pObjAig = Ckt_WinConstructAppAig_rec(p, pNode, pMan, vWinPIs, pCktNtk);
+    // pObjAig = Ckt_WinConstructAppAig_rec(p, pNode, pMan, vWinPIs, pCktNtk);
+    pObjAig = Ckt_WinConstructAppAig2_rec(p, pNode, pMan, vWinPIs, pCktNtk);
     Aig_ObjCreateCo( pMan, pObjAig );
     if ( p->pCare )
     {
@@ -296,18 +296,52 @@ Aig_Obj_t * Ckt_WinConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Ma
         pRoot = Aig_Or( pMan, pRoot, pExor );
     }
     // add approximate SDCs
+    // for (int i = 0; i < pCktNtk->GetSimNum(); ++i) {
+    //     for (int j = 0; j < 64; ++j) {
+    //         pDC = Aig_ManConst0(pMan);
+    //         Vec_PtrForEachEntry(Abc_Obj_t *, vWinPIs, pObj, k) {
+    //             shared_ptr <Ckt_Obj_t> pCktObj = pCktNtk->GetCktObj(pObj->Id);
+    //             DEBUG_ASSERT(pCktObj->GetAbcObj() == pObj, module_a{}, "object does not match");
+    //             if (pCktObj->GetSimVal(i, j))
+    //                 pDC = Aig_Or(pMan, pDC, Aig_Not((Aig_Obj_t *)pObj->pCopy));
+    //             else
+    //                 pDC = Aig_Or(pMan, pDC, (Aig_Obj_t *)pObj->pCopy);
+    //         }
+    //         pRoot = Aig_And(pMan, pRoot, pDC);
+    //     }
+    // }
+    return pRoot;
+}
+
+
+Aig_Obj_t * Ckt_WinConstructAppAig2_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t * pMan, Vec_Ptr_t * vWinPIs, shared_ptr <Ckt_Ntk_t> pCktNtk)
+{
+    Aig_Obj_t * pRoot, * pCare;
+    Abc_Obj_t * pObj;
+    int i, k;
+
+    // assign AIG nodes to the leaves
+    Abc_NtkForEachPi(pNode->pNtk, pObj, i)
+        pObj->pCopy = (Abc_Obj_t *)Aig_ObjCreateCi( pMan );
+
+    // strash intermediate nodes
+    Abc_NtkIncrementTravId( pNode->pNtk );
+    Vec_PtrForEachEntry( Abc_Obj_t *, p->vNodes, pObj, i )
+        Ckt_WinMfsConvertHopToAig2( pObj, pMan );
+
+    pRoot = Aig_ManConst0(pMan);
     for (int i = 0; i < pCktNtk->GetSimNum(); ++i) {
         for (int j = 0; j < 64; ++j) {
-            pDC = Aig_ManConst0(pMan);
+            pCare = Aig_ManConst1(pMan);
             Vec_PtrForEachEntry(Abc_Obj_t *, vWinPIs, pObj, k) {
                 shared_ptr <Ckt_Obj_t> pCktObj = pCktNtk->GetCktObj(pObj->Id);
                 DEBUG_ASSERT(pCktObj->GetAbcObj() == pObj, module_a{}, "object does not match");
-                if (pCktObj->GetSimVal(i, j))
-                    pDC = Aig_Or(pMan, pDC, Aig_Not((Aig_Obj_t *)pObj->pCopy));
+                if (!pCktObj->GetSimVal(i, j))
+                    pCare = Aig_And(pMan, pCare, Aig_Not((Aig_Obj_t *)pObj->pCopy));
                 else
-                    pDC = Aig_Or(pMan, pDC, (Aig_Obj_t *)pObj->pCopy);
+                    pCare = Aig_And(pMan, pCare, (Aig_Obj_t *)pObj->pCopy);
             }
-            pRoot = Aig_And(pMan, pRoot, pDC);
+            pRoot = Aig_Or(pMan, pRoot, pCare);
         }
     }
     return pRoot;
@@ -345,6 +379,32 @@ void Ckt_WinMfsConvertHopToAig( Abc_Obj_t * pObjOld, Aig_Man_t * pMan )
     // construct the AIG
     Ckt_WinMfsConvertHopToAig_rec( Hop_Regular(pRoot), pMan );
     pObjOld->pNext = (Abc_Obj_t *)Aig_NotCond( (Aig_Obj_t *)Hop_Regular(pRoot)->pData, Hop_IsComplement(pRoot) );
+    Hop_ConeUnmark_rec( Hop_Regular(pRoot) );
+}
+
+
+void Ckt_WinMfsConvertHopToAig2( Abc_Obj_t * pObjOld, Aig_Man_t * pMan )
+{
+    Hop_Man_t * pHopMan;
+    Hop_Obj_t * pRoot;
+    Abc_Obj_t * pFanin;
+    int i;
+    // get the local AIG
+    pHopMan = (Hop_Man_t *)pObjOld->pNtk->pManFunc;
+    pRoot = (Hop_Obj_t *)pObjOld->pData;
+    // check the case of a constant
+    if ( Hop_ObjIsConst1( Hop_Regular(pRoot) ) )
+    {
+        pObjOld->pCopy = (Abc_Obj_t *)Aig_NotCond( Aig_ManConst1(pMan), Hop_IsComplement(pRoot) );
+        return;
+    }
+
+    // assign the fanin nodes
+    Abc_ObjForEachFanin( pObjOld, pFanin, i )
+        Hop_ManPi(pHopMan, i)->pData = pFanin->pCopy;
+    // construct the AIG
+    Ckt_WinMfsConvertHopToAig_rec( Hop_Regular(pRoot), pMan );
+    pObjOld->pCopy = (Abc_Obj_t *)Aig_NotCond( (Aig_Obj_t *)Hop_Regular(pRoot)->pData, Hop_IsComplement(pRoot) );
     Hop_ConeUnmark_rec( Hop_Regular(pRoot) );
 }
 
