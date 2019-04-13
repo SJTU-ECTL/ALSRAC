@@ -1,0 +1,3801 @@
+# Benchmark "c7552.blif" written by ABC on Sat Apr 13 16:15:14 2019
+.model c7552.blif
+.inputs G1 G5 G9 G12 G15 G18 G23 G26 G29 G32 G35 G38 G41 G44 G47 G50 G53 \
+ G54 G55 G56 G57 G58 G59 G60 G61 G62 G63 G64 G65 G66 G69 G70 G73 G74 G75 \
+ G76 G77 G78 G79 G80 G81 G82 G83 G84 G85 G86 G87 G88 G89 G94 G97 G100 G103 \
+ G106 G109 G110 G111 G112 G113 G114 G115 G118 G121 G124 G127 G130 G133 G134 \
+ G135 G138 G141 G144 G147 G150 G151 G152 G153 G154 G155 G156 G157 G158 G159 \
+ G160 G161 G162 G163 G164 G165 G166 G167 G168 G169 G170 G171 G172 G173 G174 \
+ G175 G176 G177 G178 G179 G180 G181 G182 G183 G184 G185 G186 G187 G188 G189 \
+ G190 G191 G192 G193 G194 G195 G196 G197 G198 G199 G200 G201 G202 G203 G204 \
+ G205 G206 G207 G208 G209 G210 G211 G212 G213 G214 G215 G216 G217 G218 G219 \
+ G220 G221 G222 G223 G224 G225 G226 G227 G228 G229 G230 G231 G232 G233 G234 \
+ G235 G236 G237 G238 G239 G240 IN-G339 G1197 G1455 G1459 G1462 G1469 G1480 \
+ G1486 G1492 G1496 G2204 G2208 G2211 G2218 G2224 G2230 G2236 G2239 G2247 \
+ G2253 G2256 G3698 G3701 G3705 G3711 G3717 G3723 G3729 G3737 G3743 G3749 \
+ G4393 G4394 G4400 G4405 G4410 G4415 G4420 G4427 G4432 G4437 G4526 G4528
+.outputs G339 G2 G3 G450 G448 G444 G442 G440 G438 G496 G494 G492 G490 G488 \
+ G486 G484 G482 G480 G560 G542 G558 G556 G554 G552 G550 G548 G546 G544 G540 \
+ G538 G536 G534 G532 G530 G528 G526 G524 G279 G436 G478 G522 G402 G404 G406 \
+ G408 G410 G432 G446 G284 G286 G289 G292 G341 G281 G453 G278 G373 G246 G258 \
+ G264 G270 G388 G391 G394 G397 G376 G379 G382 G385 G412 G414 G416 G249 G295 \
+ G324 G252 G276 G310 G313 G316 G319 G327 G330 G333 G336 G418 G273 G298 G301 \
+ G304 G307 G344 G422 G469 G419 G471 G359 G362 G365 G368 G347 G350 G353 G356 \
+ G321 G338 G370 G399
+.gate inv1 a=G15 O=G279
+.gate inv1 a=G5 O=n317
+.gate inv1 a=G57 O=n318
+.gate and2 a=n318 b=n317 O=n319
+.gate inv1 a=n319 O=G402
+.gate and2 a=G184 b=G150 O=n321
+.gate and2 a=G240 b=G228 O=n322
+.gate and2 a=n322 b=n321 O=n323
+.gate inv1 a=n323 O=G404
+.gate and2 a=G210 b=G152 O=n325
+.gate and2 a=G230 b=G218 O=n326
+.gate and2 a=n326 b=n325 O=n327
+.gate inv1 a=n327 O=G406
+.gate and2 a=G183 b=G182 O=n329
+.gate and2 a=G186 b=G185 O=n330
+.gate and2 a=n330 b=n329 O=n331
+.gate inv1 a=n331 O=G408
+.gate and2 a=G172 b=G162 O=n333
+.gate and2 a=G199 b=G188 O=n334
+.gate and2 a=n334 b=n333 O=n335
+.gate inv1 a=n335 O=G410
+.gate and2 a=G1197 b=n317 O=n337
+.gate inv1 a=n337 O=G284
+.gate and2 a=G133 b=n317 O=n339
+.gate and2 a=n339 b=G134 O=n340
+.gate inv1 a=n340 O=G292
+.gate and2 a=G163 b=G1 O=G278
+.gate inv1 a=G4526 O=n343
+.gate inv1 a=G18 O=n344
+.gate and2 a=G41 b=n344 O=n345
+.gate and2 a=G3701 b=n344 O=n346
+.gate and2 a=n346 b=n345 O=n347
+.gate inv1 a=n347 O=n348
+.gate inv1 a=n345 O=n349
+.gate inv1 a=n346 O=n350
+.gate and2 a=n350 b=n349 O=n351
+.gate inv1 a=n351 O=n352
+.gate and2 a=n352 b=n348 O=n353
+.gate inv1 a=n353 O=n354
+.gate and2 a=n354 b=n343 O=n355
+.gate inv1 a=n355 O=n356
+.gate and2 a=n353 b=G4526 O=n357
+.gate inv1 a=n357 O=n358
+.gate and2 a=n358 b=n356 O=n359
+.gate inv1 a=n359 O=G373
+.gate and2 a=G4528 b=G1496 O=n361
+.gate and2 a=n361 b=G38 O=n362
+.gate inv1 a=n362 O=n363
+.gate inv1 a=G38 O=n364
+.gate inv1 a=n361 O=n365
+.gate and2 a=n365 b=n364 O=n366
+.gate inv1 a=n366 O=n367
+.gate and2 a=n367 b=n363 O=n368
+.gate inv1 a=n368 O=n369
+.gate and2 a=G4528 b=G1492 O=n370
+.gate and2 a=n370 b=G38 O=n371
+.gate inv1 a=n371 O=n372
+.gate inv1 a=n370 O=n373
+.gate and2 a=n373 b=n364 O=n374
+.gate inv1 a=n374 O=n375
+.gate and2 a=n375 b=n372 O=n376
+.gate inv1 a=n376 O=n377
+.gate and2 a=n377 b=n369 O=n378
+.gate and2 a=G12 b=G9 O=n379
+.gate inv1 a=n379 O=n380
+.gate inv1 a=G216 O=n381
+.gate and2 a=n381 b=G18 O=n382
+.gate inv1 a=n382 O=n383
+.gate and2 a=n383 b=n380 O=n384
+.gate and2 a=n384 b=G1469 O=n385
+.gate inv1 a=n385 O=n386
+.gate inv1 a=G1469 O=n387
+.gate inv1 a=n384 O=n388
+.gate and2 a=n388 b=n387 O=n389
+.gate inv1 a=n389 O=n390
+.gate and2 a=n390 b=n386 O=n391
+.gate inv1 a=n391 O=n392
+.gate inv1 a=G213 O=n393
+.gate and2 a=n393 b=G18 O=n394
+.gate inv1 a=n394 O=n395
+.gate and2 a=n395 b=n380 O=n396
+.gate and2 a=n396 b=G1486 O=n397
+.gate inv1 a=n397 O=n398
+.gate inv1 a=G1486 O=n399
+.gate inv1 a=n396 O=n400
+.gate and2 a=n400 b=n399 O=n401
+.gate inv1 a=n401 O=n402
+.gate and2 a=n402 b=n398 O=n403
+.gate inv1 a=n403 O=n404
+.gate and2 a=n404 b=n392 O=n405
+.gate inv1 a=G209 O=n406
+.gate and2 a=n406 b=G18 O=n407
+.gate inv1 a=n407 O=n408
+.gate and2 a=n408 b=n380 O=n409
+.gate and2 a=n409 b=G1462 O=n410
+.gate inv1 a=n410 O=n411
+.gate inv1 a=G1462 O=n412
+.gate inv1 a=n409 O=n413
+.gate and2 a=n413 b=n412 O=n414
+.gate inv1 a=n414 O=n415
+.gate and2 a=n415 b=n411 O=n416
+.gate inv1 a=n416 O=n417
+.gate inv1 a=G215 O=n418
+.gate and2 a=n418 b=G18 O=n419
+.gate inv1 a=n419 O=n420
+.gate and2 a=n420 b=n380 O=n421
+.gate and2 a=n421 b=G106 O=n422
+.gate inv1 a=n422 O=n423
+.gate inv1 a=G106 O=n424
+.gate inv1 a=n421 O=n425
+.gate and2 a=n425 b=n424 O=n426
+.gate inv1 a=n426 O=n427
+.gate and2 a=n427 b=n423 O=n428
+.gate inv1 a=n428 O=n429
+.gate inv1 a=G214 O=n430
+.gate and2 a=n430 b=G18 O=n431
+.gate inv1 a=n431 O=n432
+.gate and2 a=n432 b=n380 O=n433
+.gate and2 a=n433 b=G1480 O=n434
+.gate inv1 a=n434 O=n435
+.gate inv1 a=G1480 O=n436
+.gate inv1 a=n433 O=n437
+.gate and2 a=n437 b=n436 O=n438
+.gate inv1 a=n438 O=n439
+.gate and2 a=n439 b=n435 O=n440
+.gate inv1 a=n440 O=n441
+.gate and2 a=n441 b=n429 O=n442
+.gate and2 a=n442 b=n417 O=n443
+.gate and2 a=n443 b=n405 O=n444
+.gate and2 a=n444 b=n378 O=n445
+.gate inv1 a=G153 O=n446
+.gate and2 a=n446 b=G18 O=n447
+.gate inv1 a=n447 O=n448
+.gate and2 a=n448 b=n380 O=n449
+.gate and2 a=n449 b=G2256 O=n450
+.gate inv1 a=n450 O=n451
+.gate inv1 a=G2256 O=n452
+.gate inv1 a=n449 O=n453
+.gate and2 a=n453 b=n452 O=n454
+.gate inv1 a=n454 O=n455
+.gate and2 a=n455 b=n451 O=n456
+.gate inv1 a=n456 O=n457
+.gate inv1 a=G155 O=n458
+.gate and2 a=n458 b=G18 O=n459
+.gate inv1 a=n459 O=n460
+.gate and2 a=n460 b=n380 O=n461
+.gate and2 a=n461 b=G2247 O=n462
+.gate inv1 a=n462 O=n463
+.gate inv1 a=G2247 O=n464
+.gate inv1 a=n461 O=n465
+.gate and2 a=n465 b=n464 O=n466
+.gate inv1 a=n466 O=n467
+.gate and2 a=n467 b=n463 O=n468
+.gate inv1 a=n468 O=n469
+.gate and2 a=n469 b=n457 O=n470
+.gate inv1 a=G154 O=n471
+.gate and2 a=n471 b=G18 O=n472
+.gate inv1 a=n472 O=n473
+.gate and2 a=n473 b=n380 O=n474
+.gate and2 a=n474 b=G2253 O=n475
+.gate inv1 a=n475 O=n476
+.gate inv1 a=G2253 O=n477
+.gate inv1 a=n474 O=n478
+.gate and2 a=n478 b=n477 O=n479
+.gate inv1 a=n479 O=n480
+.gate and2 a=n480 b=n476 O=n481
+.gate inv1 a=n481 O=n482
+.gate inv1 a=G156 O=n483
+.gate and2 a=n483 b=G18 O=n484
+.gate inv1 a=n484 O=n485
+.gate and2 a=n485 b=n380 O=n486
+.gate and2 a=n486 b=G2239 O=n487
+.gate inv1 a=n487 O=n488
+.gate inv1 a=G2239 O=n489
+.gate inv1 a=n486 O=n490
+.gate and2 a=n490 b=n489 O=n491
+.gate inv1 a=n491 O=n492
+.gate and2 a=n492 b=n488 O=n493
+.gate inv1 a=n493 O=n494
+.gate and2 a=n494 b=n482 O=n495
+.gate and2 a=n495 b=n470 O=n496
+.gate inv1 a=G157 O=n497
+.gate and2 a=n497 b=G18 O=n498
+.gate inv1 a=n498 O=n499
+.gate and2 a=n499 b=n380 O=n500
+.gate and2 a=n500 b=G2236 O=n501
+.gate inv1 a=n501 O=n502
+.gate inv1 a=G2236 O=n503
+.gate inv1 a=n500 O=n504
+.gate and2 a=n504 b=n503 O=n505
+.gate inv1 a=n505 O=n506
+.gate and2 a=n506 b=n502 O=n507
+.gate inv1 a=n507 O=n508
+.gate and2 a=G138 b=n344 O=n509
+.gate inv1 a=n509 O=n510
+.gate and2 a=G160 b=G18 O=n511
+.gate inv1 a=n511 O=n512
+.gate and2 a=n512 b=n510 O=n513
+.gate inv1 a=n513 O=n514
+.gate and2 a=n514 b=G2218 O=n515
+.gate inv1 a=n515 O=n516
+.gate inv1 a=G2218 O=n517
+.gate and2 a=n513 b=n517 O=n518
+.gate inv1 a=n518 O=n519
+.gate and2 a=n519 b=n516 O=n520
+.gate inv1 a=n520 O=n521
+.gate and2 a=G144 b=n344 O=n522
+.gate inv1 a=n522 O=n523
+.gate and2 a=G159 b=G18 O=n524
+.gate inv1 a=n524 O=n525
+.gate and2 a=n525 b=n523 O=n526
+.gate inv1 a=n526 O=n527
+.gate and2 a=n527 b=G2224 O=n528
+.gate inv1 a=n528 O=n529
+.gate inv1 a=G2224 O=n530
+.gate and2 a=n526 b=n530 O=n531
+.gate inv1 a=n531 O=n532
+.gate and2 a=n532 b=n529 O=n533
+.gate inv1 a=n533 O=n534
+.gate and2 a=n534 b=n521 O=n535
+.gate and2 a=G135 b=n344 O=n536
+.gate inv1 a=n536 O=n537
+.gate and2 a=G158 b=G18 O=n538
+.gate inv1 a=n538 O=n539
+.gate and2 a=n539 b=n537 O=n540
+.gate inv1 a=n540 O=n541
+.gate and2 a=n541 b=G2230 O=n542
+.gate inv1 a=n542 O=n543
+.gate inv1 a=G2230 O=n544
+.gate and2 a=n540 b=n544 O=n545
+.gate inv1 a=n545 O=n546
+.gate and2 a=n546 b=n543 O=n547
+.gate inv1 a=n547 O=n548
+.gate and2 a=G147 b=n344 O=n549
+.gate inv1 a=n549 O=n550
+.gate and2 a=G151 b=G18 O=n551
+.gate inv1 a=n551 O=n552
+.gate and2 a=n552 b=n550 O=n553
+.gate inv1 a=n553 O=n554
+.gate and2 a=n554 b=G2211 O=n555
+.gate inv1 a=n555 O=n556
+.gate inv1 a=G2211 O=n557
+.gate and2 a=n553 b=n557 O=n558
+.gate inv1 a=n558 O=n559
+.gate and2 a=n559 b=n556 O=n560
+.gate inv1 a=n560 O=n561
+.gate and2 a=n561 b=n548 O=n562
+.gate and2 a=n562 b=n535 O=n563
+.gate and2 a=n563 b=n508 O=n564
+.gate and2 a=n564 b=n496 O=n565
+.gate and2 a=G231 b=G18 O=n566
+.gate inv1 a=n566 O=n567
+.gate and2 a=G100 b=n344 O=n568
+.gate inv1 a=n568 O=n569
+.gate and2 a=n569 b=n567 O=n570
+.gate inv1 a=n570 O=n571
+.gate and2 a=n571 b=G3749 O=n572
+.gate inv1 a=n572 O=n573
+.gate inv1 a=G3749 O=n574
+.gate and2 a=n570 b=n574 O=n575
+.gate inv1 a=n575 O=n576
+.gate and2 a=n576 b=n573 O=n577
+.gate inv1 a=n577 O=n578
+.gate inv1 a=G3729 O=n579
+.gate and2 a=G234 b=G18 O=n580
+.gate inv1 a=n580 O=n581
+.gate and2 a=G130 b=n344 O=n582
+.gate inv1 a=n582 O=n583
+.gate and2 a=n583 b=n581 O=n584
+.gate inv1 a=n584 O=n585
+.gate and2 a=n585 b=n579 O=n586
+.gate and2 a=n586 b=n578 O=n587
+.gate and2 a=G232 b=G18 O=n588
+.gate inv1 a=n588 O=n589
+.gate and2 a=G124 b=n344 O=n590
+.gate inv1 a=n590 O=n591
+.gate and2 a=n591 b=n589 O=n592
+.gate inv1 a=n592 O=n593
+.gate and2 a=n593 b=G3743 O=n594
+.gate inv1 a=n594 O=n595
+.gate inv1 a=G3743 O=n596
+.gate and2 a=n592 b=n596 O=n597
+.gate inv1 a=n597 O=n598
+.gate and2 a=n598 b=n595 O=n599
+.gate inv1 a=n599 O=n600
+.gate and2 a=G233 b=G18 O=n601
+.gate inv1 a=n601 O=n602
+.gate and2 a=G127 b=n344 O=n603
+.gate inv1 a=n603 O=n604
+.gate and2 a=n604 b=n602 O=n605
+.gate inv1 a=n605 O=n606
+.gate and2 a=n606 b=G3737 O=n607
+.gate inv1 a=n607 O=n608
+.gate inv1 a=G3737 O=n609
+.gate and2 a=n605 b=n609 O=n610
+.gate inv1 a=n610 O=n611
+.gate and2 a=n611 b=n608 O=n612
+.gate inv1 a=n612 O=n613
+.gate and2 a=n613 b=n600 O=n614
+.gate and2 a=n614 b=n587 O=n615
+.gate inv1 a=n615 O=n616
+.gate and2 a=n606 b=n609 O=n617
+.gate and2 a=n617 b=n578 O=n618
+.gate and2 a=n618 b=n600 O=n619
+.gate inv1 a=n619 O=n620
+.gate and2 a=n571 b=n574 O=n621
+.gate inv1 a=n621 O=n622
+.gate and2 a=n593 b=n596 O=n623
+.gate and2 a=n623 b=n578 O=n624
+.gate inv1 a=n624 O=n625
+.gate and2 a=n625 b=n622 O=n626
+.gate and2 a=n626 b=n620 O=n627
+.gate and2 a=n627 b=n616 O=n628
+.gate and2 a=G237 b=G18 O=n629
+.gate inv1 a=n629 O=n630
+.gate and2 a=G26 b=n344 O=n631
+.gate inv1 a=n631 O=n632
+.gate and2 a=n632 b=n630 O=n633
+.gate inv1 a=n633 O=n634
+.gate and2 a=n634 b=G3711 O=n635
+.gate inv1 a=n635 O=n636
+.gate inv1 a=G3711 O=n637
+.gate and2 a=n633 b=n637 O=n638
+.gate inv1 a=n638 O=n639
+.gate and2 a=n639 b=n636 O=n640
+.gate inv1 a=n640 O=n641
+.gate and2 a=G238 b=G18 O=n642
+.gate inv1 a=n642 O=n643
+.gate and2 a=G29 b=n344 O=n644
+.gate inv1 a=n644 O=n645
+.gate and2 a=n645 b=n643 O=n646
+.gate inv1 a=n646 O=n647
+.gate and2 a=n647 b=G3705 O=n648
+.gate inv1 a=n648 O=n649
+.gate inv1 a=G3705 O=n650
+.gate and2 a=n646 b=n650 O=n651
+.gate inv1 a=n651 O=n652
+.gate and2 a=n652 b=n649 O=n653
+.gate inv1 a=n653 O=n654
+.gate and2 a=n654 b=n641 O=n655
+.gate and2 a=n350 b=n345 O=n656
+.gate and2 a=G236 b=G18 O=n657
+.gate inv1 a=n657 O=n658
+.gate and2 a=G23 b=n344 O=n659
+.gate inv1 a=n659 O=n660
+.gate and2 a=n660 b=n658 O=n661
+.gate inv1 a=n661 O=n662
+.gate and2 a=n662 b=G3717 O=n663
+.gate inv1 a=n663 O=n664
+.gate inv1 a=G3717 O=n665
+.gate and2 a=n661 b=n665 O=n666
+.gate inv1 a=n666 O=n667
+.gate and2 a=n667 b=n664 O=n668
+.gate inv1 a=n668 O=n669
+.gate and2 a=G235 b=G18 O=n670
+.gate inv1 a=n670 O=n671
+.gate and2 a=G103 b=n344 O=n672
+.gate inv1 a=n672 O=n673
+.gate and2 a=n673 b=n671 O=n674
+.gate inv1 a=n674 O=n675
+.gate and2 a=n675 b=G3723 O=n676
+.gate inv1 a=n676 O=n677
+.gate inv1 a=G3723 O=n678
+.gate and2 a=n674 b=n678 O=n679
+.gate inv1 a=n679 O=n680
+.gate and2 a=n680 b=n677 O=n681
+.gate inv1 a=n681 O=n682
+.gate and2 a=n682 b=n669 O=n683
+.gate and2 a=n683 b=n656 O=n684
+.gate and2 a=n684 b=n655 O=n685
+.gate inv1 a=n685 O=n686
+.gate and2 a=n634 b=n637 O=n687
+.gate and2 a=n687 b=n669 O=n688
+.gate and2 a=n688 b=n682 O=n689
+.gate inv1 a=n689 O=n690
+.gate and2 a=n647 b=n650 O=n691
+.gate and2 a=n691 b=n669 O=n692
+.gate and2 a=n682 b=n641 O=n693
+.gate and2 a=n693 b=n692 O=n694
+.gate inv1 a=n694 O=n695
+.gate and2 a=n675 b=n678 O=n696
+.gate inv1 a=n696 O=n697
+.gate and2 a=n662 b=n665 O=n698
+.gate and2 a=n698 b=n682 O=n699
+.gate inv1 a=n699 O=n700
+.gate and2 a=n700 b=n697 O=n701
+.gate and2 a=n701 b=n695 O=n702
+.gate and2 a=n702 b=n690 O=n703
+.gate and2 a=n703 b=n686 O=n704
+.gate inv1 a=n704 O=n705
+.gate and2 a=n600 b=n578 O=n706
+.gate and2 a=n585 b=G3729 O=n707
+.gate inv1 a=n707 O=n708
+.gate and2 a=n584 b=n579 O=n709
+.gate inv1 a=n709 O=n710
+.gate and2 a=n710 b=n708 O=n711
+.gate inv1 a=n711 O=n712
+.gate and2 a=n712 b=n613 O=n713
+.gate and2 a=n713 b=n706 O=n714
+.gate and2 a=n714 b=n705 O=n715
+.gate inv1 a=n715 O=n716
+.gate and2 a=n716 b=n628 O=n717
+.gate inv1 a=n717 O=n718
+.gate and2 a=G219 b=G18 O=n719
+.gate inv1 a=n719 O=n720
+.gate and2 a=G66 b=n344 O=n721
+.gate inv1 a=n721 O=n722
+.gate and2 a=n722 b=n720 O=n723
+.gate inv1 a=n723 O=n724
+.gate and2 a=n724 b=G4437 O=n725
+.gate inv1 a=n725 O=n726
+.gate inv1 a=G4437 O=n727
+.gate and2 a=n723 b=n727 O=n728
+.gate inv1 a=n728 O=n729
+.gate and2 a=n729 b=n726 O=n730
+.gate inv1 a=n730 O=n731
+.gate and2 a=G221 b=G18 O=n732
+.gate inv1 a=n732 O=n733
+.gate and2 a=G32 b=n344 O=n734
+.gate inv1 a=n734 O=n735
+.gate and2 a=n735 b=n733 O=n736
+.gate inv1 a=n736 O=n737
+.gate and2 a=n737 b=G4427 O=n738
+.gate inv1 a=n738 O=n739
+.gate inv1 a=G4427 O=n740
+.gate and2 a=n736 b=n740 O=n741
+.gate inv1 a=n741 O=n742
+.gate and2 a=n742 b=n739 O=n743
+.gate inv1 a=n743 O=n744
+.gate and2 a=n744 b=n731 O=n745
+.gate and2 a=G220 b=G18 O=n746
+.gate inv1 a=n746 O=n747
+.gate and2 a=G50 b=n344 O=n748
+.gate inv1 a=n748 O=n749
+.gate and2 a=n749 b=n747 O=n750
+.gate inv1 a=n750 O=n751
+.gate and2 a=n751 b=G4432 O=n752
+.gate inv1 a=n752 O=n753
+.gate inv1 a=G4432 O=n754
+.gate and2 a=n750 b=n754 O=n755
+.gate inv1 a=n755 O=n756
+.gate and2 a=n756 b=n753 O=n757
+.gate inv1 a=n757 O=n758
+.gate and2 a=G222 b=G18 O=n759
+.gate inv1 a=n759 O=n760
+.gate and2 a=G35 b=n344 O=n761
+.gate inv1 a=n761 O=n762
+.gate and2 a=n762 b=n760 O=n763
+.gate inv1 a=n763 O=n764
+.gate and2 a=n764 b=G4420 O=n765
+.gate inv1 a=n765 O=n766
+.gate inv1 a=G4420 O=n767
+.gate and2 a=n763 b=n767 O=n768
+.gate inv1 a=n768 O=n769
+.gate and2 a=n769 b=n766 O=n770
+.gate inv1 a=n770 O=n771
+.gate and2 a=n771 b=n758 O=n772
+.gate and2 a=n772 b=n745 O=n773
+.gate and2 a=G226 b=G18 O=n774
+.gate inv1 a=n774 O=n775
+.gate and2 a=G97 b=n344 O=n776
+.gate inv1 a=n776 O=n777
+.gate and2 a=n777 b=n775 O=n778
+.gate inv1 a=n778 O=n779
+.gate and2 a=n779 b=G4400 O=n780
+.gate inv1 a=n780 O=n781
+.gate inv1 a=G4400 O=n782
+.gate and2 a=n778 b=n782 O=n783
+.gate inv1 a=n783 O=n784
+.gate and2 a=n784 b=n781 O=n785
+.gate inv1 a=n785 O=n786
+.gate and2 a=G223 b=G18 O=n787
+.gate inv1 a=n787 O=n788
+.gate and2 a=G47 b=n344 O=n789
+.gate inv1 a=n789 O=n790
+.gate and2 a=n790 b=n788 O=n791
+.gate inv1 a=n791 O=n792
+.gate and2 a=n792 b=G4415 O=n793
+.gate inv1 a=n793 O=n794
+.gate inv1 a=G4415 O=n795
+.gate and2 a=n791 b=n795 O=n796
+.gate inv1 a=n796 O=n797
+.gate and2 a=n797 b=n794 O=n798
+.gate inv1 a=n798 O=n799
+.gate and2 a=n799 b=n786 O=n800
+.gate and2 a=G217 b=G18 O=n801
+.gate inv1 a=n801 O=n802
+.gate and2 a=G118 b=n344 O=n803
+.gate inv1 a=n803 O=n804
+.gate and2 a=n804 b=n802 O=n805
+.gate inv1 a=n805 O=n806
+.gate and2 a=n806 b=G4394 O=n807
+.gate inv1 a=n807 O=n808
+.gate inv1 a=G4394 O=n809
+.gate and2 a=n805 b=n809 O=n810
+.gate inv1 a=n810 O=n811
+.gate and2 a=n811 b=n808 O=n812
+.gate inv1 a=n812 O=n813
+.gate and2 a=G225 b=G18 O=n814
+.gate inv1 a=n814 O=n815
+.gate and2 a=G94 b=n344 O=n816
+.gate inv1 a=n816 O=n817
+.gate and2 a=n817 b=n815 O=n818
+.gate inv1 a=n818 O=n819
+.gate and2 a=n819 b=G4405 O=n820
+.gate inv1 a=n820 O=n821
+.gate inv1 a=G4405 O=n822
+.gate and2 a=n818 b=n822 O=n823
+.gate inv1 a=n823 O=n824
+.gate and2 a=n824 b=n821 O=n825
+.gate inv1 a=n825 O=n826
+.gate and2 a=G224 b=G18 O=n827
+.gate inv1 a=n827 O=n828
+.gate and2 a=G121 b=n344 O=n829
+.gate inv1 a=n829 O=n830
+.gate and2 a=n830 b=n828 O=n831
+.gate inv1 a=n831 O=n832
+.gate and2 a=n832 b=G4410 O=n833
+.gate inv1 a=n833 O=n834
+.gate inv1 a=G4410 O=n835
+.gate and2 a=n831 b=n835 O=n836
+.gate inv1 a=n836 O=n837
+.gate and2 a=n837 b=n834 O=n838
+.gate inv1 a=n838 O=n839
+.gate and2 a=n839 b=n826 O=n840
+.gate and2 a=n840 b=n813 O=n841
+.gate and2 a=n841 b=n800 O=n842
+.gate and2 a=n842 b=n773 O=n843
+.gate and2 a=n843 b=n718 O=n844
+.gate and2 a=n844 b=n565 O=n845
+.gate and2 a=n845 b=n445 O=n846
+.gate inv1 a=n846 O=n847
+.gate and2 a=n764 b=n767 O=n848
+.gate and2 a=n848 b=n731 O=n849
+.gate and2 a=n758 b=n744 O=n850
+.gate and2 a=n850 b=n849 O=n851
+.gate inv1 a=n851 O=n852
+.gate and2 a=n737 b=n740 O=n853
+.gate and2 a=n853 b=n731 O=n854
+.gate and2 a=n854 b=n758 O=n855
+.gate inv1 a=n855 O=n856
+.gate and2 a=n724 b=n727 O=n857
+.gate inv1 a=n857 O=n858
+.gate and2 a=n751 b=n754 O=n859
+.gate and2 a=n859 b=n731 O=n860
+.gate inv1 a=n860 O=n861
+.gate and2 a=n861 b=n858 O=n862
+.gate and2 a=n862 b=n856 O=n863
+.gate and2 a=n863 b=n852 O=n864
+.gate and2 a=n826 b=n786 O=n865
+.gate and2 a=n806 b=n809 O=n866
+.gate and2 a=n866 b=n799 O=n867
+.gate and2 a=n867 b=n839 O=n868
+.gate and2 a=n868 b=n865 O=n869
+.gate inv1 a=n869 O=n870
+.gate and2 a=n819 b=n822 O=n871
+.gate and2 a=n871 b=n799 O=n872
+.gate and2 a=n872 b=n839 O=n873
+.gate inv1 a=n873 O=n874
+.gate and2 a=n779 b=n782 O=n875
+.gate and2 a=n875 b=n799 O=n876
+.gate and2 a=n876 b=n840 O=n877
+.gate inv1 a=n877 O=n878
+.gate and2 a=n792 b=n795 O=n879
+.gate inv1 a=n879 O=n880
+.gate and2 a=n832 b=n835 O=n881
+.gate and2 a=n881 b=n799 O=n882
+.gate inv1 a=n882 O=n883
+.gate and2 a=n883 b=n880 O=n884
+.gate and2 a=n884 b=n878 O=n885
+.gate and2 a=n885 b=n874 O=n886
+.gate and2 a=n886 b=n870 O=n887
+.gate inv1 a=n887 O=n888
+.gate and2 a=n888 b=n773 O=n889
+.gate inv1 a=n889 O=n890
+.gate and2 a=n890 b=n864 O=n891
+.gate inv1 a=n891 O=n892
+.gate and2 a=n892 b=n565 O=n893
+.gate and2 a=n893 b=n445 O=n894
+.gate inv1 a=n894 O=n895
+.gate and2 a=n486 b=n489 O=n896
+.gate and2 a=n896 b=n457 O=n897
+.gate and2 a=n482 b=n469 O=n898
+.gate and2 a=n898 b=n897 O=n899
+.gate inv1 a=n899 O=n900
+.gate and2 a=n461 b=n464 O=n901
+.gate and2 a=n901 b=n457 O=n902
+.gate and2 a=n902 b=n482 O=n903
+.gate inv1 a=n903 O=n904
+.gate and2 a=n449 b=n452 O=n905
+.gate inv1 a=n905 O=n906
+.gate and2 a=n474 b=n477 O=n907
+.gate and2 a=n907 b=n457 O=n908
+.gate inv1 a=n908 O=n909
+.gate and2 a=n909 b=n906 O=n910
+.gate and2 a=n910 b=n904 O=n911
+.gate and2 a=n911 b=n900 O=n912
+.gate and2 a=n541 b=n544 O=n913
+.gate and2 a=n913 b=n508 O=n914
+.gate inv1 a=n914 O=n915
+.gate and2 a=n527 b=n530 O=n916
+.gate and2 a=n916 b=n548 O=n917
+.gate and2 a=n917 b=n508 O=n918
+.gate inv1 a=n918 O=n919
+.gate and2 a=n500 b=n503 O=n920
+.gate inv1 a=n920 O=n921
+.gate and2 a=n921 b=n919 O=n922
+.gate and2 a=n922 b=n915 O=n923
+.gate and2 a=n514 b=n517 O=n924
+.gate and2 a=n924 b=n534 O=n925
+.gate and2 a=n925 b=n548 O=n926
+.gate and2 a=n926 b=n508 O=n927
+.gate inv1 a=n927 O=n928
+.gate and2 a=n554 b=n557 O=n929
+.gate and2 a=n929 b=n548 O=n930
+.gate and2 a=n930 b=n508 O=n931
+.gate and2 a=n931 b=n535 O=n932
+.gate inv1 a=n932 O=n933
+.gate and2 a=n933 b=n928 O=n934
+.gate and2 a=n934 b=n923 O=n935
+.gate inv1 a=n935 O=n936
+.gate and2 a=n936 b=n496 O=n937
+.gate inv1 a=n937 O=n938
+.gate and2 a=n938 b=n912 O=n939
+.gate inv1 a=n939 O=n940
+.gate and2 a=n940 b=n445 O=n941
+.gate inv1 a=n941 O=n942
+.gate and2 a=n683 b=n655 O=n943
+.gate and2 a=n943 b=n354 O=n944
+.gate and2 a=n714 b=G4526 O=n945
+.gate and2 a=n945 b=n944 O=n946
+.gate and2 a=n946 b=n843 O=n947
+.gate and2 a=n947 b=n565 O=n948
+.gate and2 a=n948 b=n445 O=n949
+.gate inv1 a=n949 O=n950
+.gate and2 a=n365 b=G38 O=n951
+.gate inv1 a=n951 O=n952
+.gate and2 a=n373 b=G38 O=n953
+.gate and2 a=n953 b=n369 O=n954
+.gate inv1 a=n954 O=n955
+.gate and2 a=n955 b=n952 O=n956
+.gate and2 a=n429 b=n392 O=n957
+.gate and2 a=n409 b=n412 O=n958
+.gate and2 a=n958 b=n404 O=n959
+.gate and2 a=n959 b=n441 O=n960
+.gate and2 a=n960 b=n957 O=n961
+.gate inv1 a=n961 O=n962
+.gate and2 a=n421 b=n424 O=n963
+.gate and2 a=n963 b=n404 O=n964
+.gate and2 a=n964 b=n441 O=n965
+.gate inv1 a=n965 O=n966
+.gate and2 a=n384 b=n387 O=n967
+.gate and2 a=n967 b=n404 O=n968
+.gate and2 a=n968 b=n442 O=n969
+.gate inv1 a=n969 O=n970
+.gate and2 a=n396 b=n399 O=n971
+.gate inv1 a=n971 O=n972
+.gate and2 a=n433 b=n436 O=n973
+.gate and2 a=n973 b=n404 O=n974
+.gate inv1 a=n974 O=n975
+.gate and2 a=n975 b=n972 O=n976
+.gate and2 a=n976 b=n970 O=n977
+.gate and2 a=n977 b=n966 O=n978
+.gate and2 a=n978 b=n962 O=n979
+.gate inv1 a=n979 O=n980
+.gate and2 a=n980 b=n378 O=n981
+.gate inv1 a=n981 O=n982
+.gate and2 a=n982 b=n956 O=n983
+.gate and2 a=n983 b=n950 O=n984
+.gate and2 a=n984 b=n942 O=n985
+.gate and2 a=n985 b=n895 O=n986
+.gate and2 a=n986 b=n847 O=n987
+.gate inv1 a=n987 O=G246
+.gate inv1 a=G2204 O=n989
+.gate and2 a=G4528 b=n989 O=n990
+.gate and2 a=n990 b=G38 O=n991
+.gate inv1 a=n991 O=n992
+.gate inv1 a=n990 O=n993
+.gate and2 a=n993 b=n364 O=n994
+.gate inv1 a=n994 O=n995
+.gate and2 a=n995 b=n992 O=n996
+.gate inv1 a=n996 O=n997
+.gate inv1 a=G1455 O=n998
+.gate and2 a=G4528 b=n998 O=n999
+.gate and2 a=n999 b=G38 O=n1000
+.gate inv1 a=n1000 O=n1001
+.gate inv1 a=n999 O=n1002
+.gate and2 a=n1002 b=n364 O=n1003
+.gate inv1 a=n1003 O=n1004
+.gate and2 a=n1004 b=n1001 O=n1005
+.gate inv1 a=n1005 O=n1006
+.gate and2 a=n1006 b=n997 O=n1007
+.gate and2 a=G88 b=n344 O=n1008
+.gate inv1 a=n1008 O=n1009
+.gate and2 a=n399 b=G18 O=n1010
+.gate inv1 a=n1010 O=n1011
+.gate and2 a=n1011 b=n1009 O=n1012
+.gate inv1 a=G166 O=n1013
+.gate and2 a=n1013 b=G18 O=n1014
+.gate inv1 a=n1014 O=n1015
+.gate and2 a=n1015 b=n380 O=n1016
+.gate and2 a=n1016 b=n1012 O=n1017
+.gate inv1 a=n1017 O=n1018
+.gate inv1 a=n1012 O=n1019
+.gate inv1 a=n1016 O=n1020
+.gate and2 a=n1020 b=n1019 O=n1021
+.gate inv1 a=n1021 O=n1022
+.gate and2 a=n1022 b=n1018 O=n1023
+.gate inv1 a=n1023 O=n1024
+.gate and2 a=G113 b=n344 O=n1025
+.gate inv1 a=n1025 O=n1026
+.gate and2 a=n412 b=G18 O=n1027
+.gate inv1 a=n1027 O=n1028
+.gate and2 a=n1028 b=n1026 O=n1029
+.gate and2 a=n1029 b=n380 O=n1030
+.gate inv1 a=n1030 O=n1031
+.gate inv1 a=n1029 O=n1032
+.gate and2 a=n1032 b=n379 O=n1033
+.gate inv1 a=n1033 O=n1034
+.gate and2 a=n1034 b=n1031 O=n1035
+.gate inv1 a=n1035 O=n1036
+.gate and2 a=n1036 b=n1024 O=n1037
+.gate and2 a=G111 b=n344 O=n1038
+.gate inv1 a=n1038 O=n1039
+.gate and2 a=n387 b=G18 O=n1040
+.gate inv1 a=n1040 O=n1041
+.gate and2 a=n1041 b=n1039 O=n1042
+.gate inv1 a=G169 O=n1043
+.gate and2 a=n1043 b=G18 O=n1044
+.gate inv1 a=n1044 O=n1045
+.gate and2 a=n1045 b=n380 O=n1046
+.gate and2 a=n1046 b=n1042 O=n1047
+.gate inv1 a=n1047 O=n1048
+.gate inv1 a=n1042 O=n1049
+.gate inv1 a=n1046 O=n1050
+.gate and2 a=n1050 b=n1049 O=n1051
+.gate inv1 a=n1051 O=n1052
+.gate and2 a=n1052 b=n1048 O=n1053
+.gate inv1 a=n1053 O=n1054
+.gate and2 a=G112 b=n344 O=n1055
+.gate inv1 a=n1055 O=n1056
+.gate and2 a=n436 b=G18 O=n1057
+.gate inv1 a=n1057 O=n1058
+.gate and2 a=n1058 b=n1056 O=n1059
+.gate inv1 a=G167 O=n1060
+.gate and2 a=n1060 b=G18 O=n1061
+.gate inv1 a=n1061 O=n1062
+.gate and2 a=n1062 b=n380 O=n1063
+.gate and2 a=n1063 b=n1059 O=n1064
+.gate inv1 a=n1064 O=n1065
+.gate inv1 a=n1059 O=n1066
+.gate inv1 a=n1063 O=n1067
+.gate and2 a=n1067 b=n1066 O=n1068
+.gate inv1 a=n1068 O=n1069
+.gate and2 a=n1069 b=n1065 O=n1070
+.gate inv1 a=n1070 O=n1071
+.gate and2 a=G87 b=n344 O=n1072
+.gate inv1 a=n1072 O=n1073
+.gate and2 a=n424 b=G18 O=n1074
+.gate inv1 a=n1074 O=n1075
+.gate and2 a=n1075 b=n1073 O=n1076
+.gate inv1 a=G168 O=n1077
+.gate and2 a=n1077 b=G18 O=n1078
+.gate inv1 a=n1078 O=n1079
+.gate and2 a=n1079 b=n380 O=n1080
+.gate and2 a=n1080 b=n1076 O=n1081
+.gate inv1 a=n1081 O=n1082
+.gate inv1 a=n1076 O=n1083
+.gate inv1 a=n1080 O=n1084
+.gate and2 a=n1084 b=n1083 O=n1085
+.gate inv1 a=n1085 O=n1086
+.gate and2 a=n1086 b=n1082 O=n1087
+.gate inv1 a=n1087 O=n1088
+.gate and2 a=n1088 b=n1071 O=n1089
+.gate and2 a=n1089 b=n1054 O=n1090
+.gate and2 a=n1090 b=n1037 O=n1091
+.gate and2 a=n1091 b=n1007 O=n1092
+.gate and2 a=G110 b=n344 O=n1093
+.gate inv1 a=n1093 O=n1094
+.gate and2 a=n452 b=G18 O=n1095
+.gate inv1 a=n1095 O=n1096
+.gate and2 a=n1096 b=n1094 O=n1097
+.gate inv1 a=G173 O=n1098
+.gate and2 a=n1098 b=G18 O=n1099
+.gate inv1 a=n1099 O=n1100
+.gate and2 a=n1100 b=n380 O=n1101
+.gate and2 a=n1101 b=n1097 O=n1102
+.gate inv1 a=n1102 O=n1103
+.gate inv1 a=n1097 O=n1104
+.gate inv1 a=n1101 O=n1105
+.gate and2 a=n1105 b=n1104 O=n1106
+.gate inv1 a=n1106 O=n1107
+.gate and2 a=n1107 b=n1103 O=n1108
+.gate inv1 a=n1108 O=n1109
+.gate and2 a=G109 b=n344 O=n1110
+.gate inv1 a=n1110 O=n1111
+.gate and2 a=n477 b=G18 O=n1112
+.gate inv1 a=n1112 O=n1113
+.gate and2 a=n1113 b=n1111 O=n1114
+.gate inv1 a=G174 O=n1115
+.gate and2 a=n1115 b=G18 O=n1116
+.gate inv1 a=n1116 O=n1117
+.gate and2 a=n1117 b=n380 O=n1118
+.gate and2 a=n1118 b=n1114 O=n1119
+.gate inv1 a=n1119 O=n1120
+.gate inv1 a=n1114 O=n1121
+.gate inv1 a=n1118 O=n1122
+.gate and2 a=n1122 b=n1121 O=n1123
+.gate inv1 a=n1123 O=n1124
+.gate and2 a=n1124 b=n1120 O=n1125
+.gate inv1 a=n1125 O=n1126
+.gate and2 a=n1126 b=n1109 O=n1127
+.gate and2 a=G86 b=n344 O=n1128
+.gate inv1 a=n1128 O=n1129
+.gate and2 a=n464 b=G18 O=n1130
+.gate inv1 a=n1130 O=n1131
+.gate and2 a=n1131 b=n1129 O=n1132
+.gate inv1 a=G175 O=n1133
+.gate and2 a=n1133 b=G18 O=n1134
+.gate inv1 a=n1134 O=n1135
+.gate and2 a=n1135 b=n380 O=n1136
+.gate and2 a=n1136 b=n1132 O=n1137
+.gate inv1 a=n1137 O=n1138
+.gate inv1 a=n1132 O=n1139
+.gate inv1 a=n1136 O=n1140
+.gate and2 a=n1140 b=n1139 O=n1141
+.gate inv1 a=n1141 O=n1142
+.gate and2 a=n1142 b=n1138 O=n1143
+.gate inv1 a=n1143 O=n1144
+.gate and2 a=G63 b=n344 O=n1145
+.gate inv1 a=n1145 O=n1146
+.gate and2 a=n489 b=G18 O=n1147
+.gate inv1 a=n1147 O=n1148
+.gate and2 a=n1148 b=n1146 O=n1149
+.gate inv1 a=G176 O=n1150
+.gate and2 a=n1150 b=G18 O=n1151
+.gate inv1 a=n1151 O=n1152
+.gate and2 a=n1152 b=n380 O=n1153
+.gate and2 a=n1153 b=n1149 O=n1154
+.gate inv1 a=n1154 O=n1155
+.gate inv1 a=n1149 O=n1156
+.gate inv1 a=n1153 O=n1157
+.gate and2 a=n1157 b=n1156 O=n1158
+.gate inv1 a=n1158 O=n1159
+.gate and2 a=n1159 b=n1155 O=n1160
+.gate inv1 a=n1160 O=n1161
+.gate and2 a=n1161 b=n1144 O=n1162
+.gate and2 a=n1162 b=n1127 O=n1163
+.gate and2 a=G64 b=n344 O=n1164
+.gate inv1 a=n1164 O=n1165
+.gate and2 a=n503 b=G18 O=n1166
+.gate inv1 a=n1166 O=n1167
+.gate and2 a=n1167 b=n1165 O=n1168
+.gate inv1 a=G177 O=n1169
+.gate and2 a=n1169 b=G18 O=n1170
+.gate inv1 a=n1170 O=n1171
+.gate and2 a=n1171 b=n380 O=n1172
+.gate and2 a=n1172 b=n1168 O=n1173
+.gate inv1 a=n1173 O=n1174
+.gate inv1 a=n1168 O=n1175
+.gate inv1 a=n1172 O=n1176
+.gate and2 a=n1176 b=n1175 O=n1177
+.gate inv1 a=n1177 O=n1178
+.gate and2 a=n1178 b=n1174 O=n1179
+.gate inv1 a=n1179 O=n1180
+.gate and2 a=G85 b=n344 O=n1181
+.gate inv1 a=n1181 O=n1182
+.gate and2 a=n544 b=G18 O=n1183
+.gate inv1 a=n1183 O=n1184
+.gate and2 a=n1184 b=n1182 O=n1185
+.gate inv1 a=n1185 O=n1186
+.gate and2 a=G178 b=G18 O=n1187
+.gate inv1 a=n1187 O=n1188
+.gate and2 a=n1188 b=n537 O=n1189
+.gate inv1 a=n1189 O=n1190
+.gate and2 a=n1190 b=n1186 O=n1191
+.gate and2 a=n1191 b=n1180 O=n1192
+.gate inv1 a=n1192 O=n1193
+.gate and2 a=n1190 b=n1185 O=n1194
+.gate inv1 a=n1194 O=n1195
+.gate and2 a=n1189 b=n1186 O=n1196
+.gate inv1 a=n1196 O=n1197
+.gate and2 a=n1197 b=n1195 O=n1198
+.gate inv1 a=n1198 O=n1199
+.gate and2 a=G84 b=n344 O=n1200
+.gate inv1 a=n1200 O=n1201
+.gate and2 a=n530 b=G18 O=n1202
+.gate inv1 a=n1202 O=n1203
+.gate and2 a=n1203 b=n1201 O=n1204
+.gate inv1 a=n1204 O=n1205
+.gate and2 a=G179 b=G18 O=n1206
+.gate inv1 a=n1206 O=n1207
+.gate and2 a=n1207 b=n523 O=n1208
+.gate inv1 a=n1208 O=n1209
+.gate and2 a=n1209 b=n1205 O=n1210
+.gate and2 a=n1210 b=n1199 O=n1211
+.gate and2 a=n1211 b=n1180 O=n1212
+.gate inv1 a=n1212 O=n1213
+.gate and2 a=n1172 b=n1175 O=n1214
+.gate inv1 a=n1214 O=n1215
+.gate and2 a=n1215 b=n1213 O=n1216
+.gate and2 a=n1216 b=n1193 O=n1217
+.gate and2 a=n1209 b=n1204 O=n1218
+.gate inv1 a=n1218 O=n1219
+.gate and2 a=n1208 b=n1205 O=n1220
+.gate inv1 a=n1220 O=n1221
+.gate and2 a=n1221 b=n1219 O=n1222
+.gate inv1 a=n1222 O=n1223
+.gate and2 a=G83 b=n344 O=n1224
+.gate inv1 a=n1224 O=n1225
+.gate and2 a=n517 b=G18 O=n1226
+.gate inv1 a=n1226 O=n1227
+.gate and2 a=n1227 b=n1225 O=n1228
+.gate inv1 a=n1228 O=n1229
+.gate and2 a=G180 b=G18 O=n1230
+.gate inv1 a=n1230 O=n1231
+.gate and2 a=n1231 b=n510 O=n1232
+.gate inv1 a=n1232 O=n1233
+.gate and2 a=n1233 b=n1229 O=n1234
+.gate and2 a=n1234 b=n1199 O=n1235
+.gate and2 a=n1235 b=n1223 O=n1236
+.gate and2 a=n1236 b=n1180 O=n1237
+.gate inv1 a=n1237 O=n1238
+.gate and2 a=G65 b=n344 O=n1239
+.gate inv1 a=n1239 O=n1240
+.gate and2 a=n557 b=G18 O=n1241
+.gate inv1 a=n1241 O=n1242
+.gate and2 a=n1242 b=n1240 O=n1243
+.gate inv1 a=n1243 O=n1244
+.gate and2 a=G171 b=G18 O=n1245
+.gate inv1 a=n1245 O=n1246
+.gate and2 a=n1246 b=n550 O=n1247
+.gate inv1 a=n1247 O=n1248
+.gate and2 a=n1248 b=n1244 O=n1249
+.gate and2 a=n1249 b=n1199 O=n1250
+.gate and2 a=n1233 b=n1228 O=n1251
+.gate inv1 a=n1251 O=n1252
+.gate and2 a=n1232 b=n1229 O=n1253
+.gate inv1 a=n1253 O=n1254
+.gate and2 a=n1254 b=n1252 O=n1255
+.gate inv1 a=n1255 O=n1256
+.gate and2 a=n1256 b=n1223 O=n1257
+.gate and2 a=n1257 b=n1250 O=n1258
+.gate and2 a=n1258 b=n1180 O=n1259
+.gate inv1 a=n1259 O=n1260
+.gate and2 a=n1260 b=n1238 O=n1261
+.gate and2 a=n1261 b=n1217 O=n1262
+.gate inv1 a=n1262 O=n1263
+.gate and2 a=n1263 b=n1163 O=n1264
+.gate inv1 a=n1264 O=n1265
+.gate and2 a=n1153 b=n1156 O=n1266
+.gate and2 a=n1266 b=n1109 O=n1267
+.gate and2 a=n1144 b=n1126 O=n1268
+.gate and2 a=n1268 b=n1267 O=n1269
+.gate inv1 a=n1269 O=n1270
+.gate and2 a=n1136 b=n1139 O=n1271
+.gate and2 a=n1271 b=n1109 O=n1272
+.gate and2 a=n1272 b=n1126 O=n1273
+.gate inv1 a=n1273 O=n1274
+.gate and2 a=n1101 b=n1104 O=n1275
+.gate inv1 a=n1275 O=n1276
+.gate and2 a=n1118 b=n1121 O=n1277
+.gate and2 a=n1277 b=n1109 O=n1278
+.gate inv1 a=n1278 O=n1279
+.gate and2 a=n1279 b=n1276 O=n1280
+.gate and2 a=n1280 b=n1274 O=n1281
+.gate and2 a=n1281 b=n1270 O=n1282
+.gate and2 a=n1282 b=n1265 O=n1283
+.gate inv1 a=n1283 O=n1284
+.gate and2 a=n1284 b=n1092 O=n1285
+.gate inv1 a=n1285 O=n1286
+.gate and2 a=n1032 b=n380 O=n1287
+.gate and2 a=n1287 b=n1024 O=n1288
+.gate and2 a=n1288 b=n1090 O=n1289
+.gate inv1 a=n1289 O=n1290
+.gate and2 a=n1080 b=n1083 O=n1291
+.gate and2 a=n1291 b=n1024 O=n1292
+.gate and2 a=n1292 b=n1071 O=n1293
+.gate inv1 a=n1293 O=n1294
+.gate and2 a=n1046 b=n1049 O=n1295
+.gate and2 a=n1295 b=n1024 O=n1296
+.gate and2 a=n1296 b=n1089 O=n1297
+.gate inv1 a=n1297 O=n1298
+.gate and2 a=n1016 b=n1019 O=n1299
+.gate inv1 a=n1299 O=n1300
+.gate and2 a=n1063 b=n1066 O=n1301
+.gate and2 a=n1301 b=n1024 O=n1302
+.gate inv1 a=n1302 O=n1303
+.gate and2 a=n1303 b=n1300 O=n1304
+.gate and2 a=n1304 b=n1298 O=n1305
+.gate and2 a=n1305 b=n1294 O=n1306
+.gate and2 a=n1306 b=n1290 O=n1307
+.gate inv1 a=n1307 O=n1308
+.gate and2 a=n1308 b=n1007 O=n1309
+.gate inv1 a=n1309 O=n1310
+.gate and2 a=n727 b=G18 O=n1311
+.gate inv1 a=n1311 O=n1312
+.gate and2 a=G62 b=n344 O=n1313
+.gate inv1 a=n1313 O=n1314
+.gate and2 a=n1314 b=n1312 O=n1315
+.gate and2 a=G189 b=G18 O=n1316
+.gate inv1 a=n1316 O=n1317
+.gate and2 a=n1317 b=n722 O=n1318
+.gate inv1 a=n1318 O=n1319
+.gate and2 a=n1319 b=n1315 O=n1320
+.gate inv1 a=n1320 O=n1321
+.gate inv1 a=n1315 O=n1322
+.gate and2 a=n1318 b=n1322 O=n1323
+.gate inv1 a=n1323 O=n1324
+.gate and2 a=n1324 b=n1321 O=n1325
+.gate inv1 a=n1325 O=n1326
+.gate and2 a=n754 b=G18 O=n1327
+.gate inv1 a=n1327 O=n1328
+.gate and2 a=G61 b=n344 O=n1329
+.gate inv1 a=n1329 O=n1330
+.gate and2 a=n1330 b=n1328 O=n1331
+.gate and2 a=G190 b=G18 O=n1332
+.gate inv1 a=n1332 O=n1333
+.gate and2 a=n1333 b=n749 O=n1334
+.gate inv1 a=n1334 O=n1335
+.gate and2 a=n1335 b=n1331 O=n1336
+.gate inv1 a=n1336 O=n1337
+.gate inv1 a=n1331 O=n1338
+.gate and2 a=n1334 b=n1338 O=n1339
+.gate inv1 a=n1339 O=n1340
+.gate and2 a=n1340 b=n1337 O=n1341
+.gate inv1 a=n1341 O=n1342
+.gate and2 a=n1342 b=n1326 O=n1343
+.gate and2 a=n740 b=G18 O=n1344
+.gate inv1 a=n1344 O=n1345
+.gate and2 a=G60 b=n344 O=n1346
+.gate inv1 a=n1346 O=n1347
+.gate and2 a=n1347 b=n1345 O=n1348
+.gate and2 a=G191 b=G18 O=n1349
+.gate inv1 a=n1349 O=n1350
+.gate and2 a=n1350 b=n735 O=n1351
+.gate inv1 a=n1351 O=n1352
+.gate and2 a=n1352 b=n1348 O=n1353
+.gate inv1 a=n1353 O=n1354
+.gate inv1 a=n1348 O=n1355
+.gate and2 a=n1351 b=n1355 O=n1356
+.gate inv1 a=n1356 O=n1357
+.gate and2 a=n1357 b=n1354 O=n1358
+.gate inv1 a=n1358 O=n1359
+.gate and2 a=n767 b=G18 O=n1360
+.gate inv1 a=n1360 O=n1361
+.gate and2 a=G79 b=n344 O=n1362
+.gate inv1 a=n1362 O=n1363
+.gate and2 a=n1363 b=n1361 O=n1364
+.gate and2 a=G192 b=G18 O=n1365
+.gate inv1 a=n1365 O=n1366
+.gate and2 a=n1366 b=n762 O=n1367
+.gate inv1 a=n1367 O=n1368
+.gate and2 a=n1368 b=n1364 O=n1369
+.gate inv1 a=n1369 O=n1370
+.gate inv1 a=n1364 O=n1371
+.gate and2 a=n1367 b=n1371 O=n1372
+.gate inv1 a=n1372 O=n1373
+.gate and2 a=n1373 b=n1370 O=n1374
+.gate inv1 a=n1374 O=n1375
+.gate and2 a=n1375 b=n1359 O=n1376
+.gate and2 a=n1376 b=n1343 O=n1377
+.gate and2 a=n795 b=G18 O=n1378
+.gate inv1 a=n1378 O=n1379
+.gate and2 a=G80 b=n344 O=n1380
+.gate inv1 a=n1380 O=n1381
+.gate and2 a=n1381 b=n1379 O=n1382
+.gate and2 a=G193 b=G18 O=n1383
+.gate inv1 a=n1383 O=n1384
+.gate and2 a=n1384 b=n790 O=n1385
+.gate inv1 a=n1385 O=n1386
+.gate and2 a=n1386 b=n1382 O=n1387
+.gate inv1 a=n1387 O=n1388
+.gate inv1 a=n1382 O=n1389
+.gate and2 a=n1385 b=n1389 O=n1390
+.gate inv1 a=n1390 O=n1391
+.gate and2 a=n1391 b=n1388 O=n1392
+.gate inv1 a=n1392 O=n1393
+.gate and2 a=n835 b=G18 O=n1394
+.gate inv1 a=n1394 O=n1395
+.gate and2 a=G81 b=n344 O=n1396
+.gate inv1 a=n1396 O=n1397
+.gate and2 a=n1397 b=n1395 O=n1398
+.gate and2 a=G194 b=G18 O=n1399
+.gate inv1 a=n1399 O=n1400
+.gate and2 a=n1400 b=n830 O=n1401
+.gate inv1 a=n1401 O=n1402
+.gate and2 a=n1402 b=n1398 O=n1403
+.gate inv1 a=n1403 O=n1404
+.gate inv1 a=n1398 O=n1405
+.gate and2 a=n1401 b=n1405 O=n1406
+.gate inv1 a=n1406 O=n1407
+.gate and2 a=n1407 b=n1404 O=n1408
+.gate inv1 a=n1408 O=n1409
+.gate and2 a=n1409 b=n1393 O=n1410
+.gate and2 a=n809 b=G18 O=n1411
+.gate inv1 a=n1411 O=n1412
+.gate and2 a=G77 b=n344 O=n1413
+.gate inv1 a=n1413 O=n1414
+.gate and2 a=n1414 b=n1412 O=n1415
+.gate and2 a=G187 b=G18 O=n1416
+.gate inv1 a=n1416 O=n1417
+.gate and2 a=n1417 b=n804 O=n1418
+.gate inv1 a=n1418 O=n1419
+.gate and2 a=n1419 b=n1415 O=n1420
+.gate inv1 a=n1420 O=n1421
+.gate inv1 a=n1415 O=n1422
+.gate and2 a=n1418 b=n1422 O=n1423
+.gate inv1 a=n1423 O=n1424
+.gate and2 a=n1424 b=n1421 O=n1425
+.gate inv1 a=n1425 O=n1426
+.gate and2 a=n822 b=G18 O=n1427
+.gate inv1 a=n1427 O=n1428
+.gate and2 a=G59 b=n344 O=n1429
+.gate inv1 a=n1429 O=n1430
+.gate and2 a=n1430 b=n1428 O=n1431
+.gate and2 a=G195 b=G18 O=n1432
+.gate inv1 a=n1432 O=n1433
+.gate and2 a=n1433 b=n817 O=n1434
+.gate inv1 a=n1434 O=n1435
+.gate and2 a=n1435 b=n1431 O=n1436
+.gate inv1 a=n1436 O=n1437
+.gate inv1 a=n1431 O=n1438
+.gate and2 a=n1434 b=n1438 O=n1439
+.gate inv1 a=n1439 O=n1440
+.gate and2 a=n1440 b=n1437 O=n1441
+.gate inv1 a=n1441 O=n1442
+.gate and2 a=n782 b=G18 O=n1443
+.gate inv1 a=n1443 O=n1444
+.gate and2 a=G78 b=n344 O=n1445
+.gate inv1 a=n1445 O=n1446
+.gate and2 a=n1446 b=n1444 O=n1447
+.gate and2 a=G196 b=G18 O=n1448
+.gate inv1 a=n1448 O=n1449
+.gate and2 a=n1449 b=n777 O=n1450
+.gate inv1 a=n1450 O=n1451
+.gate and2 a=n1451 b=n1447 O=n1452
+.gate inv1 a=n1452 O=n1453
+.gate inv1 a=n1447 O=n1454
+.gate and2 a=n1450 b=n1454 O=n1455
+.gate inv1 a=n1455 O=n1456
+.gate and2 a=n1456 b=n1453 O=n1457
+.gate inv1 a=n1457 O=n1458
+.gate and2 a=n1458 b=n1442 O=n1459
+.gate and2 a=n1459 b=n1426 O=n1460
+.gate and2 a=n1460 b=n1410 O=n1461
+.gate and2 a=n1461 b=n1377 O=n1462
+.gate and2 a=n1223 b=n1199 O=n1463
+.gate and2 a=n1248 b=n1243 O=n1464
+.gate inv1 a=n1464 O=n1465
+.gate and2 a=n1247 b=n1244 O=n1466
+.gate inv1 a=n1466 O=n1467
+.gate and2 a=n1467 b=n1465 O=n1468
+.gate inv1 a=n1468 O=n1469
+.gate and2 a=n1469 b=n1256 O=n1470
+.gate and2 a=n1470 b=n1463 O=n1471
+.gate and2 a=n1471 b=n1180 O=n1472
+.gate and2 a=n1472 b=n1163 O=n1473
+.gate inv1 a=G70 O=n1474
+.gate and2 a=n1474 b=n344 O=n1475
+.gate and2 a=G41 b=n344 O=n1476
+.gate and2 a=n1476 b=n1475 O=n1477
+.gate inv1 a=n1477 O=n1478
+.gate inv1 a=n1475 O=n1479
+.gate inv1 a=n1476 O=n1480
+.gate and2 a=n1480 b=n1479 O=n1481
+.gate inv1 a=n1481 O=n1482
+.gate and2 a=n1482 b=n1478 O=n1483
+.gate inv1 a=n1483 O=n1484
+.gate and2 a=n665 b=G18 O=n1485
+.gate inv1 a=n1485 O=n1486
+.gate and2 a=G75 b=n344 O=n1487
+.gate inv1 a=n1487 O=n1488
+.gate and2 a=n1488 b=n1486 O=n1489
+.gate and2 a=G205 b=G18 O=n1490
+.gate inv1 a=n1490 O=n1491
+.gate and2 a=n1491 b=n660 O=n1492
+.gate inv1 a=n1492 O=n1493
+.gate and2 a=n1493 b=n1489 O=n1494
+.gate inv1 a=n1494 O=n1495
+.gate inv1 a=n1489 O=n1496
+.gate and2 a=n1492 b=n1496 O=n1497
+.gate inv1 a=n1497 O=n1498
+.gate and2 a=n1498 b=n1495 O=n1499
+.gate inv1 a=n1499 O=n1500
+.gate and2 a=n678 b=G18 O=n1501
+.gate inv1 a=n1501 O=n1502
+.gate and2 a=G73 b=n344 O=n1503
+.gate inv1 a=n1503 O=n1504
+.gate and2 a=n1504 b=n1502 O=n1505
+.gate and2 a=G204 b=G18 O=n1506
+.gate inv1 a=n1506 O=n1507
+.gate and2 a=n1507 b=n673 O=n1508
+.gate inv1 a=n1508 O=n1509
+.gate and2 a=n1509 b=n1505 O=n1510
+.gate inv1 a=n1510 O=n1511
+.gate inv1 a=n1505 O=n1512
+.gate and2 a=n1508 b=n1512 O=n1513
+.gate inv1 a=n1513 O=n1514
+.gate and2 a=n1514 b=n1511 O=n1515
+.gate inv1 a=n1515 O=n1516
+.gate and2 a=n1516 b=n1500 O=n1517
+.gate and2 a=n637 b=G18 O=n1518
+.gate inv1 a=n1518 O=n1519
+.gate and2 a=G76 b=n344 O=n1520
+.gate inv1 a=n1520 O=n1521
+.gate and2 a=n1521 b=n1519 O=n1522
+.gate and2 a=G206 b=G18 O=n1523
+.gate inv1 a=n1523 O=n1524
+.gate and2 a=n1524 b=n632 O=n1525
+.gate inv1 a=n1525 O=n1526
+.gate and2 a=n1526 b=n1522 O=n1527
+.gate inv1 a=n1527 O=n1528
+.gate inv1 a=n1522 O=n1529
+.gate and2 a=n1525 b=n1529 O=n1530
+.gate inv1 a=n1530 O=n1531
+.gate and2 a=n1531 b=n1528 O=n1532
+.gate inv1 a=n1532 O=n1533
+.gate and2 a=n650 b=G18 O=n1534
+.gate inv1 a=n1534 O=n1535
+.gate and2 a=G74 b=n344 O=n1536
+.gate inv1 a=n1536 O=n1537
+.gate and2 a=n1537 b=n1535 O=n1538
+.gate and2 a=G207 b=G18 O=n1539
+.gate inv1 a=n1539 O=n1540
+.gate and2 a=n1540 b=n645 O=n1541
+.gate inv1 a=n1541 O=n1542
+.gate and2 a=n1542 b=n1538 O=n1543
+.gate inv1 a=n1543 O=n1544
+.gate inv1 a=n1538 O=n1545
+.gate and2 a=n1541 b=n1545 O=n1546
+.gate inv1 a=n1546 O=n1547
+.gate and2 a=n1547 b=n1544 O=n1548
+.gate inv1 a=n1548 O=n1549
+.gate and2 a=n1549 b=n1533 O=n1550
+.gate and2 a=n1550 b=n1517 O=n1551
+.gate and2 a=n1551 b=n1484 O=n1552
+.gate and2 a=n574 b=G18 O=n1553
+.gate inv1 a=n1553 O=n1554
+.gate and2 a=G56 b=n344 O=n1555
+.gate inv1 a=n1555 O=n1556
+.gate and2 a=n1556 b=n1554 O=n1557
+.gate and2 a=G200 b=G18 O=n1558
+.gate inv1 a=n1558 O=n1559
+.gate and2 a=n1559 b=n569 O=n1560
+.gate inv1 a=n1560 O=n1561
+.gate and2 a=n1561 b=n1557 O=n1562
+.gate inv1 a=n1562 O=n1563
+.gate inv1 a=n1557 O=n1564
+.gate and2 a=n1560 b=n1564 O=n1565
+.gate inv1 a=n1565 O=n1566
+.gate and2 a=n1566 b=n1563 O=n1567
+.gate inv1 a=n1567 O=n1568
+.gate and2 a=n596 b=G18 O=n1569
+.gate inv1 a=n1569 O=n1570
+.gate and2 a=G55 b=n344 O=n1571
+.gate inv1 a=n1571 O=n1572
+.gate and2 a=n1572 b=n1570 O=n1573
+.gate and2 a=G201 b=G18 O=n1574
+.gate inv1 a=n1574 O=n1575
+.gate and2 a=n1575 b=n591 O=n1576
+.gate inv1 a=n1576 O=n1577
+.gate and2 a=n1577 b=n1573 O=n1578
+.gate inv1 a=n1578 O=n1579
+.gate inv1 a=n1573 O=n1580
+.gate and2 a=n1576 b=n1580 O=n1581
+.gate inv1 a=n1581 O=n1582
+.gate and2 a=n1582 b=n1579 O=n1583
+.gate inv1 a=n1583 O=n1584
+.gate and2 a=n1584 b=n1568 O=n1585
+.gate and2 a=n609 b=G18 O=n1586
+.gate inv1 a=n1586 O=n1587
+.gate and2 a=G54 b=n344 O=n1588
+.gate inv1 a=n1588 O=n1589
+.gate and2 a=n1589 b=n1587 O=n1590
+.gate and2 a=G202 b=G18 O=n1591
+.gate inv1 a=n1591 O=n1592
+.gate and2 a=n1592 b=n604 O=n1593
+.gate inv1 a=n1593 O=n1594
+.gate and2 a=n1594 b=n1590 O=n1595
+.gate inv1 a=n1595 O=n1596
+.gate inv1 a=n1590 O=n1597
+.gate and2 a=n1593 b=n1597 O=n1598
+.gate inv1 a=n1598 O=n1599
+.gate and2 a=n1599 b=n1596 O=n1600
+.gate inv1 a=n1600 O=n1601
+.gate and2 a=n579 b=G18 O=n1602
+.gate inv1 a=n1602 O=n1603
+.gate and2 a=G53 b=n344 O=n1604
+.gate inv1 a=n1604 O=n1605
+.gate and2 a=n1605 b=n1603 O=n1606
+.gate and2 a=G203 b=G18 O=n1607
+.gate inv1 a=n1607 O=n1608
+.gate and2 a=n1608 b=n583 O=n1609
+.gate inv1 a=n1609 O=n1610
+.gate and2 a=n1610 b=n1606 O=n1611
+.gate inv1 a=n1611 O=n1612
+.gate inv1 a=n1606 O=n1613
+.gate and2 a=n1609 b=n1613 O=n1614
+.gate inv1 a=n1614 O=n1615
+.gate and2 a=n1615 b=n1612 O=n1616
+.gate inv1 a=n1616 O=n1617
+.gate and2 a=n1617 b=n1601 O=n1618
+.gate and2 a=n1618 b=n1585 O=n1619
+.gate and2 a=n1619 b=G89 O=n1620
+.gate and2 a=n1620 b=n1552 O=n1621
+.gate and2 a=n1621 b=n1473 O=n1622
+.gate and2 a=n1622 b=n1462 O=n1623
+.gate and2 a=n1623 b=n1092 O=n1624
+.gate inv1 a=n1624 O=n1625
+.gate and2 a=n993 b=G38 O=n1626
+.gate inv1 a=n1626 O=n1627
+.gate and2 a=n1002 b=G38 O=n1628
+.gate and2 a=n1628 b=n997 O=n1629
+.gate inv1 a=n1629 O=n1630
+.gate and2 a=n1630 b=n1627 O=n1631
+.gate and2 a=n1631 b=n1625 O=n1632
+.gate and2 a=n1632 b=n1310 O=n1633
+.gate and2 a=n1633 b=n1286 O=n1634
+.gate and2 a=n1610 b=n1613 O=n1635
+.gate and2 a=n1635 b=n1568 O=n1636
+.gate and2 a=n1601 b=n1584 O=n1637
+.gate and2 a=n1637 b=n1636 O=n1638
+.gate inv1 a=n1638 O=n1639
+.gate and2 a=n1594 b=n1597 O=n1640
+.gate and2 a=n1640 b=n1568 O=n1641
+.gate and2 a=n1641 b=n1584 O=n1642
+.gate inv1 a=n1642 O=n1643
+.gate and2 a=n1561 b=n1564 O=n1644
+.gate inv1 a=n1644 O=n1645
+.gate and2 a=n1577 b=n1580 O=n1646
+.gate and2 a=n1646 b=n1568 O=n1647
+.gate inv1 a=n1647 O=n1648
+.gate and2 a=n1648 b=n1645 O=n1649
+.gate and2 a=n1649 b=n1643 O=n1650
+.gate and2 a=n1650 b=n1639 O=n1651
+.gate and2 a=n1476 b=n1479 O=n1652
+.gate and2 a=n1652 b=n1500 O=n1653
+.gate and2 a=n1533 b=n1516 O=n1654
+.gate and2 a=n1654 b=n1549 O=n1655
+.gate and2 a=n1655 b=n1653 O=n1656
+.gate inv1 a=n1656 O=n1657
+.gate and2 a=n1526 b=n1529 O=n1658
+.gate and2 a=n1658 b=n1500 O=n1659
+.gate and2 a=n1659 b=n1516 O=n1660
+.gate inv1 a=n1660 O=n1661
+.gate and2 a=n1542 b=n1545 O=n1662
+.gate and2 a=n1662 b=n1500 O=n1663
+.gate and2 a=n1663 b=n1654 O=n1664
+.gate inv1 a=n1664 O=n1665
+.gate and2 a=n1509 b=n1512 O=n1666
+.gate inv1 a=n1666 O=n1667
+.gate and2 a=n1493 b=n1496 O=n1668
+.gate and2 a=n1668 b=n1516 O=n1669
+.gate inv1 a=n1669 O=n1670
+.gate and2 a=n1670 b=n1667 O=n1671
+.gate and2 a=n1671 b=n1665 O=n1672
+.gate and2 a=n1672 b=n1661 O=n1673
+.gate and2 a=n1673 b=n1657 O=n1674
+.gate inv1 a=n1674 O=n1675
+.gate and2 a=n1675 b=n1619 O=n1676
+.gate inv1 a=n1676 O=n1677
+.gate and2 a=n1677 b=n1651 O=n1678
+.gate inv1 a=n1678 O=n1679
+.gate and2 a=n1473 b=n1462 O=n1680
+.gate and2 a=n1680 b=n1679 O=n1681
+.gate and2 a=n1681 b=n1092 O=n1682
+.gate inv1 a=n1682 O=n1683
+.gate and2 a=n1368 b=n1371 O=n1684
+.gate and2 a=n1684 b=n1326 O=n1685
+.gate and2 a=n1359 b=n1342 O=n1686
+.gate and2 a=n1686 b=n1685 O=n1687
+.gate inv1 a=n1687 O=n1688
+.gate and2 a=n1352 b=n1355 O=n1689
+.gate and2 a=n1689 b=n1326 O=n1690
+.gate and2 a=n1690 b=n1342 O=n1691
+.gate inv1 a=n1691 O=n1692
+.gate and2 a=n1319 b=n1322 O=n1693
+.gate inv1 a=n1693 O=n1694
+.gate and2 a=n1335 b=n1338 O=n1695
+.gate and2 a=n1695 b=n1326 O=n1696
+.gate inv1 a=n1696 O=n1697
+.gate and2 a=n1697 b=n1694 O=n1698
+.gate and2 a=n1698 b=n1692 O=n1699
+.gate and2 a=n1699 b=n1688 O=n1700
+.gate and2 a=n1419 b=n1422 O=n1701
+.gate and2 a=n1701 b=n1393 O=n1702
+.gate and2 a=n1442 b=n1409 O=n1703
+.gate and2 a=n1703 b=n1458 O=n1704
+.gate and2 a=n1704 b=n1702 O=n1705
+.gate inv1 a=n1705 O=n1706
+.gate and2 a=n1435 b=n1438 O=n1707
+.gate and2 a=n1707 b=n1393 O=n1708
+.gate and2 a=n1708 b=n1409 O=n1709
+.gate inv1 a=n1709 O=n1710
+.gate and2 a=n1451 b=n1454 O=n1711
+.gate and2 a=n1711 b=n1393 O=n1712
+.gate and2 a=n1712 b=n1703 O=n1713
+.gate inv1 a=n1713 O=n1714
+.gate and2 a=n1386 b=n1389 O=n1715
+.gate inv1 a=n1715 O=n1716
+.gate and2 a=n1402 b=n1405 O=n1717
+.gate and2 a=n1717 b=n1393 O=n1718
+.gate inv1 a=n1718 O=n1719
+.gate and2 a=n1719 b=n1716 O=n1720
+.gate and2 a=n1720 b=n1714 O=n1721
+.gate and2 a=n1721 b=n1710 O=n1722
+.gate and2 a=n1722 b=n1706 O=n1723
+.gate inv1 a=n1723 O=n1724
+.gate and2 a=n1724 b=n1377 O=n1725
+.gate inv1 a=n1725 O=n1726
+.gate and2 a=n1726 b=n1700 O=n1727
+.gate inv1 a=n1727 O=n1728
+.gate and2 a=n1728 b=n1473 O=n1729
+.gate and2 a=n1729 b=n1092 O=n1730
+.gate inv1 a=n1730 O=n1731
+.gate and2 a=n1731 b=n1683 O=n1732
+.gate and2 a=n1732 b=n1634 O=n1733
+.gate inv1 a=n1733 O=G258
+.gate and2 a=n417 b=n392 O=n1735
+.gate and2 a=n429 b=n404 O=n1736
+.gate and2 a=n1736 b=n441 O=n1737
+.gate and2 a=n1737 b=n1735 O=n1738
+.gate and2 a=n1738 b=n378 O=n1739
+.gate and2 a=n494 b=n469 O=n1740
+.gate and2 a=n1740 b=n482 O=n1741
+.gate and2 a=n1741 b=n457 O=n1742
+.gate and2 a=n561 b=n521 O=n1743
+.gate and2 a=n548 b=n534 O=n1744
+.gate and2 a=n1744 b=n508 O=n1745
+.gate and2 a=n1745 b=n1743 O=n1746
+.gate and2 a=n1746 b=n1742 O=n1747
+.gate and2 a=n713 b=n600 O=n1748
+.gate and2 a=n1748 b=n578 O=n1749
+.gate and2 a=n1749 b=n705 O=n1750
+.gate inv1 a=n1750 O=n1751
+.gate and2 a=n1751 b=n628 O=n1752
+.gate inv1 a=n1752 O=n1753
+.gate and2 a=n771 b=n744 O=n1754
+.gate and2 a=n1754 b=n758 O=n1755
+.gate and2 a=n1755 b=n731 O=n1756
+.gate and2 a=n813 b=n786 O=n1757
+.gate and2 a=n826 b=n799 O=n1758
+.gate and2 a=n1758 b=n839 O=n1759
+.gate and2 a=n1759 b=n1757 O=n1760
+.gate and2 a=n1760 b=n1756 O=n1761
+.gate and2 a=n1761 b=n1753 O=n1762
+.gate and2 a=n1762 b=n1747 O=n1763
+.gate and2 a=n1763 b=n1739 O=n1764
+.gate inv1 a=n1764 O=n1765
+.gate and2 a=n1756 b=n888 O=n1766
+.gate inv1 a=n1766 O=n1767
+.gate and2 a=n1767 b=n864 O=n1768
+.gate inv1 a=n1768 O=n1769
+.gate and2 a=n1769 b=n1747 O=n1770
+.gate and2 a=n1770 b=n1739 O=n1771
+.gate inv1 a=n1771 O=n1772
+.gate and2 a=n1742 b=n936 O=n1773
+.gate inv1 a=n1773 O=n1774
+.gate and2 a=n1774 b=n912 O=n1775
+.gate inv1 a=n1775 O=n1776
+.gate and2 a=n1776 b=n1739 O=n1777
+.gate inv1 a=n1777 O=n1778
+.gate and2 a=n654 b=n354 O=n1779
+.gate and2 a=n683 b=n641 O=n1780
+.gate and2 a=n1780 b=n1779 O=n1781
+.gate and2 a=n1749 b=G4526 O=n1782
+.gate and2 a=n1782 b=n1781 O=n1783
+.gate and2 a=n1783 b=n1761 O=n1784
+.gate and2 a=n1784 b=n1747 O=n1785
+.gate and2 a=n1785 b=n1739 O=n1786
+.gate inv1 a=n1786 O=n1787
+.gate and2 a=n1787 b=n983 O=n1788
+.gate and2 a=n1788 b=n1778 O=n1789
+.gate and2 a=n1789 b=n1772 O=n1790
+.gate and2 a=n1790 b=n1765 O=n1791
+.gate inv1 a=n1791 O=G270
+.gate and2 a=n354 b=G4526 O=n1793
+.gate and2 a=n1793 b=n655 O=n1794
+.gate and2 a=n1794 b=n669 O=n1795
+.gate inv1 a=n1795 O=n1796
+.gate and2 a=n656 b=n655 O=n1797
+.gate and2 a=n1797 b=n669 O=n1798
+.gate inv1 a=n1798 O=n1799
+.gate and2 a=n691 b=n641 O=n1800
+.gate and2 a=n1800 b=n669 O=n1801
+.gate inv1 a=n1801 O=n1802
+.gate inv1 a=n688 O=n1803
+.gate inv1 a=n698 O=n1804
+.gate and2 a=n1804 b=n1803 O=n1805
+.gate and2 a=n1805 b=n1802 O=n1806
+.gate and2 a=n1806 b=n1799 O=n1807
+.gate and2 a=n1807 b=n1796 O=n1808
+.gate and2 a=n1808 b=n682 O=n1809
+.gate inv1 a=n1809 O=n1810
+.gate inv1 a=n1808 O=n1811
+.gate and2 a=n1811 b=n681 O=n1812
+.gate inv1 a=n1812 O=n1813
+.gate and2 a=n1813 b=n1810 O=n1814
+.gate inv1 a=n1814 O=G388
+.gate inv1 a=n1794 O=n1816
+.gate inv1 a=n1797 O=n1817
+.gate inv1 a=n687 O=n1818
+.gate inv1 a=n1800 O=n1819
+.gate and2 a=n1819 b=n1818 O=n1820
+.gate and2 a=n1820 b=n1817 O=n1821
+.gate and2 a=n1821 b=n1816 O=n1822
+.gate and2 a=n1822 b=n669 O=n1823
+.gate inv1 a=n1823 O=n1824
+.gate inv1 a=n1822 O=n1825
+.gate and2 a=n1825 b=n668 O=n1826
+.gate inv1 a=n1826 O=n1827
+.gate and2 a=n1827 b=n1824 O=n1828
+.gate inv1 a=n1828 O=G391
+.gate and2 a=n1793 b=n654 O=n1830
+.gate inv1 a=n1830 O=n1831
+.gate inv1 a=n691 O=n1832
+.gate and2 a=n656 b=n654 O=n1833
+.gate inv1 a=n1833 O=n1834
+.gate and2 a=n1834 b=n1832 O=n1835
+.gate and2 a=n1835 b=n1831 O=n1836
+.gate and2 a=n1836 b=n641 O=n1837
+.gate inv1 a=n1837 O=n1838
+.gate inv1 a=n1836 O=n1839
+.gate and2 a=n1839 b=n640 O=n1840
+.gate inv1 a=n1840 O=n1841
+.gate and2 a=n1841 b=n1838 O=n1842
+.gate inv1 a=n1842 O=G394
+.gate inv1 a=n656 O=n1844
+.gate inv1 a=n1793 O=n1845
+.gate and2 a=n1845 b=n1844 O=n1846
+.gate and2 a=n1846 b=n654 O=n1847
+.gate inv1 a=n1847 O=n1848
+.gate inv1 a=n1846 O=n1849
+.gate and2 a=n1849 b=n653 O=n1850
+.gate inv1 a=n1850 O=n1851
+.gate and2 a=n1851 b=n1848 O=n1852
+.gate inv1 a=n1852 O=G397
+.gate and2 a=n944 b=G4526 O=n1854
+.gate inv1 a=n1854 O=n1855
+.gate and2 a=n1855 b=n704 O=n1856
+.gate and2 a=n613 b=n586 O=n1857
+.gate and2 a=n1857 b=n600 O=n1858
+.gate inv1 a=n1858 O=n1859
+.gate inv1 a=n623 O=n1860
+.gate and2 a=n617 b=n600 O=n1861
+.gate inv1 a=n1861 O=n1862
+.gate and2 a=n1862 b=n1860 O=n1863
+.gate and2 a=n1863 b=n1859 O=n1864
+.gate inv1 a=n1864 O=n1865
+.gate and2 a=n1865 b=n578 O=n1866
+.gate inv1 a=n1866 O=n1867
+.gate and2 a=n1864 b=n577 O=n1868
+.gate inv1 a=n1868 O=n1869
+.gate and2 a=n1869 b=n1867 O=n1870
+.gate and2 a=n1870 b=n1856 O=n1871
+.gate inv1 a=n1871 O=n1872
+.gate inv1 a=n1856 O=n1873
+.gate inv1 a=n1748 O=n1874
+.gate and2 a=n1859 b=n1874 O=n1875
+.gate and2 a=n1875 b=n1863 O=n1876
+.gate and2 a=n1876 b=n578 O=n1877
+.gate inv1 a=n1877 O=n1878
+.gate inv1 a=n1876 O=n1879
+.gate and2 a=n1879 b=n577 O=n1880
+.gate inv1 a=n1880 O=n1881
+.gate and2 a=n1881 b=n1878 O=n1882
+.gate inv1 a=n1882 O=n1883
+.gate and2 a=n1883 b=n1873 O=n1884
+.gate inv1 a=n1884 O=n1885
+.gate and2 a=n1885 b=n1872 O=n1886
+.gate inv1 a=n1886 O=G376
+.gate inv1 a=n617 O=n1888
+.gate inv1 a=n1857 O=n1889
+.gate and2 a=n1889 b=n1888 O=n1890
+.gate inv1 a=n1890 O=n1891
+.gate and2 a=n1891 b=n600 O=n1892
+.gate inv1 a=n1892 O=n1893
+.gate and2 a=n1890 b=n599 O=n1894
+.gate inv1 a=n1894 O=n1895
+.gate and2 a=n1895 b=n1893 O=n1896
+.gate and2 a=n1896 b=n1856 O=n1897
+.gate inv1 a=n1897 O=n1898
+.gate inv1 a=n713 O=n1899
+.gate and2 a=n1890 b=n1899 O=n1900
+.gate and2 a=n1900 b=n600 O=n1901
+.gate inv1 a=n1901 O=n1902
+.gate inv1 a=n1900 O=n1903
+.gate and2 a=n1903 b=n599 O=n1904
+.gate inv1 a=n1904 O=n1905
+.gate and2 a=n1905 b=n1902 O=n1906
+.gate inv1 a=n1906 O=n1907
+.gate and2 a=n1907 b=n1873 O=n1908
+.gate inv1 a=n1908 O=n1909
+.gate and2 a=n1909 b=n1898 O=n1910
+.gate inv1 a=n1910 O=G379
+.gate inv1 a=n586 O=n1912
+.gate and2 a=n613 b=n1912 O=n1913
+.gate inv1 a=n1913 O=n1914
+.gate and2 a=n612 b=n586 O=n1915
+.gate inv1 a=n1915 O=n1916
+.gate and2 a=n1916 b=n1914 O=n1917
+.gate inv1 a=n1917 O=n1918
+.gate and2 a=n1918 b=n1856 O=n1919
+.gate inv1 a=n1919 O=n1920
+.gate and2 a=n584 b=G3729 O=n1921
+.gate inv1 a=n1921 O=n1922
+.gate and2 a=n1922 b=n613 O=n1923
+.gate inv1 a=n1923 O=n1924
+.gate and2 a=n1921 b=n612 O=n1925
+.gate inv1 a=n1925 O=n1926
+.gate and2 a=n1926 b=n1924 O=n1927
+.gate and2 a=n1927 b=n1873 O=n1928
+.gate inv1 a=n1928 O=n1929
+.gate and2 a=n1929 b=n1920 O=n1930
+.gate inv1 a=n1930 O=G382
+.gate and2 a=n1856 b=n712 O=n1932
+.gate inv1 a=n1932 O=n1933
+.gate and2 a=n1873 b=n711 O=n1934
+.gate inv1 a=n1934 O=n1935
+.gate and2 a=n1935 b=n1933 O=n1936
+.gate inv1 a=n1936 O=G385
+.gate inv1 a=G212 O=n1938
+.gate and2 a=n1938 b=G18 O=n1939
+.gate inv1 a=n1939 O=n1940
+.gate and2 a=n1940 b=n380 O=n1941
+.gate inv1 a=G211 O=n1942
+.gate and2 a=n1942 b=G18 O=n1943
+.gate inv1 a=n1943 O=n1944
+.gate and2 a=n1944 b=n380 O=n1945
+.gate inv1 a=n1945 O=n1946
+.gate and2 a=n1946 b=n1941 O=n1947
+.gate inv1 a=n1947 O=n1948
+.gate inv1 a=n1941 O=n1949
+.gate and2 a=n1945 b=n1949 O=n1950
+.gate inv1 a=n1950 O=n1951
+.gate and2 a=n1951 b=n1948 O=n1952
+.gate inv1 a=n1952 O=n1953
+.gate and2 a=n425 b=n384 O=n1954
+.gate inv1 a=n1954 O=n1955
+.gate and2 a=n421 b=n388 O=n1956
+.gate inv1 a=n1956 O=n1957
+.gate and2 a=n1957 b=n1955 O=n1958
+.gate and2 a=n433 b=n400 O=n1959
+.gate inv1 a=n1959 O=n1960
+.gate and2 a=n437 b=n396 O=n1961
+.gate inv1 a=n1961 O=n1962
+.gate and2 a=n1962 b=n1960 O=n1963
+.gate and2 a=n407 b=n380 O=n1964
+.gate inv1 a=n1964 O=n1965
+.gate and2 a=n1965 b=n1963 O=n1966
+.gate and2 a=n1966 b=n1958 O=n1967
+.gate inv1 a=n1967 O=n1968
+.gate inv1 a=n1963 O=n1969
+.gate and2 a=n1964 b=n1969 O=n1970
+.gate and2 a=n1970 b=n1958 O=n1971
+.gate inv1 a=n1971 O=n1972
+.gate and2 a=n1972 b=n1968 O=n1973
+.gate inv1 a=n1958 O=n1974
+.gate and2 a=n1964 b=n1963 O=n1975
+.gate and2 a=n1975 b=n1974 O=n1976
+.gate inv1 a=n1976 O=n1977
+.gate and2 a=n1965 b=n1969 O=n1978
+.gate and2 a=n1978 b=n1974 O=n1979
+.gate inv1 a=n1979 O=n1980
+.gate and2 a=n1980 b=n1977 O=n1981
+.gate and2 a=n1981 b=n1973 O=n1982
+.gate and2 a=n1982 b=n1953 O=n1983
+.gate inv1 a=n1983 O=n1984
+.gate inv1 a=n1982 O=n1985
+.gate and2 a=n1985 b=n1952 O=n1986
+.gate inv1 a=n1986 O=n1987
+.gate and2 a=n1987 b=n1984 O=n1988
+.gate inv1 a=n1988 O=n1989
+.gate and2 a=n486 b=n465 O=n1990
+.gate inv1 a=n1990 O=n1991
+.gate and2 a=n490 b=n461 O=n1992
+.gate inv1 a=n1992 O=n1993
+.gate and2 a=n1993 b=n1991 O=n1994
+.gate inv1 a=n1994 O=n1995
+.gate and2 a=n474 b=n453 O=n1996
+.gate inv1 a=n1996 O=n1997
+.gate and2 a=n478 b=n449 O=n1998
+.gate inv1 a=n1998 O=n1999
+.gate and2 a=n1999 b=n1997 O=n2000
+.gate and2 a=n2000 b=n1995 O=n2001
+.gate inv1 a=n2001 O=n2002
+.gate inv1 a=n2000 O=n2003
+.gate and2 a=n2003 b=n1994 O=n2004
+.gate inv1 a=n2004 O=n2005
+.gate and2 a=n2005 b=n2002 O=n2006
+.gate inv1 a=n2006 O=n2007
+.gate and2 a=n541 b=n504 O=n2008
+.gate inv1 a=n2008 O=n2009
+.gate and2 a=n540 b=n500 O=n2010
+.gate inv1 a=n2010 O=n2011
+.gate and2 a=n2011 b=n2009 O=n2012
+.gate and2 a=G141 b=n344 O=n2013
+.gate inv1 a=n2013 O=n2014
+.gate and2 a=G161 b=G18 O=n2015
+.gate inv1 a=n2015 O=n2016
+.gate and2 a=n2016 b=n2014 O=n2017
+.gate inv1 a=n2017 O=n2018
+.gate and2 a=n2018 b=n553 O=n2019
+.gate inv1 a=n2019 O=n2020
+.gate and2 a=n2017 b=n554 O=n2021
+.gate inv1 a=n2021 O=n2022
+.gate and2 a=n2022 b=n2020 O=n2023
+.gate inv1 a=n2023 O=n2024
+.gate and2 a=n526 b=n514 O=n2025
+.gate inv1 a=n2025 O=n2026
+.gate and2 a=n527 b=n513 O=n2027
+.gate inv1 a=n2027 O=n2028
+.gate and2 a=n2028 b=n2026 O=n2029
+.gate and2 a=n2029 b=n2024 O=n2030
+.gate and2 a=n2030 b=n2012 O=n2031
+.gate inv1 a=n2031 O=n2032
+.gate inv1 a=n2012 O=n2033
+.gate and2 a=n2029 b=n2023 O=n2034
+.gate and2 a=n2034 b=n2033 O=n2035
+.gate inv1 a=n2035 O=n2036
+.gate and2 a=n2036 b=n2032 O=n2037
+.gate inv1 a=n2029 O=n2038
+.gate and2 a=n2038 b=n2023 O=n2039
+.gate and2 a=n2039 b=n2012 O=n2040
+.gate inv1 a=n2040 O=n2041
+.gate and2 a=n2038 b=n2024 O=n2042
+.gate and2 a=n2042 b=n2033 O=n2043
+.gate inv1 a=n2043 O=n2044
+.gate and2 a=n2044 b=n2041 O=n2045
+.gate and2 a=n2045 b=n2037 O=n2046
+.gate and2 a=n2046 b=n2007 O=n2047
+.gate inv1 a=n2047 O=n2048
+.gate inv1 a=n2046 O=n2049
+.gate and2 a=n2049 b=n2006 O=n2050
+.gate inv1 a=n2050 O=n2051
+.gate and2 a=n2051 b=n2048 O=n2052
+.gate inv1 a=n2052 O=n2053
+.gate and2 a=n605 b=n585 O=n2054
+.gate inv1 a=n2054 O=n2055
+.gate and2 a=n606 b=n584 O=n2056
+.gate inv1 a=n2056 O=n2057
+.gate and2 a=n2057 b=n2055 O=n2058
+.gate inv1 a=n2058 O=n2059
+.gate and2 a=n593 b=n570 O=n2060
+.gate inv1 a=n2060 O=n2061
+.gate and2 a=n592 b=n571 O=n2062
+.gate inv1 a=n2062 O=n2063
+.gate and2 a=n2063 b=n2061 O=n2064
+.gate and2 a=n2064 b=n2059 O=n2065
+.gate inv1 a=n2065 O=n2066
+.gate inv1 a=n2064 O=n2067
+.gate and2 a=n2067 b=n2058 O=n2068
+.gate inv1 a=n2068 O=n2069
+.gate and2 a=n2069 b=n2066 O=n2070
+.gate inv1 a=n2070 O=n2071
+.gate and2 a=n647 b=n633 O=n2072
+.gate inv1 a=n2072 O=n2073
+.gate and2 a=n646 b=n634 O=n2074
+.gate inv1 a=n2074 O=n2075
+.gate and2 a=n2075 b=n2073 O=n2076
+.gate and2 a=n674 b=n662 O=n2077
+.gate inv1 a=n2077 O=n2078
+.gate and2 a=n675 b=n661 O=n2079
+.gate inv1 a=n2079 O=n2080
+.gate and2 a=n2080 b=n2078 O=n2081
+.gate and2 a=G229 b=G18 O=n2082
+.gate inv1 a=n2082 O=n2083
+.gate and2 a=G41 b=n344 O=n2084
+.gate inv1 a=n2084 O=n2085
+.gate and2 a=n2085 b=n2083 O=n2086
+.gate and2 a=G239 b=G18 O=n2087
+.gate inv1 a=n2087 O=n2088
+.gate and2 a=G44 b=n344 O=n2089
+.gate inv1 a=n2089 O=n2090
+.gate and2 a=n2090 b=n2088 O=n2091
+.gate inv1 a=n2091 O=n2092
+.gate and2 a=n2092 b=n2086 O=n2093
+.gate inv1 a=n2093 O=n2094
+.gate inv1 a=n2086 O=n2095
+.gate and2 a=n2091 b=n2095 O=n2096
+.gate inv1 a=n2096 O=n2097
+.gate and2 a=n2097 b=n2094 O=n2098
+.gate inv1 a=n2098 O=n2099
+.gate and2 a=n2099 b=n2081 O=n2100
+.gate and2 a=n2100 b=n2076 O=n2101
+.gate inv1 a=n2101 O=n2102
+.gate inv1 a=n2081 O=n2103
+.gate and2 a=n2098 b=n2103 O=n2104
+.gate and2 a=n2104 b=n2076 O=n2105
+.gate inv1 a=n2105 O=n2106
+.gate and2 a=n2106 b=n2102 O=n2107
+.gate inv1 a=n2076 O=n2108
+.gate and2 a=n2098 b=n2081 O=n2109
+.gate and2 a=n2109 b=n2108 O=n2110
+.gate inv1 a=n2110 O=n2111
+.gate and2 a=n2099 b=n2103 O=n2112
+.gate and2 a=n2112 b=n2108 O=n2113
+.gate inv1 a=n2113 O=n2114
+.gate and2 a=n2114 b=n2111 O=n2115
+.gate and2 a=n2115 b=n2107 O=n2116
+.gate and2 a=n2116 b=n2071 O=n2117
+.gate inv1 a=n2117 O=n2118
+.gate inv1 a=n2116 O=n2119
+.gate and2 a=n2119 b=n2070 O=n2120
+.gate inv1 a=n2120 O=n2121
+.gate and2 a=n2121 b=n2118 O=n2122
+.gate inv1 a=n2122 O=n2123
+.gate and2 a=n764 b=n736 O=n2124
+.gate inv1 a=n2124 O=n2125
+.gate and2 a=n763 b=n737 O=n2126
+.gate inv1 a=n2126 O=n2127
+.gate and2 a=n2127 b=n2125 O=n2128
+.gate inv1 a=n2128 O=n2129
+.gate and2 a=n751 b=n723 O=n2130
+.gate inv1 a=n2130 O=n2131
+.gate and2 a=n750 b=n724 O=n2132
+.gate inv1 a=n2132 O=n2133
+.gate and2 a=n2133 b=n2131 O=n2134
+.gate and2 a=n2134 b=n2129 O=n2135
+.gate inv1 a=n2135 O=n2136
+.gate inv1 a=n2134 O=n2137
+.gate and2 a=n2137 b=n2128 O=n2138
+.gate inv1 a=n2138 O=n2139
+.gate and2 a=n2139 b=n2136 O=n2140
+.gate inv1 a=n2140 O=n2141
+.gate and2 a=n818 b=n779 O=n2142
+.gate inv1 a=n2142 O=n2143
+.gate and2 a=n819 b=n778 O=n2144
+.gate inv1 a=n2144 O=n2145
+.gate and2 a=n2145 b=n2143 O=n2146
+.gate and2 a=n832 b=n791 O=n2147
+.gate inv1 a=n2147 O=n2148
+.gate and2 a=n831 b=n792 O=n2149
+.gate inv1 a=n2149 O=n2150
+.gate and2 a=n2150 b=n2148 O=n2151
+.gate and2 a=G227 b=G18 O=n2152
+.gate inv1 a=n2152 O=n2153
+.gate and2 a=G115 b=n344 O=n2154
+.gate inv1 a=n2154 O=n2155
+.gate and2 a=n2155 b=n2153 O=n2156
+.gate inv1 a=n2156 O=n2157
+.gate and2 a=n2157 b=n805 O=n2158
+.gate inv1 a=n2158 O=n2159
+.gate and2 a=n2156 b=n806 O=n2160
+.gate inv1 a=n2160 O=n2161
+.gate and2 a=n2161 b=n2159 O=n2162
+.gate inv1 a=n2162 O=n2163
+.gate and2 a=n2163 b=n2151 O=n2164
+.gate and2 a=n2164 b=n2146 O=n2165
+.gate inv1 a=n2165 O=n2166
+.gate inv1 a=n2151 O=n2167
+.gate and2 a=n2162 b=n2167 O=n2168
+.gate and2 a=n2168 b=n2146 O=n2169
+.gate inv1 a=n2169 O=n2170
+.gate and2 a=n2170 b=n2166 O=n2171
+.gate inv1 a=n2146 O=n2172
+.gate and2 a=n2162 b=n2151 O=n2173
+.gate and2 a=n2173 b=n2172 O=n2174
+.gate inv1 a=n2174 O=n2175
+.gate and2 a=n2163 b=n2167 O=n2176
+.gate and2 a=n2176 b=n2172 O=n2177
+.gate inv1 a=n2177 O=n2178
+.gate and2 a=n2178 b=n2175 O=n2179
+.gate and2 a=n2179 b=n2171 O=n2180
+.gate and2 a=n2180 b=n2141 O=n2181
+.gate inv1 a=n2181 O=n2182
+.gate inv1 a=n2180 O=n2183
+.gate and2 a=n2183 b=n2140 O=n2184
+.gate inv1 a=n2184 O=n2185
+.gate and2 a=n2185 b=n2182 O=n2186
+.gate inv1 a=n2186 O=n2187
+.gate and2 a=n2187 b=n2123 O=n2188
+.gate and2 a=n2188 b=n2053 O=n2189
+.gate and2 a=n2189 b=n1989 O=n2190
+.gate inv1 a=n2190 O=G412
+.gate and2 a=n1613 b=n1590 O=n2192
+.gate inv1 a=n2192 O=n2193
+.gate and2 a=n1606 b=n1597 O=n2194
+.gate inv1 a=n2194 O=n2195
+.gate and2 a=n2195 b=n2193 O=n2196
+.gate inv1 a=n2196 O=n2197
+.gate and2 a=n1580 b=n1557 O=n2198
+.gate inv1 a=n2198 O=n2199
+.gate and2 a=n1573 b=n1564 O=n2200
+.gate inv1 a=n2200 O=n2201
+.gate and2 a=n2201 b=n2199 O=n2202
+.gate and2 a=n2202 b=n2197 O=n2203
+.gate inv1 a=n2203 O=n2204
+.gate inv1 a=n2202 O=n2205
+.gate and2 a=n2205 b=n2196 O=n2206
+.gate inv1 a=n2206 O=n2207
+.gate and2 a=n2207 b=n2204 O=n2208
+.gate inv1 a=n2208 O=n2209
+.gate and2 a=n1545 b=n1522 O=n2210
+.gate inv1 a=n2210 O=n2211
+.gate and2 a=n1538 b=n1529 O=n2212
+.gate inv1 a=n2212 O=n2213
+.gate and2 a=n2213 b=n2211 O=n2214
+.gate and2 a=n1505 b=n1496 O=n2215
+.gate inv1 a=n2215 O=n2216
+.gate and2 a=n1512 b=n1489 O=n2217
+.gate inv1 a=n2217 O=n2218
+.gate and2 a=n2218 b=n2216 O=n2219
+.gate inv1 a=G3698 O=n2220
+.gate and2 a=n2220 b=G18 O=n2221
+.gate inv1 a=n2221 O=n2222
+.gate and2 a=G69 b=n344 O=n2223
+.gate inv1 a=n2223 O=n2224
+.gate and2 a=n2224 b=n2222 O=n2225
+.gate inv1 a=n2225 O=n2226
+.gate and2 a=G70 b=n344 O=n2227
+.gate inv1 a=n2227 O=n2228
+.gate inv1 a=G3701 O=n2229
+.gate and2 a=n2229 b=G18 O=n2230
+.gate inv1 a=n2230 O=n2231
+.gate and2 a=n2231 b=n2228 O=n2232
+.gate and2 a=n2232 b=n2226 O=n2233
+.gate inv1 a=n2233 O=n2234
+.gate inv1 a=n2232 O=n2235
+.gate and2 a=n2235 b=n2225 O=n2236
+.gate inv1 a=n2236 O=n2237
+.gate and2 a=n2237 b=n2234 O=n2238
+.gate inv1 a=n2238 O=n2239
+.gate and2 a=n2239 b=n2219 O=n2240
+.gate and2 a=n2240 b=n2214 O=n2241
+.gate inv1 a=n2241 O=n2242
+.gate inv1 a=n2219 O=n2243
+.gate and2 a=n2238 b=n2243 O=n2244
+.gate and2 a=n2244 b=n2214 O=n2245
+.gate inv1 a=n2245 O=n2246
+.gate and2 a=n2246 b=n2242 O=n2247
+.gate inv1 a=n2214 O=n2248
+.gate and2 a=n2238 b=n2219 O=n2249
+.gate and2 a=n2249 b=n2248 O=n2250
+.gate inv1 a=n2250 O=n2251
+.gate and2 a=n2239 b=n2243 O=n2252
+.gate and2 a=n2252 b=n2248 O=n2253
+.gate inv1 a=n2253 O=n2254
+.gate and2 a=n2254 b=n2251 O=n2255
+.gate and2 a=n2255 b=n2247 O=n2256
+.gate and2 a=n2256 b=n2209 O=n2257
+.gate inv1 a=n2257 O=n2258
+.gate inv1 a=n2256 O=n2259
+.gate and2 a=n2259 b=n2208 O=n2260
+.gate inv1 a=n2260 O=n2261
+.gate and2 a=n2261 b=n2258 O=n2262
+.gate inv1 a=n2262 O=n2263
+.gate and2 a=n1371 b=n1348 O=n2264
+.gate inv1 a=n2264 O=n2265
+.gate and2 a=n1364 b=n1355 O=n2266
+.gate inv1 a=n2266 O=n2267
+.gate and2 a=n2267 b=n2265 O=n2268
+.gate inv1 a=n2268 O=n2269
+.gate and2 a=n1338 b=n1315 O=n2270
+.gate inv1 a=n2270 O=n2271
+.gate and2 a=n1331 b=n1322 O=n2272
+.gate inv1 a=n2272 O=n2273
+.gate and2 a=n2273 b=n2271 O=n2274
+.gate and2 a=n2274 b=n2269 O=n2275
+.gate inv1 a=n2275 O=n2276
+.gate inv1 a=n2274 O=n2277
+.gate and2 a=n2277 b=n2268 O=n2278
+.gate inv1 a=n2278 O=n2279
+.gate and2 a=n2279 b=n2276 O=n2280
+.gate inv1 a=n2280 O=n2281
+.gate and2 a=n1454 b=n1431 O=n2282
+.gate inv1 a=n2282 O=n2283
+.gate and2 a=n1447 b=n1438 O=n2284
+.gate inv1 a=n2284 O=n2285
+.gate and2 a=n2285 b=n2283 O=n2286
+.gate and2 a=n1405 b=n1382 O=n2287
+.gate inv1 a=n2287 O=n2288
+.gate and2 a=n1398 b=n1389 O=n2289
+.gate inv1 a=n2289 O=n2290
+.gate and2 a=n2290 b=n2288 O=n2291
+.gate inv1 a=G4393 O=n2292
+.gate and2 a=n2292 b=G18 O=n2293
+.gate inv1 a=n2293 O=n2294
+.gate and2 a=G58 b=n344 O=n2295
+.gate inv1 a=n2295 O=n2296
+.gate and2 a=n2296 b=n2294 O=n2297
+.gate inv1 a=n2297 O=n2298
+.gate and2 a=n2298 b=n1415 O=n2299
+.gate inv1 a=n2299 O=n2300
+.gate and2 a=n2297 b=n1422 O=n2301
+.gate inv1 a=n2301 O=n2302
+.gate and2 a=n2302 b=n2300 O=n2303
+.gate inv1 a=n2303 O=n2304
+.gate and2 a=n2304 b=n2291 O=n2305
+.gate and2 a=n2305 b=n2286 O=n2306
+.gate inv1 a=n2306 O=n2307
+.gate inv1 a=n2291 O=n2308
+.gate and2 a=n2303 b=n2308 O=n2309
+.gate and2 a=n2309 b=n2286 O=n2310
+.gate inv1 a=n2310 O=n2311
+.gate and2 a=n2311 b=n2307 O=n2312
+.gate inv1 a=n2286 O=n2313
+.gate and2 a=n2303 b=n2291 O=n2314
+.gate and2 a=n2314 b=n2313 O=n2315
+.gate inv1 a=n2315 O=n2316
+.gate and2 a=n2304 b=n2308 O=n2317
+.gate and2 a=n2317 b=n2313 O=n2318
+.gate inv1 a=n2318 O=n2319
+.gate and2 a=n2319 b=n2316 O=n2320
+.gate and2 a=n2320 b=n2312 O=n2321
+.gate and2 a=n2321 b=n2281 O=n2322
+.gate inv1 a=n2322 O=n2323
+.gate inv1 a=n2321 O=n2324
+.gate and2 a=n2324 b=n2280 O=n2325
+.gate inv1 a=n2325 O=n2326
+.gate and2 a=n2326 b=n2323 O=n2327
+.gate inv1 a=n2327 O=n2328
+.gate and2 a=n2328 b=n2263 O=n2329
+.gate and2 a=G1455 b=n344 O=n2330
+.gate inv1 a=n2330 O=n2331
+.gate inv1 a=G1492 O=n2332
+.gate and2 a=n2332 b=G18 O=n2333
+.gate inv1 a=n2333 O=n2334
+.gate and2 a=n2334 b=n2331 O=n2335
+.gate inv1 a=n2335 O=n2336
+.gate and2 a=G2204 b=n344 O=n2337
+.gate inv1 a=n2337 O=n2338
+.gate inv1 a=G1496 O=n2339
+.gate and2 a=n2339 b=G18 O=n2340
+.gate inv1 a=n2340 O=n2341
+.gate and2 a=n2341 b=n2338 O=n2342
+.gate and2 a=n2342 b=n2336 O=n2343
+.gate inv1 a=n2343 O=n2344
+.gate inv1 a=n2342 O=n2345
+.gate and2 a=n2345 b=n2335 O=n2346
+.gate inv1 a=n2346 O=n2347
+.gate and2 a=n2347 b=n2344 O=n2348
+.gate inv1 a=n2348 O=n2349
+.gate and2 a=n1076 b=n1049 O=n2350
+.gate inv1 a=n2350 O=n2351
+.gate and2 a=n1083 b=n1042 O=n2352
+.gate inv1 a=n2352 O=n2353
+.gate and2 a=n2353 b=n2351 O=n2354
+.gate and2 a=n1066 b=n1012 O=n2355
+.gate inv1 a=n2355 O=n2356
+.gate and2 a=n1059 b=n1019 O=n2357
+.gate inv1 a=n2357 O=n2358
+.gate and2 a=n2358 b=n2356 O=n2359
+.gate and2 a=G114 b=n344 O=n2360
+.gate inv1 a=n2360 O=n2361
+.gate inv1 a=G1459 O=n2362
+.gate and2 a=n2362 b=G18 O=n2363
+.gate inv1 a=n2363 O=n2364
+.gate and2 a=n2364 b=n2361 O=n2365
+.gate inv1 a=n2365 O=n2366
+.gate and2 a=n2366 b=n1029 O=n2367
+.gate inv1 a=n2367 O=n2368
+.gate and2 a=n2365 b=n1032 O=n2369
+.gate inv1 a=n2369 O=n2370
+.gate and2 a=n2370 b=n2368 O=n2371
+.gate inv1 a=n2371 O=n2372
+.gate and2 a=n2372 b=n2359 O=n2373
+.gate and2 a=n2373 b=n2354 O=n2374
+.gate inv1 a=n2374 O=n2375
+.gate inv1 a=n2359 O=n2376
+.gate and2 a=n2371 b=n2376 O=n2377
+.gate and2 a=n2377 b=n2354 O=n2378
+.gate inv1 a=n2378 O=n2379
+.gate and2 a=n2379 b=n2375 O=n2380
+.gate inv1 a=n2354 O=n2381
+.gate and2 a=n2371 b=n2359 O=n2382
+.gate and2 a=n2382 b=n2381 O=n2383
+.gate inv1 a=n2383 O=n2384
+.gate and2 a=n2372 b=n2376 O=n2385
+.gate and2 a=n2385 b=n2381 O=n2386
+.gate inv1 a=n2386 O=n2387
+.gate and2 a=n2387 b=n2384 O=n2388
+.gate and2 a=n2388 b=n2380 O=n2389
+.gate and2 a=n2389 b=n2349 O=n2390
+.gate inv1 a=n2390 O=n2391
+.gate inv1 a=n2389 O=n2392
+.gate and2 a=n2392 b=n2348 O=n2393
+.gate inv1 a=n2393 O=n2394
+.gate and2 a=n2394 b=n2391 O=n2395
+.gate inv1 a=n2395 O=n2396
+.gate and2 a=n1156 b=n1132 O=n2397
+.gate inv1 a=n2397 O=n2398
+.gate and2 a=n1149 b=n1139 O=n2399
+.gate inv1 a=n2399 O=n2400
+.gate and2 a=n2400 b=n2398 O=n2401
+.gate inv1 a=n2401 O=n2402
+.gate and2 a=n1121 b=n1097 O=n2403
+.gate inv1 a=n2403 O=n2404
+.gate and2 a=n1114 b=n1104 O=n2405
+.gate inv1 a=n2405 O=n2406
+.gate and2 a=n2406 b=n2404 O=n2407
+.gate and2 a=n2407 b=n2402 O=n2408
+.gate inv1 a=n2408 O=n2409
+.gate inv1 a=n2407 O=n2410
+.gate and2 a=n2410 b=n2401 O=n2411
+.gate inv1 a=n2411 O=n2412
+.gate and2 a=n2412 b=n2409 O=n2413
+.gate inv1 a=n2413 O=n2414
+.gate and2 a=n1229 b=n1204 O=n2415
+.gate inv1 a=n2415 O=n2416
+.gate and2 a=n1228 b=n1205 O=n2417
+.gate inv1 a=n2417 O=n2418
+.gate and2 a=n2418 b=n2416 O=n2419
+.gate and2 a=n1186 b=n1168 O=n2420
+.gate inv1 a=n2420 O=n2421
+.gate and2 a=n1185 b=n1175 O=n2422
+.gate inv1 a=n2422 O=n2423
+.gate and2 a=n2423 b=n2421 O=n2424
+.gate and2 a=G82 b=n344 O=n2425
+.gate inv1 a=n2425 O=n2426
+.gate inv1 a=G2208 O=n2427
+.gate and2 a=n2427 b=G18 O=n2428
+.gate inv1 a=n2428 O=n2429
+.gate and2 a=n2429 b=n2426 O=n2430
+.gate inv1 a=n2430 O=n2431
+.gate and2 a=n2431 b=n1243 O=n2432
+.gate inv1 a=n2432 O=n2433
+.gate and2 a=n2430 b=n1244 O=n2434
+.gate inv1 a=n2434 O=n2435
+.gate and2 a=n2435 b=n2433 O=n2436
+.gate inv1 a=n2436 O=n2437
+.gate and2 a=n2437 b=n2424 O=n2438
+.gate and2 a=n2438 b=n2419 O=n2439
+.gate inv1 a=n2439 O=n2440
+.gate inv1 a=n2424 O=n2441
+.gate and2 a=n2436 b=n2441 O=n2442
+.gate and2 a=n2442 b=n2419 O=n2443
+.gate inv1 a=n2443 O=n2444
+.gate and2 a=n2444 b=n2440 O=n2445
+.gate inv1 a=n2419 O=n2446
+.gate and2 a=n2436 b=n2424 O=n2447
+.gate and2 a=n2447 b=n2446 O=n2448
+.gate inv1 a=n2448 O=n2449
+.gate and2 a=n2437 b=n2441 O=n2450
+.gate and2 a=n2450 b=n2446 O=n2451
+.gate inv1 a=n2451 O=n2452
+.gate and2 a=n2452 b=n2449 O=n2453
+.gate and2 a=n2453 b=n2445 O=n2454
+.gate and2 a=n2454 b=n2414 O=n2455
+.gate inv1 a=n2455 O=n2456
+.gate inv1 a=n2454 O=n2457
+.gate and2 a=n2457 b=n2413 O=n2458
+.gate inv1 a=n2458 O=n2459
+.gate and2 a=n2459 b=n2456 O=n2460
+.gate inv1 a=n2460 O=n2461
+.gate and2 a=n2461 b=n2396 O=n2462
+.gate and2 a=n2462 b=n2329 O=n2463
+.gate inv1 a=n2463 O=G414
+.gate inv1 a=G165 O=n2465
+.gate and2 a=n2465 b=G18 O=n2466
+.gate inv1 a=n2466 O=n2467
+.gate and2 a=n2467 b=n380 O=n2468
+.gate inv1 a=G164 O=n2469
+.gate and2 a=n2469 b=G18 O=n2470
+.gate inv1 a=n2470 O=n2471
+.gate and2 a=n2471 b=n380 O=n2472
+.gate inv1 a=n2472 O=n2473
+.gate and2 a=n2473 b=n2468 O=n2474
+.gate inv1 a=n2474 O=n2475
+.gate inv1 a=n2468 O=n2476
+.gate and2 a=n2472 b=n2476 O=n2477
+.gate inv1 a=n2477 O=n2478
+.gate and2 a=n2478 b=n2475 O=n2479
+.gate inv1 a=n2479 O=n2480
+.gate and2 a=n1084 b=n1046 O=n2481
+.gate inv1 a=n2481 O=n2482
+.gate and2 a=n1080 b=n1050 O=n2483
+.gate inv1 a=n2483 O=n2484
+.gate and2 a=n2484 b=n2482 O=n2485
+.gate and2 a=n1063 b=n1020 O=n2486
+.gate inv1 a=n2486 O=n2487
+.gate and2 a=n1067 b=n1016 O=n2488
+.gate inv1 a=n2488 O=n2489
+.gate and2 a=n2489 b=n2487 O=n2490
+.gate inv1 a=G170 O=n2491
+.gate and2 a=n2491 b=G18 O=n2492
+.gate and2 a=n2492 b=n380 O=n2493
+.gate inv1 a=n2493 O=n2494
+.gate and2 a=n2494 b=n2490 O=n2495
+.gate and2 a=n2495 b=n2485 O=n2496
+.gate inv1 a=n2496 O=n2497
+.gate inv1 a=n2490 O=n2498
+.gate and2 a=n2493 b=n2498 O=n2499
+.gate and2 a=n2499 b=n2485 O=n2500
+.gate inv1 a=n2500 O=n2501
+.gate and2 a=n2501 b=n2497 O=n2502
+.gate inv1 a=n2485 O=n2503
+.gate and2 a=n2493 b=n2490 O=n2504
+.gate and2 a=n2504 b=n2503 O=n2505
+.gate inv1 a=n2505 O=n2506
+.gate and2 a=n2494 b=n2498 O=n2507
+.gate and2 a=n2507 b=n2503 O=n2508
+.gate inv1 a=n2508 O=n2509
+.gate and2 a=n2509 b=n2506 O=n2510
+.gate and2 a=n2510 b=n2502 O=n2511
+.gate and2 a=n2511 b=n2480 O=n2512
+.gate inv1 a=n2512 O=n2513
+.gate inv1 a=n2511 O=n2514
+.gate and2 a=n2514 b=n2479 O=n2515
+.gate inv1 a=n2515 O=n2516
+.gate and2 a=n2516 b=n2513 O=n2517
+.gate inv1 a=n2517 O=n2518
+.gate and2 a=n1153 b=n1140 O=n2519
+.gate inv1 a=n2519 O=n2520
+.gate and2 a=n1157 b=n1136 O=n2521
+.gate inv1 a=n2521 O=n2522
+.gate and2 a=n2522 b=n2520 O=n2523
+.gate inv1 a=n2523 O=n2524
+.gate and2 a=n1118 b=n1105 O=n2525
+.gate inv1 a=n2525 O=n2526
+.gate and2 a=n1122 b=n1101 O=n2527
+.gate inv1 a=n2527 O=n2528
+.gate and2 a=n2528 b=n2526 O=n2529
+.gate and2 a=n2529 b=n2524 O=n2530
+.gate inv1 a=n2530 O=n2531
+.gate inv1 a=n2529 O=n2532
+.gate and2 a=n2532 b=n2523 O=n2533
+.gate inv1 a=n2533 O=n2534
+.gate and2 a=n2534 b=n2531 O=n2535
+.gate inv1 a=n2535 O=n2536
+.gate and2 a=n1190 b=n1176 O=n2537
+.gate inv1 a=n2537 O=n2538
+.gate and2 a=n1189 b=n1172 O=n2539
+.gate inv1 a=n2539 O=n2540
+.gate and2 a=n2540 b=n2538 O=n2541
+.gate and2 a=G181 b=G18 O=n2542
+.gate inv1 a=n2542 O=n2543
+.gate and2 a=n2543 b=n2014 O=n2544
+.gate inv1 a=n2544 O=n2545
+.gate and2 a=n2545 b=n1247 O=n2546
+.gate inv1 a=n2546 O=n2547
+.gate and2 a=n2544 b=n1248 O=n2548
+.gate inv1 a=n2548 O=n2549
+.gate and2 a=n2549 b=n2547 O=n2550
+.gate inv1 a=n2550 O=n2551
+.gate and2 a=n1233 b=n1208 O=n2552
+.gate inv1 a=n2552 O=n2553
+.gate and2 a=n1232 b=n1209 O=n2554
+.gate inv1 a=n2554 O=n2555
+.gate and2 a=n2555 b=n2553 O=n2556
+.gate and2 a=n2556 b=n2551 O=n2557
+.gate and2 a=n2557 b=n2541 O=n2558
+.gate inv1 a=n2558 O=n2559
+.gate inv1 a=n2541 O=n2560
+.gate and2 a=n2556 b=n2550 O=n2561
+.gate and2 a=n2561 b=n2560 O=n2562
+.gate inv1 a=n2562 O=n2563
+.gate and2 a=n2563 b=n2559 O=n2564
+.gate inv1 a=n2556 O=n2565
+.gate and2 a=n2565 b=n2550 O=n2566
+.gate and2 a=n2566 b=n2541 O=n2567
+.gate inv1 a=n2567 O=n2568
+.gate and2 a=n2565 b=n2551 O=n2569
+.gate and2 a=n2569 b=n2560 O=n2570
+.gate inv1 a=n2570 O=n2571
+.gate and2 a=n2571 b=n2568 O=n2572
+.gate and2 a=n2572 b=n2564 O=n2573
+.gate and2 a=n2573 b=n2536 O=n2574
+.gate inv1 a=n2574 O=n2575
+.gate inv1 a=n2573 O=n2576
+.gate and2 a=n2576 b=n2535 O=n2577
+.gate inv1 a=n2577 O=n2578
+.gate and2 a=n2578 b=n2575 O=n2579
+.gate inv1 a=n2579 O=n2580
+.gate and2 a=n1610 b=n1593 O=n2581
+.gate inv1 a=n2581 O=n2582
+.gate and2 a=n1609 b=n1594 O=n2583
+.gate inv1 a=n2583 O=n2584
+.gate and2 a=n2584 b=n2582 O=n2585
+.gate inv1 a=n2585 O=n2586
+.gate and2 a=n1577 b=n1560 O=n2587
+.gate inv1 a=n2587 O=n2588
+.gate and2 a=n1576 b=n1561 O=n2589
+.gate inv1 a=n2589 O=n2590
+.gate and2 a=n2590 b=n2588 O=n2591
+.gate and2 a=n2591 b=n2586 O=n2592
+.gate inv1 a=n2592 O=n2593
+.gate inv1 a=n2591 O=n2594
+.gate and2 a=n2594 b=n2585 O=n2595
+.gate inv1 a=n2595 O=n2596
+.gate and2 a=n2596 b=n2593 O=n2597
+.gate inv1 a=n2597 O=n2598
+.gate and2 a=n1542 b=n1525 O=n2599
+.gate inv1 a=n2599 O=n2600
+.gate and2 a=n1541 b=n1526 O=n2601
+.gate inv1 a=n2601 O=n2602
+.gate and2 a=n2602 b=n2600 O=n2603
+.gate and2 a=n1508 b=n1493 O=n2604
+.gate inv1 a=n2604 O=n2605
+.gate and2 a=n1509 b=n1492 O=n2606
+.gate inv1 a=n2606 O=n2607
+.gate and2 a=n2607 b=n2605 O=n2608
+.gate and2 a=G198 b=G18 O=n2609
+.gate inv1 a=n2609 O=n2610
+.gate and2 a=n2610 b=n2085 O=n2611
+.gate and2 a=G208 b=G18 O=n2612
+.gate inv1 a=n2612 O=n2613
+.gate and2 a=n2613 b=n2090 O=n2614
+.gate inv1 a=n2614 O=n2615
+.gate and2 a=n2615 b=n2611 O=n2616
+.gate inv1 a=n2616 O=n2617
+.gate inv1 a=n2611 O=n2618
+.gate and2 a=n2614 b=n2618 O=n2619
+.gate inv1 a=n2619 O=n2620
+.gate and2 a=n2620 b=n2617 O=n2621
+.gate inv1 a=n2621 O=n2622
+.gate and2 a=n2622 b=n2608 O=n2623
+.gate and2 a=n2623 b=n2603 O=n2624
+.gate inv1 a=n2624 O=n2625
+.gate inv1 a=n2608 O=n2626
+.gate and2 a=n2621 b=n2626 O=n2627
+.gate and2 a=n2627 b=n2603 O=n2628
+.gate inv1 a=n2628 O=n2629
+.gate and2 a=n2629 b=n2625 O=n2630
+.gate inv1 a=n2603 O=n2631
+.gate and2 a=n2621 b=n2608 O=n2632
+.gate and2 a=n2632 b=n2631 O=n2633
+.gate inv1 a=n2633 O=n2634
+.gate and2 a=n2622 b=n2626 O=n2635
+.gate and2 a=n2635 b=n2631 O=n2636
+.gate inv1 a=n2636 O=n2637
+.gate and2 a=n2637 b=n2634 O=n2638
+.gate and2 a=n2638 b=n2630 O=n2639
+.gate and2 a=n2639 b=n2598 O=n2640
+.gate inv1 a=n2640 O=n2641
+.gate inv1 a=n2639 O=n2642
+.gate and2 a=n2642 b=n2597 O=n2643
+.gate inv1 a=n2643 O=n2644
+.gate and2 a=n2644 b=n2641 O=n2645
+.gate inv1 a=n2645 O=n2646
+.gate and2 a=n1368 b=n1351 O=n2647
+.gate inv1 a=n2647 O=n2648
+.gate and2 a=n1367 b=n1352 O=n2649
+.gate inv1 a=n2649 O=n2650
+.gate and2 a=n2650 b=n2648 O=n2651
+.gate inv1 a=n2651 O=n2652
+.gate and2 a=n1335 b=n1318 O=n2653
+.gate inv1 a=n2653 O=n2654
+.gate and2 a=n1334 b=n1319 O=n2655
+.gate inv1 a=n2655 O=n2656
+.gate and2 a=n2656 b=n2654 O=n2657
+.gate and2 a=n2657 b=n2652 O=n2658
+.gate inv1 a=n2658 O=n2659
+.gate inv1 a=n2657 O=n2660
+.gate and2 a=n2660 b=n2651 O=n2661
+.gate inv1 a=n2661 O=n2662
+.gate and2 a=n2662 b=n2659 O=n2663
+.gate inv1 a=n2663 O=n2664
+.gate and2 a=n1451 b=n1434 O=n2665
+.gate inv1 a=n2665 O=n2666
+.gate and2 a=n1450 b=n1435 O=n2667
+.gate inv1 a=n2667 O=n2668
+.gate and2 a=n2668 b=n2666 O=n2669
+.gate and2 a=n1402 b=n1385 O=n2670
+.gate inv1 a=n2670 O=n2671
+.gate and2 a=n1401 b=n1386 O=n2672
+.gate inv1 a=n2672 O=n2673
+.gate and2 a=n2673 b=n2671 O=n2674
+.gate and2 a=G197 b=G18 O=n2675
+.gate inv1 a=n2675 O=n2676
+.gate and2 a=n2676 b=n2155 O=n2677
+.gate inv1 a=n2677 O=n2678
+.gate and2 a=n2678 b=n1418 O=n2679
+.gate inv1 a=n2679 O=n2680
+.gate and2 a=n2677 b=n1419 O=n2681
+.gate inv1 a=n2681 O=n2682
+.gate and2 a=n2682 b=n2680 O=n2683
+.gate inv1 a=n2683 O=n2684
+.gate and2 a=n2684 b=n2674 O=n2685
+.gate and2 a=n2685 b=n2669 O=n2686
+.gate inv1 a=n2686 O=n2687
+.gate inv1 a=n2674 O=n2688
+.gate and2 a=n2683 b=n2688 O=n2689
+.gate and2 a=n2689 b=n2669 O=n2690
+.gate inv1 a=n2690 O=n2691
+.gate and2 a=n2691 b=n2687 O=n2692
+.gate inv1 a=n2669 O=n2693
+.gate and2 a=n2683 b=n2674 O=n2694
+.gate and2 a=n2694 b=n2693 O=n2695
+.gate inv1 a=n2695 O=n2696
+.gate and2 a=n2684 b=n2688 O=n2697
+.gate and2 a=n2697 b=n2693 O=n2698
+.gate inv1 a=n2698 O=n2699
+.gate and2 a=n2699 b=n2696 O=n2700
+.gate and2 a=n2700 b=n2692 O=n2701
+.gate and2 a=n2701 b=n2664 O=n2702
+.gate inv1 a=n2702 O=n2703
+.gate inv1 a=n2701 O=n2704
+.gate and2 a=n2704 b=n2663 O=n2705
+.gate inv1 a=n2705 O=n2706
+.gate and2 a=n2706 b=n2703 O=n2707
+.gate inv1 a=n2707 O=n2708
+.gate and2 a=n2708 b=n2646 O=n2709
+.gate and2 a=n2709 b=n2580 O=n2710
+.gate and2 a=n2710 b=n2518 O=n2711
+.gate inv1 a=n2711 O=G416
+.gate inv1 a=n1007 O=n2713
+.gate and2 a=n1631 b=n2713 O=n2714
+.gate inv1 a=n2714 O=n2715
+.gate inv1 a=n1729 O=n2716
+.gate inv1 a=n1681 O=n2717
+.gate inv1 a=n1623 O=n2718
+.gate and2 a=n2718 b=n1283 O=n2719
+.gate and2 a=n2719 b=n2717 O=n2720
+.gate and2 a=n2720 b=n2716 O=n2721
+.gate inv1 a=n2721 O=n2722
+.gate and2 a=n2722 b=n1091 O=n2723
+.gate inv1 a=n2723 O=n2724
+.gate and2 a=n2724 b=n1307 O=n2725
+.gate inv1 a=n2725 O=n2726
+.gate and2 a=n2726 b=n2715 O=n2727
+.gate inv1 a=n2727 O=n2728
+.gate inv1 a=n1631 O=n2729
+.gate and2 a=n2725 b=n2729 O=n2730
+.gate inv1 a=n2730 O=n2731
+.gate and2 a=n2731 b=n2728 O=n2732
+.gate inv1 a=n2732 O=G249
+.gate inv1 a=n844 O=n2734
+.gate inv1 a=n947 O=n2735
+.gate and2 a=n2735 b=n891 O=n2736
+.gate and2 a=n2736 b=n2734 O=n2737
+.gate and2 a=n2737 b=n561 O=n2738
+.gate inv1 a=n2738 O=n2739
+.gate inv1 a=n2737 O=n2740
+.gate and2 a=n2740 b=n560 O=n2741
+.gate inv1 a=n2741 O=n2742
+.gate and2 a=n2742 b=n2739 O=n2743
+.gate inv1 a=n2743 O=G295
+.gate inv1 a=n845 O=n2745
+.gate inv1 a=n893 O=n2746
+.gate inv1 a=n948 O=n2747
+.gate and2 a=n2747 b=n939 O=n2748
+.gate and2 a=n2748 b=n2746 O=n2749
+.gate and2 a=n2749 b=n2745 O=n2750
+.gate and2 a=n2750 b=n417 O=n2751
+.gate inv1 a=n2751 O=n2752
+.gate inv1 a=n2750 O=n2753
+.gate and2 a=n2753 b=n416 O=n2754
+.gate inv1 a=n2754 O=n2755
+.gate and2 a=n2755 b=n2752 O=n2756
+.gate inv1 a=n2756 O=G324
+.gate inv1 a=n1377 O=n2758
+.gate and2 a=n1700 b=n2758 O=n2759
+.gate inv1 a=n2759 O=n2760
+.gate inv1 a=n1619 O=n2761
+.gate and2 a=n1651 b=n2761 O=n2762
+.gate inv1 a=n2762 O=n2763
+.gate and2 a=n1552 b=G89 O=n2764
+.gate inv1 a=n2764 O=n2765
+.gate and2 a=n2765 b=n1674 O=n2766
+.gate inv1 a=n2766 O=n2767
+.gate and2 a=n2767 b=n2763 O=n2768
+.gate inv1 a=n2768 O=n2769
+.gate inv1 a=n1651 O=n2770
+.gate and2 a=n2766 b=n2770 O=n2771
+.gate inv1 a=n2771 O=n2772
+.gate and2 a=n2772 b=n2769 O=n2773
+.gate inv1 a=n2773 O=n2774
+.gate and2 a=n2774 b=n1461 O=n2775
+.gate inv1 a=n2775 O=n2776
+.gate and2 a=n2776 b=n1723 O=n2777
+.gate inv1 a=n2777 O=n2778
+.gate and2 a=n2778 b=n2760 O=n2779
+.gate inv1 a=n2779 O=n2780
+.gate inv1 a=n1700 O=n2781
+.gate and2 a=n2777 b=n2781 O=n2782
+.gate inv1 a=n2782 O=n2783
+.gate and2 a=n2783 b=n2780 O=n2784
+.gate inv1 a=n2784 O=G252
+.gate inv1 a=n378 O=n2786
+.gate and2 a=n956 b=n2786 O=n2787
+.gate inv1 a=n2787 O=n2788
+.gate inv1 a=n1763 O=n2789
+.gate inv1 a=n1770 O=n2790
+.gate inv1 a=n1785 O=n2791
+.gate and2 a=n2791 b=n1775 O=n2792
+.gate and2 a=n2792 b=n2790 O=n2793
+.gate and2 a=n2793 b=n2789 O=n2794
+.gate inv1 a=n2794 O=n2795
+.gate and2 a=n2795 b=n1738 O=n2796
+.gate inv1 a=n2796 O=n2797
+.gate and2 a=n2797 b=n979 O=n2798
+.gate inv1 a=n2798 O=n2799
+.gate and2 a=n2799 b=n2788 O=n2800
+.gate inv1 a=n2800 O=n2801
+.gate inv1 a=n956 O=n2802
+.gate and2 a=n2798 b=n2802 O=n2803
+.gate inv1 a=n2803 O=n2804
+.gate and2 a=n2804 b=n2801 O=n2805
+.gate inv1 a=n2805 O=G276
+.gate and2 a=n2740 b=n561 O=n2807
+.gate and2 a=n2807 b=n535 O=n2808
+.gate and2 a=n2808 b=n548 O=n2809
+.gate inv1 a=n2809 O=n2810
+.gate and2 a=n929 b=n535 O=n2811
+.gate and2 a=n2811 b=n548 O=n2812
+.gate inv1 a=n2812 O=n2813
+.gate inv1 a=n926 O=n2814
+.gate inv1 a=n913 O=n2815
+.gate inv1 a=n917 O=n2816
+.gate and2 a=n2816 b=n2815 O=n2817
+.gate and2 a=n2817 b=n2814 O=n2818
+.gate and2 a=n2818 b=n2813 O=n2819
+.gate and2 a=n2819 b=n2810 O=n2820
+.gate and2 a=n2820 b=n508 O=n2821
+.gate inv1 a=n2821 O=n2822
+.gate inv1 a=n2820 O=n2823
+.gate and2 a=n2823 b=n507 O=n2824
+.gate inv1 a=n2824 O=n2825
+.gate and2 a=n2825 b=n2822 O=n2826
+.gate inv1 a=n2826 O=G310
+.gate inv1 a=n2808 O=n2828
+.gate inv1 a=n2811 O=n2829
+.gate inv1 a=n916 O=n2830
+.gate inv1 a=n925 O=n2831
+.gate and2 a=n2831 b=n2830 O=n2832
+.gate and2 a=n2832 b=n2829 O=n2833
+.gate and2 a=n2833 b=n2828 O=n2834
+.gate and2 a=n2834 b=n548 O=n2835
+.gate inv1 a=n2835 O=n2836
+.gate inv1 a=n2834 O=n2837
+.gate and2 a=n2837 b=n547 O=n2838
+.gate inv1 a=n2838 O=n2839
+.gate and2 a=n2839 b=n2836 O=n2840
+.gate inv1 a=n2840 O=G313
+.gate and2 a=n2807 b=n521 O=n2842
+.gate inv1 a=n2842 O=n2843
+.gate inv1 a=n924 O=n2844
+.gate and2 a=n929 b=n521 O=n2845
+.gate inv1 a=n2845 O=n2846
+.gate and2 a=n2846 b=n2844 O=n2847
+.gate and2 a=n2847 b=n2843 O=n2848
+.gate and2 a=n2848 b=n534 O=n2849
+.gate inv1 a=n2849 O=n2850
+.gate inv1 a=n2848 O=n2851
+.gate and2 a=n2851 b=n533 O=n2852
+.gate inv1 a=n2852 O=n2853
+.gate and2 a=n2853 b=n2850 O=n2854
+.gate inv1 a=n2854 O=G316
+.gate inv1 a=n929 O=n2856
+.gate inv1 a=n2807 O=n2857
+.gate and2 a=n2857 b=n2856 O=n2858
+.gate and2 a=n2858 b=n521 O=n2859
+.gate inv1 a=n2859 O=n2860
+.gate inv1 a=n2858 O=n2861
+.gate and2 a=n2861 b=n520 O=n2862
+.gate inv1 a=n2862 O=n2863
+.gate and2 a=n2863 b=n2860 O=n2864
+.gate inv1 a=n2864 O=G319
+.gate and2 a=n2753 b=n417 O=n2866
+.gate and2 a=n2866 b=n957 O=n2867
+.gate and2 a=n2867 b=n441 O=n2868
+.gate inv1 a=n2868 O=n2869
+.gate and2 a=n958 b=n957 O=n2870
+.gate and2 a=n2870 b=n441 O=n2871
+.gate inv1 a=n2871 O=n2872
+.gate and2 a=n967 b=n429 O=n2873
+.gate and2 a=n2873 b=n441 O=n2874
+.gate inv1 a=n2874 O=n2875
+.gate inv1 a=n973 O=n2876
+.gate and2 a=n963 b=n441 O=n2877
+.gate inv1 a=n2877 O=n2878
+.gate and2 a=n2878 b=n2876 O=n2879
+.gate and2 a=n2879 b=n2875 O=n2880
+.gate and2 a=n2880 b=n2872 O=n2881
+.gate and2 a=n2881 b=n2869 O=n2882
+.gate and2 a=n2882 b=n404 O=n2883
+.gate inv1 a=n2883 O=n2884
+.gate inv1 a=n2882 O=n2885
+.gate and2 a=n2885 b=n403 O=n2886
+.gate inv1 a=n2886 O=n2887
+.gate and2 a=n2887 b=n2884 O=n2888
+.gate inv1 a=n2888 O=G327
+.gate inv1 a=n2867 O=n2890
+.gate inv1 a=n2870 O=n2891
+.gate inv1 a=n963 O=n2892
+.gate inv1 a=n2873 O=n2893
+.gate and2 a=n2893 b=n2892 O=n2894
+.gate and2 a=n2894 b=n2891 O=n2895
+.gate and2 a=n2895 b=n2890 O=n2896
+.gate and2 a=n2896 b=n441 O=n2897
+.gate inv1 a=n2897 O=n2898
+.gate inv1 a=n2896 O=n2899
+.gate and2 a=n2899 b=n440 O=n2900
+.gate inv1 a=n2900 O=n2901
+.gate and2 a=n2901 b=n2898 O=n2902
+.gate inv1 a=n2902 O=G330
+.gate and2 a=n2866 b=n392 O=n2904
+.gate inv1 a=n2904 O=n2905
+.gate inv1 a=n967 O=n2906
+.gate and2 a=n958 b=n392 O=n2907
+.gate inv1 a=n2907 O=n2908
+.gate and2 a=n2908 b=n2906 O=n2909
+.gate and2 a=n2909 b=n2905 O=n2910
+.gate and2 a=n2910 b=n429 O=n2911
+.gate inv1 a=n2911 O=n2912
+.gate inv1 a=n2910 O=n2913
+.gate and2 a=n2913 b=n428 O=n2914
+.gate inv1 a=n2914 O=n2915
+.gate and2 a=n2915 b=n2912 O=n2916
+.gate inv1 a=n2916 O=G333
+.gate inv1 a=n958 O=n2918
+.gate inv1 a=n2866 O=n2919
+.gate and2 a=n2919 b=n2918 O=n2920
+.gate and2 a=n2920 b=n392 O=n2921
+.gate inv1 a=n2921 O=n2922
+.gate inv1 a=n2920 O=n2923
+.gate and2 a=n2923 b=n391 O=n2924
+.gate inv1 a=n2924 O=n2925
+.gate and2 a=n2925 b=n2922 O=n2926
+.gate inv1 a=n2926 O=G336
+.gate and2 a=n327 b=n323 O=n2928
+.gate and2 a=n335 b=n331 O=n2929
+.gate and2 a=n2929 b=n2928 O=n2930
+.gate and2 a=n2930 b=n2463 O=n2931
+.gate and2 a=n2931 b=n2190 O=n2932
+.gate and2 a=n2932 b=n2711 O=n2933
+.gate inv1 a=n2933 O=G418
+.gate and2 a=n2753 b=n444 O=n2935
+.gate inv1 a=n2935 O=n2936
+.gate and2 a=n2936 b=n979 O=n2937
+.gate and2 a=n2937 b=n2802 O=n2938
+.gate inv1 a=n2938 O=n2939
+.gate inv1 a=n2937 O=n2940
+.gate and2 a=n2940 b=n2788 O=n2941
+.gate inv1 a=n2941 O=n2942
+.gate and2 a=n2942 b=n2939 O=n2943
+.gate inv1 a=n2943 O=G273
+.gate and2 a=n2740 b=n564 O=n2945
+.gate inv1 a=n2945 O=n2946
+.gate and2 a=n2946 b=n935 O=n2947
+.gate and2 a=n896 b=n469 O=n2948
+.gate and2 a=n2948 b=n482 O=n2949
+.gate inv1 a=n2949 O=n2950
+.gate inv1 a=n907 O=n2951
+.gate and2 a=n901 b=n482 O=n2952
+.gate inv1 a=n2952 O=n2953
+.gate and2 a=n2953 b=n2951 O=n2954
+.gate and2 a=n2954 b=n2950 O=n2955
+.gate inv1 a=n2955 O=n2956
+.gate and2 a=n2956 b=n457 O=n2957
+.gate inv1 a=n2957 O=n2958
+.gate and2 a=n2955 b=n456 O=n2959
+.gate inv1 a=n2959 O=n2960
+.gate and2 a=n2960 b=n2958 O=n2961
+.gate and2 a=n2961 b=n2947 O=n2962
+.gate inv1 a=n2962 O=n2963
+.gate inv1 a=n2947 O=n2964
+.gate inv1 a=n1741 O=n2965
+.gate and2 a=n2950 b=n2965 O=n2966
+.gate and2 a=n2966 b=n2954 O=n2967
+.gate and2 a=n2967 b=n457 O=n2968
+.gate inv1 a=n2968 O=n2969
+.gate inv1 a=n2967 O=n2970
+.gate and2 a=n2970 b=n456 O=n2971
+.gate inv1 a=n2971 O=n2972
+.gate and2 a=n2972 b=n2969 O=n2973
+.gate inv1 a=n2973 O=n2974
+.gate and2 a=n2974 b=n2964 O=n2975
+.gate inv1 a=n2975 O=n2976
+.gate and2 a=n2976 b=n2963 O=n2977
+.gate inv1 a=n2977 O=G298
+.gate inv1 a=n901 O=n2979
+.gate inv1 a=n2948 O=n2980
+.gate and2 a=n2980 b=n2979 O=n2981
+.gate inv1 a=n2981 O=n2982
+.gate and2 a=n2982 b=n482 O=n2983
+.gate inv1 a=n2983 O=n2984
+.gate and2 a=n2981 b=n481 O=n2985
+.gate inv1 a=n2985 O=n2986
+.gate and2 a=n2986 b=n2984 O=n2987
+.gate and2 a=n2987 b=n2947 O=n2988
+.gate inv1 a=n2988 O=n2989
+.gate inv1 a=n1740 O=n2990
+.gate and2 a=n2981 b=n2990 O=n2991
+.gate and2 a=n2991 b=n482 O=n2992
+.gate inv1 a=n2992 O=n2993
+.gate inv1 a=n2991 O=n2994
+.gate and2 a=n2994 b=n481 O=n2995
+.gate inv1 a=n2995 O=n2996
+.gate and2 a=n2996 b=n2993 O=n2997
+.gate inv1 a=n2997 O=n2998
+.gate and2 a=n2998 b=n2964 O=n2999
+.gate inv1 a=n2999 O=n3000
+.gate and2 a=n3000 b=n2989 O=n3001
+.gate inv1 a=n3001 O=G301
+.gate inv1 a=n896 O=n3003
+.gate and2 a=n3003 b=n469 O=n3004
+.gate inv1 a=n3004 O=n3005
+.gate and2 a=n896 b=n468 O=n3006
+.gate inv1 a=n3006 O=n3007
+.gate and2 a=n3007 b=n3005 O=n3008
+.gate inv1 a=n3008 O=n3009
+.gate and2 a=n3009 b=n2947 O=n3010
+.gate inv1 a=n3010 O=n3011
+.gate and2 a=n490 b=G2239 O=n3012
+.gate inv1 a=n3012 O=n3013
+.gate and2 a=n3013 b=n469 O=n3014
+.gate inv1 a=n3014 O=n3015
+.gate and2 a=n3012 b=n468 O=n3016
+.gate inv1 a=n3016 O=n3017
+.gate and2 a=n3017 b=n3015 O=n3018
+.gate and2 a=n3018 b=n2964 O=n3019
+.gate inv1 a=n3019 O=n3020
+.gate and2 a=n3020 b=n3011 O=n3021
+.gate inv1 a=n3021 O=G304
+.gate and2 a=n2947 b=n494 O=n3023
+.gate inv1 a=n3023 O=n3024
+.gate and2 a=n2964 b=n493 O=n3025
+.gate inv1 a=n3025 O=n3026
+.gate and2 a=n3026 b=n3024 O=n3027
+.gate inv1 a=n3027 O=G307
+.gate inv1 a=n628 O=n3029
+.gate and2 a=n1856 b=n3029 O=n3030
+.gate inv1 a=n3030 O=n3031
+.gate inv1 a=n714 O=n3032
+.gate and2 a=n3032 b=n628 O=n3033
+.gate inv1 a=n3033 O=n3034
+.gate and2 a=n3034 b=n1873 O=n3035
+.gate inv1 a=n3035 O=n3036
+.gate and2 a=n3036 b=n3031 O=n3037
+.gate and2 a=n3037 b=n813 O=n3038
+.gate inv1 a=n3038 O=n3039
+.gate inv1 a=n3037 O=n3040
+.gate and2 a=n3040 b=n812 O=n3041
+.gate inv1 a=n3041 O=n3042
+.gate and2 a=n3042 b=n3039 O=n3043
+.gate inv1 a=n3043 O=G344
+.gate inv1 a=n953 O=n3045
+.gate and2 a=n3045 b=n369 O=n3046
+.gate inv1 a=n3046 O=n3047
+.gate and2 a=n953 b=n368 O=n3048
+.gate inv1 a=n3048 O=n3049
+.gate and2 a=n3049 b=n3047 O=n3050
+.gate inv1 a=n3050 O=n3051
+.gate and2 a=n3051 b=n2937 O=n3052
+.gate inv1 a=n3052 O=n3053
+.gate and2 a=n370 b=n364 O=n3054
+.gate inv1 a=n3054 O=n3055
+.gate and2 a=n3055 b=n369 O=n3056
+.gate inv1 a=n3056 O=n3057
+.gate and2 a=n3054 b=n368 O=n3058
+.gate inv1 a=n3058 O=n3059
+.gate and2 a=n3059 b=n3057 O=n3060
+.gate and2 a=n3060 b=n2940 O=n3061
+.gate inv1 a=n3061 O=n3062
+.gate and2 a=n3062 b=n3053 O=n3063
+.gate inv1 a=n3063 O=G422
+.gate and2 a=n2937 b=n377 O=n3065
+.gate inv1 a=n3065 O=n3066
+.gate and2 a=n2940 b=n376 O=n3067
+.gate inv1 a=n3067 O=n3068
+.gate and2 a=n3068 b=n3066 O=n3069
+.gate inv1 a=n3069 O=G419
+.gate and2 a=n3040 b=n813 O=n3071
+.gate and2 a=n3071 b=n865 O=n3072
+.gate and2 a=n3072 b=n839 O=n3073
+.gate inv1 a=n3073 O=n3074
+.gate and2 a=n866 b=n865 O=n3075
+.gate and2 a=n3075 b=n839 O=n3076
+.gate inv1 a=n3076 O=n3077
+.gate and2 a=n875 b=n826 O=n3078
+.gate and2 a=n3078 b=n839 O=n3079
+.gate inv1 a=n3079 O=n3080
+.gate inv1 a=n881 O=n3081
+.gate and2 a=n871 b=n839 O=n3082
+.gate inv1 a=n3082 O=n3083
+.gate and2 a=n3083 b=n3081 O=n3084
+.gate and2 a=n3084 b=n3080 O=n3085
+.gate and2 a=n3085 b=n3077 O=n3086
+.gate and2 a=n3086 b=n3074 O=n3087
+.gate and2 a=n3087 b=n799 O=n3088
+.gate inv1 a=n3088 O=n3089
+.gate inv1 a=n3087 O=n3090
+.gate and2 a=n3090 b=n798 O=n3091
+.gate inv1 a=n3091 O=n3092
+.gate and2 a=n3092 b=n3089 O=n3093
+.gate inv1 a=n3093 O=G359
+.gate inv1 a=n3072 O=n3095
+.gate inv1 a=n3075 O=n3096
+.gate inv1 a=n871 O=n3097
+.gate inv1 a=n3078 O=n3098
+.gate and2 a=n3098 b=n3097 O=n3099
+.gate and2 a=n3099 b=n3096 O=n3100
+.gate and2 a=n3100 b=n3095 O=n3101
+.gate and2 a=n3101 b=n839 O=n3102
+.gate inv1 a=n3102 O=n3103
+.gate inv1 a=n3101 O=n3104
+.gate and2 a=n3104 b=n838 O=n3105
+.gate inv1 a=n3105 O=n3106
+.gate and2 a=n3106 b=n3103 O=n3107
+.gate inv1 a=n3107 O=G362
+.gate and2 a=n3071 b=n786 O=n3109
+.gate inv1 a=n3109 O=n3110
+.gate inv1 a=n875 O=n3111
+.gate and2 a=n866 b=n786 O=n3112
+.gate inv1 a=n3112 O=n3113
+.gate and2 a=n3113 b=n3111 O=n3114
+.gate and2 a=n3114 b=n3110 O=n3115
+.gate and2 a=n3115 b=n826 O=n3116
+.gate inv1 a=n3116 O=n3117
+.gate inv1 a=n3115 O=n3118
+.gate and2 a=n3118 b=n825 O=n3119
+.gate inv1 a=n3119 O=n3120
+.gate and2 a=n3120 b=n3117 O=n3121
+.gate inv1 a=n3121 O=G365
+.gate inv1 a=n866 O=n3123
+.gate inv1 a=n3071 O=n3124
+.gate and2 a=n3124 b=n3123 O=n3125
+.gate and2 a=n3125 b=n786 O=n3126
+.gate inv1 a=n3126 O=n3127
+.gate inv1 a=n3125 O=n3128
+.gate and2 a=n3128 b=n785 O=n3129
+.gate inv1 a=n3129 O=n3130
+.gate and2 a=n3130 b=n3127 O=n3131
+.gate inv1 a=n3131 O=G368
+.gate and2 a=n3040 b=n842 O=n3133
+.gate inv1 a=n3133 O=n3134
+.gate and2 a=n3134 b=n887 O=n3135
+.gate and2 a=n848 b=n744 O=n3136
+.gate and2 a=n3136 b=n758 O=n3137
+.gate inv1 a=n3137 O=n3138
+.gate inv1 a=n859 O=n3139
+.gate and2 a=n853 b=n758 O=n3140
+.gate inv1 a=n3140 O=n3141
+.gate and2 a=n3141 b=n3139 O=n3142
+.gate and2 a=n3142 b=n3138 O=n3143
+.gate inv1 a=n3143 O=n3144
+.gate and2 a=n3144 b=n731 O=n3145
+.gate inv1 a=n3145 O=n3146
+.gate and2 a=n3143 b=n730 O=n3147
+.gate inv1 a=n3147 O=n3148
+.gate and2 a=n3148 b=n3146 O=n3149
+.gate and2 a=n3149 b=n3135 O=n3150
+.gate inv1 a=n3150 O=n3151
+.gate inv1 a=n3135 O=n3152
+.gate inv1 a=n1755 O=n3153
+.gate and2 a=n3138 b=n3153 O=n3154
+.gate and2 a=n3154 b=n3142 O=n3155
+.gate and2 a=n3155 b=n731 O=n3156
+.gate inv1 a=n3156 O=n3157
+.gate inv1 a=n3155 O=n3158
+.gate and2 a=n3158 b=n730 O=n3159
+.gate inv1 a=n3159 O=n3160
+.gate and2 a=n3160 b=n3157 O=n3161
+.gate inv1 a=n3161 O=n3162
+.gate and2 a=n3162 b=n3152 O=n3163
+.gate inv1 a=n3163 O=n3164
+.gate and2 a=n3164 b=n3151 O=n3165
+.gate inv1 a=n3165 O=G347
+.gate inv1 a=n853 O=n3167
+.gate inv1 a=n3136 O=n3168
+.gate and2 a=n3168 b=n3167 O=n3169
+.gate inv1 a=n3169 O=n3170
+.gate and2 a=n3170 b=n758 O=n3171
+.gate inv1 a=n3171 O=n3172
+.gate and2 a=n3169 b=n757 O=n3173
+.gate inv1 a=n3173 O=n3174
+.gate and2 a=n3174 b=n3172 O=n3175
+.gate and2 a=n3175 b=n3135 O=n3176
+.gate inv1 a=n3176 O=n3177
+.gate inv1 a=n1754 O=n3178
+.gate and2 a=n3169 b=n3178 O=n3179
+.gate and2 a=n3179 b=n758 O=n3180
+.gate inv1 a=n3180 O=n3181
+.gate inv1 a=n3179 O=n3182
+.gate and2 a=n3182 b=n757 O=n3183
+.gate inv1 a=n3183 O=n3184
+.gate and2 a=n3184 b=n3181 O=n3185
+.gate inv1 a=n3185 O=n3186
+.gate and2 a=n3186 b=n3152 O=n3187
+.gate inv1 a=n3187 O=n3188
+.gate and2 a=n3188 b=n3177 O=n3189
+.gate inv1 a=n3189 O=G350
+.gate inv1 a=n848 O=n3191
+.gate and2 a=n3191 b=n744 O=n3192
+.gate inv1 a=n3192 O=n3193
+.gate and2 a=n848 b=n743 O=n3194
+.gate inv1 a=n3194 O=n3195
+.gate and2 a=n3195 b=n3193 O=n3196
+.gate inv1 a=n3196 O=n3197
+.gate and2 a=n3197 b=n3135 O=n3198
+.gate inv1 a=n3198 O=n3199
+.gate and2 a=n763 b=G4420 O=n3200
+.gate inv1 a=n3200 O=n3201
+.gate and2 a=n3201 b=n744 O=n3202
+.gate inv1 a=n3202 O=n3203
+.gate and2 a=n3200 b=n743 O=n3204
+.gate inv1 a=n3204 O=n3205
+.gate and2 a=n3205 b=n3203 O=n3206
+.gate and2 a=n3206 b=n3152 O=n3207
+.gate inv1 a=n3207 O=n3208
+.gate and2 a=n3208 b=n3199 O=n3209
+.gate inv1 a=n3209 O=G353
+.gate and2 a=n3135 b=n771 O=n3211
+.gate inv1 a=n3211 O=n3212
+.gate and2 a=n3152 b=n770 O=n3213
+.gate inv1 a=n3213 O=n3214
+.gate and2 a=n3214 b=n3212 O=n3215
+.gate inv1 a=n3215 O=G356
+.gate and2 a=n2833 b=n2856 O=n3217
+.gate inv1 a=n3217 O=n3218
+.gate inv1 a=n2833 O=n3219
+.gate and2 a=n3219 b=n929 O=n3220
+.gate inv1 a=n3220 O=n3221
+.gate and2 a=n3221 b=n3218 O=n3222
+.gate and2 a=n3222 b=n2847 O=n3223
+.gate inv1 a=n3223 O=n3224
+.gate inv1 a=n2847 O=n3225
+.gate inv1 a=n3222 O=n3226
+.gate and2 a=n3226 b=n3225 O=n3227
+.gate inv1 a=n3227 O=n3228
+.gate and2 a=n3228 b=n3224 O=n3229
+.gate and2 a=n3229 b=n2819 O=n3230
+.gate inv1 a=n3230 O=n3231
+.gate inv1 a=n2819 O=n3232
+.gate inv1 a=n3229 O=n3233
+.gate and2 a=n3233 b=n3232 O=n3234
+.gate inv1 a=n3234 O=n3235
+.gate and2 a=n3235 b=n3231 O=n3236
+.gate and2 a=n3236 b=n561 O=n3237
+.gate inv1 a=n3237 O=n3238
+.gate inv1 a=n3236 O=n3239
+.gate and2 a=n3239 b=n560 O=n3240
+.gate inv1 a=n3240 O=n3241
+.gate and2 a=n3241 b=n3238 O=n3242
+.gate and2 a=n3242 b=n521 O=n3243
+.gate inv1 a=n3243 O=n3244
+.gate inv1 a=n3242 O=n3245
+.gate and2 a=n3245 b=n520 O=n3246
+.gate inv1 a=n3246 O=n3247
+.gate and2 a=n3247 b=n3244 O=n3248
+.gate and2 a=n3248 b=n508 O=n3249
+.gate inv1 a=n3249 O=n3250
+.gate inv1 a=n3248 O=n3251
+.gate and2 a=n3251 b=n507 O=n3252
+.gate inv1 a=n3252 O=n3253
+.gate and2 a=n3253 b=n3250 O=n3254
+.gate and2 a=n3254 b=n534 O=n3255
+.gate inv1 a=n3255 O=n3256
+.gate inv1 a=n3254 O=n3257
+.gate and2 a=n3257 b=n533 O=n3258
+.gate inv1 a=n3258 O=n3259
+.gate and2 a=n3259 b=n3256 O=n3260
+.gate inv1 a=n3260 O=n3261
+.gate and2 a=n3261 b=n547 O=n3262
+.gate inv1 a=n3262 O=n3263
+.gate and2 a=n3260 b=n548 O=n3264
+.gate inv1 a=n3264 O=n3265
+.gate inv1 a=n1762 O=n3266
+.gate inv1 a=n1784 O=n3267
+.gate and2 a=n3267 b=n1768 O=n3268
+.gate and2 a=n3268 b=n3266 O=n3269
+.gate and2 a=n3269 b=n3265 O=n3270
+.gate and2 a=n3270 b=n3263 O=n3271
+.gate inv1 a=n3271 O=n3272
+.gate inv1 a=n3269 O=n3273
+.gate and2 a=n561 b=n534 O=n3274
+.gate and2 a=n548 b=n521 O=n3275
+.gate and2 a=n3275 b=n3274 O=n3276
+.gate inv1 a=n3276 O=n3277
+.gate and2 a=n3277 b=n2813 O=n3278
+.gate and2 a=n3278 b=n2818 O=n3279
+.gate inv1 a=n3279 O=n3280
+.gate inv1 a=n1743 O=n3281
+.gate and2 a=n2847 b=n3281 O=n3282
+.gate inv1 a=n3282 O=n3283
+.gate and2 a=n3274 b=n521 O=n3284
+.gate inv1 a=n3284 O=n3285
+.gate and2 a=n3285 b=n2833 O=n3286
+.gate inv1 a=n3286 O=n3287
+.gate and2 a=n553 b=G2211 O=n3288
+.gate inv1 a=n3288 O=n3289
+.gate and2 a=n3289 b=n3287 O=n3290
+.gate inv1 a=n3290 O=n3291
+.gate and2 a=n3288 b=n3286 O=n3292
+.gate inv1 a=n3292 O=n3293
+.gate and2 a=n3293 b=n3291 O=n3294
+.gate and2 a=n3294 b=n3283 O=n3295
+.gate inv1 a=n3295 O=n3296
+.gate inv1 a=n3294 O=n3297
+.gate and2 a=n3297 b=n3282 O=n3298
+.gate inv1 a=n3298 O=n3299
+.gate and2 a=n3299 b=n3296 O=n3300
+.gate and2 a=n3300 b=n3280 O=n3301
+.gate inv1 a=n3301 O=n3302
+.gate inv1 a=n3300 O=n3303
+.gate and2 a=n3303 b=n3279 O=n3304
+.gate inv1 a=n3304 O=n3305
+.gate and2 a=n3305 b=n3302 O=n3306
+.gate and2 a=n3306 b=n561 O=n3307
+.gate inv1 a=n3307 O=n3308
+.gate inv1 a=n3306 O=n3309
+.gate and2 a=n3309 b=n560 O=n3310
+.gate inv1 a=n3310 O=n3311
+.gate and2 a=n3311 b=n3308 O=n3312
+.gate and2 a=n3312 b=n521 O=n3313
+.gate inv1 a=n3313 O=n3314
+.gate inv1 a=n3312 O=n3315
+.gate and2 a=n3315 b=n520 O=n3316
+.gate inv1 a=n3316 O=n3317
+.gate and2 a=n3317 b=n3314 O=n3318
+.gate and2 a=n3318 b=n508 O=n3319
+.gate inv1 a=n3319 O=n3320
+.gate inv1 a=n3318 O=n3321
+.gate and2 a=n3321 b=n507 O=n3322
+.gate inv1 a=n3322 O=n3323
+.gate and2 a=n3323 b=n3320 O=n3324
+.gate and2 a=n3324 b=n534 O=n3325
+.gate inv1 a=n3325 O=n3326
+.gate inv1 a=n3324 O=n3327
+.gate and2 a=n3327 b=n533 O=n3328
+.gate inv1 a=n3328 O=n3329
+.gate and2 a=n3329 b=n3326 O=n3330
+.gate and2 a=n3330 b=n548 O=n3331
+.gate inv1 a=n3331 O=n3332
+.gate inv1 a=n3330 O=n3333
+.gate and2 a=n3333 b=n547 O=n3334
+.gate inv1 a=n3334 O=n3335
+.gate and2 a=n3335 b=n3332 O=n3336
+.gate inv1 a=n3336 O=n3337
+.gate and2 a=n3337 b=n3273 O=n3338
+.gate inv1 a=n3338 O=n3339
+.gate and2 a=n3339 b=n3272 O=n3340
+.gate inv1 a=n3340 O=n3341
+.gate and2 a=n3013 b=n2994 O=n3342
+.gate inv1 a=n3342 O=n3343
+.gate and2 a=n3012 b=n2991 O=n3344
+.gate inv1 a=n3344 O=n3345
+.gate and2 a=n3345 b=n3343 O=n3346
+.gate and2 a=n3346 b=n2970 O=n3347
+.gate inv1 a=n3347 O=n3348
+.gate inv1 a=n3346 O=n3349
+.gate and2 a=n3349 b=n2967 O=n3350
+.gate inv1 a=n3350 O=n3351
+.gate and2 a=n3351 b=n3348 O=n3352
+.gate and2 a=n3352 b=n494 O=n3353
+.gate inv1 a=n3353 O=n3354
+.gate inv1 a=n3352 O=n3355
+.gate and2 a=n3355 b=n493 O=n3356
+.gate inv1 a=n3356 O=n3357
+.gate and2 a=n3357 b=n3354 O=n3358
+.gate and2 a=n3358 b=n469 O=n3359
+.gate inv1 a=n3359 O=n3360
+.gate inv1 a=n3358 O=n3361
+.gate and2 a=n3361 b=n468 O=n3362
+.gate inv1 a=n3362 O=n3363
+.gate and2 a=n3363 b=n3360 O=n3364
+.gate and2 a=n3364 b=n457 O=n3365
+.gate inv1 a=n3365 O=n3366
+.gate inv1 a=n3364 O=n3367
+.gate and2 a=n3367 b=n456 O=n3368
+.gate inv1 a=n3368 O=n3369
+.gate and2 a=n3369 b=n3366 O=n3370
+.gate and2 a=n3370 b=n482 O=n3371
+.gate inv1 a=n3371 O=n3372
+.gate inv1 a=n3370 O=n3373
+.gate and2 a=n3373 b=n481 O=n3374
+.gate inv1 a=n3374 O=n3375
+.gate and2 a=n3375 b=n3372 O=n3376
+.gate inv1 a=n3376 O=n3377
+.gate inv1 a=n1746 O=n3378
+.gate and2 a=n3378 b=n935 O=n3379
+.gate inv1 a=n3379 O=n3380
+.gate and2 a=n3380 b=n3273 O=n3381
+.gate and2 a=n3381 b=n3377 O=n3382
+.gate inv1 a=n3382 O=n3383
+.gate and2 a=n3269 b=n936 O=n3384
+.gate and2 a=n3384 b=n3377 O=n3385
+.gate inv1 a=n3385 O=n3386
+.gate and2 a=n2981 b=n3003 O=n3387
+.gate inv1 a=n3387 O=n3388
+.gate and2 a=n2982 b=n896 O=n3389
+.gate inv1 a=n3389 O=n3390
+.gate and2 a=n3390 b=n3388 O=n3391
+.gate and2 a=n3391 b=n2955 O=n3392
+.gate inv1 a=n3392 O=n3393
+.gate inv1 a=n3391 O=n3394
+.gate and2 a=n3394 b=n2956 O=n3395
+.gate inv1 a=n3395 O=n3396
+.gate and2 a=n3396 b=n3393 O=n3397
+.gate and2 a=n3397 b=n494 O=n3398
+.gate inv1 a=n3398 O=n3399
+.gate inv1 a=n3397 O=n3400
+.gate and2 a=n3400 b=n493 O=n3401
+.gate inv1 a=n3401 O=n3402
+.gate and2 a=n3402 b=n3399 O=n3403
+.gate and2 a=n3403 b=n469 O=n3404
+.gate inv1 a=n3404 O=n3405
+.gate inv1 a=n3403 O=n3406
+.gate and2 a=n3406 b=n468 O=n3407
+.gate inv1 a=n3407 O=n3408
+.gate and2 a=n3408 b=n3405 O=n3409
+.gate and2 a=n3409 b=n457 O=n3410
+.gate inv1 a=n3410 O=n3411
+.gate inv1 a=n3409 O=n3412
+.gate and2 a=n3412 b=n456 O=n3413
+.gate inv1 a=n3413 O=n3414
+.gate and2 a=n3414 b=n3411 O=n3415
+.gate and2 a=n3415 b=n482 O=n3416
+.gate inv1 a=n3416 O=n3417
+.gate inv1 a=n3415 O=n3418
+.gate and2 a=n3418 b=n481 O=n3419
+.gate inv1 a=n3419 O=n3420
+.gate and2 a=n3420 b=n3417 O=n3421
+.gate inv1 a=n3421 O=n3422
+.gate and2 a=n3269 b=n935 O=n3423
+.gate and2 a=n3423 b=n3422 O=n3424
+.gate inv1 a=n3424 O=n3425
+.gate and2 a=n3379 b=n3273 O=n3426
+.gate and2 a=n3426 b=n3422 O=n3427
+.gate inv1 a=n3427 O=n3428
+.gate and2 a=n3428 b=n3425 O=n3429
+.gate and2 a=n3429 b=n3386 O=n3430
+.gate and2 a=n3430 b=n3383 O=n3431
+.gate and2 a=n3431 b=n3341 O=n3432
+.gate inv1 a=n3432 O=n3433
+.gate inv1 a=n3431 O=n3434
+.gate and2 a=n3434 b=n3340 O=n3435
+.gate inv1 a=n3435 O=n3436
+.gate and2 a=n3436 b=n3433 O=G321
+.gate and2 a=n2895 b=n2918 O=n3438
+.gate inv1 a=n3438 O=n3439
+.gate inv1 a=n2895 O=n3440
+.gate and2 a=n3440 b=n958 O=n3441
+.gate inv1 a=n3441 O=n3442
+.gate and2 a=n3442 b=n3439 O=n3443
+.gate and2 a=n3443 b=n2909 O=n3444
+.gate inv1 a=n3444 O=n3445
+.gate inv1 a=n2909 O=n3446
+.gate inv1 a=n3443 O=n3447
+.gate and2 a=n3447 b=n3446 O=n3448
+.gate inv1 a=n3448 O=n3449
+.gate and2 a=n3449 b=n3445 O=n3450
+.gate and2 a=n3450 b=n2881 O=n3451
+.gate inv1 a=n3451 O=n3452
+.gate inv1 a=n2881 O=n3453
+.gate inv1 a=n3450 O=n3454
+.gate and2 a=n3454 b=n3453 O=n3455
+.gate inv1 a=n3455 O=n3456
+.gate and2 a=n3456 b=n3452 O=n3457
+.gate and2 a=n3457 b=n417 O=n3458
+.gate inv1 a=n3458 O=n3459
+.gate inv1 a=n3457 O=n3460
+.gate and2 a=n3460 b=n416 O=n3461
+.gate inv1 a=n3461 O=n3462
+.gate and2 a=n3462 b=n3459 O=n3463
+.gate and2 a=n3463 b=n392 O=n3464
+.gate inv1 a=n3464 O=n3465
+.gate inv1 a=n3463 O=n3466
+.gate and2 a=n3466 b=n391 O=n3467
+.gate inv1 a=n3467 O=n3468
+.gate and2 a=n3468 b=n3465 O=n3469
+.gate and2 a=n3469 b=n404 O=n3470
+.gate inv1 a=n3470 O=n3471
+.gate inv1 a=n3469 O=n3472
+.gate and2 a=n3472 b=n403 O=n3473
+.gate inv1 a=n3473 O=n3474
+.gate and2 a=n3474 b=n3471 O=n3475
+.gate and2 a=n3475 b=n429 O=n3476
+.gate inv1 a=n3476 O=n3477
+.gate inv1 a=n3475 O=n3478
+.gate and2 a=n3478 b=n428 O=n3479
+.gate inv1 a=n3479 O=n3480
+.gate and2 a=n3480 b=n3477 O=n3481
+.gate inv1 a=n3481 O=n3482
+.gate and2 a=n3482 b=n440 O=n3483
+.gate inv1 a=n3483 O=n3484
+.gate and2 a=n3481 b=n441 O=n3485
+.gate inv1 a=n3485 O=n3486
+.gate and2 a=n3486 b=n2794 O=n3487
+.gate and2 a=n3487 b=n3484 O=n3488
+.gate inv1 a=n3488 O=n3489
+.gate and2 a=n429 b=n417 O=n3490
+.gate and2 a=n441 b=n392 O=n3491
+.gate and2 a=n3491 b=n3490 O=n3492
+.gate inv1 a=n3492 O=n3493
+.gate and2 a=n3493 b=n2872 O=n3494
+.gate and2 a=n3494 b=n2880 O=n3495
+.gate inv1 a=n3495 O=n3496
+.gate inv1 a=n1735 O=n3497
+.gate and2 a=n2909 b=n3497 O=n3498
+.gate inv1 a=n3498 O=n3499
+.gate and2 a=n3490 b=n392 O=n3500
+.gate inv1 a=n3500 O=n3501
+.gate and2 a=n3501 b=n2895 O=n3502
+.gate inv1 a=n3502 O=n3503
+.gate and2 a=n413 b=G1462 O=n3504
+.gate inv1 a=n3504 O=n3505
+.gate and2 a=n3505 b=n3503 O=n3506
+.gate inv1 a=n3506 O=n3507
+.gate and2 a=n3504 b=n3502 O=n3508
+.gate inv1 a=n3508 O=n3509
+.gate and2 a=n3509 b=n3507 O=n3510
+.gate and2 a=n3510 b=n3499 O=n3511
+.gate inv1 a=n3511 O=n3512
+.gate inv1 a=n3510 O=n3513
+.gate and2 a=n3513 b=n3498 O=n3514
+.gate inv1 a=n3514 O=n3515
+.gate and2 a=n3515 b=n3512 O=n3516
+.gate and2 a=n3516 b=n3496 O=n3517
+.gate inv1 a=n3517 O=n3518
+.gate inv1 a=n3516 O=n3519
+.gate and2 a=n3519 b=n3495 O=n3520
+.gate inv1 a=n3520 O=n3521
+.gate and2 a=n3521 b=n3518 O=n3522
+.gate and2 a=n3522 b=n417 O=n3523
+.gate inv1 a=n3523 O=n3524
+.gate inv1 a=n3522 O=n3525
+.gate and2 a=n3525 b=n416 O=n3526
+.gate inv1 a=n3526 O=n3527
+.gate and2 a=n3527 b=n3524 O=n3528
+.gate and2 a=n3528 b=n392 O=n3529
+.gate inv1 a=n3529 O=n3530
+.gate inv1 a=n3528 O=n3531
+.gate and2 a=n3531 b=n391 O=n3532
+.gate inv1 a=n3532 O=n3533
+.gate and2 a=n3533 b=n3530 O=n3534
+.gate and2 a=n3534 b=n404 O=n3535
+.gate inv1 a=n3535 O=n3536
+.gate inv1 a=n3534 O=n3537
+.gate and2 a=n3537 b=n403 O=n3538
+.gate inv1 a=n3538 O=n3539
+.gate and2 a=n3539 b=n3536 O=n3540
+.gate and2 a=n3540 b=n429 O=n3541
+.gate inv1 a=n3541 O=n3542
+.gate inv1 a=n3540 O=n3543
+.gate and2 a=n3543 b=n428 O=n3544
+.gate inv1 a=n3544 O=n3545
+.gate and2 a=n3545 b=n3542 O=n3546
+.gate and2 a=n3546 b=n441 O=n3547
+.gate inv1 a=n3547 O=n3548
+.gate inv1 a=n3546 O=n3549
+.gate and2 a=n3549 b=n440 O=n3550
+.gate inv1 a=n3550 O=n3551
+.gate and2 a=n3551 b=n3548 O=n3552
+.gate inv1 a=n3552 O=n3553
+.gate and2 a=n3553 b=n2795 O=n3554
+.gate inv1 a=n3554 O=n3555
+.gate and2 a=n3555 b=n3489 O=n3556
+.gate inv1 a=n3556 O=n3557
+.gate and2 a=n373 b=G38 O=n3558
+.gate and2 a=n3558 b=n369 O=n3559
+.gate inv1 a=n3559 O=n3560
+.gate inv1 a=n3558 O=n3561
+.gate and2 a=n3561 b=n368 O=n3562
+.gate inv1 a=n3562 O=n3563
+.gate and2 a=n3563 b=n3560 O=n3564
+.gate inv1 a=n3564 O=n3565
+.gate inv1 a=n1738 O=n3566
+.gate and2 a=n3566 b=n979 O=n3567
+.gate inv1 a=n3567 O=n3568
+.gate and2 a=n3568 b=n2795 O=n3569
+.gate and2 a=n3569 b=n3565 O=n3570
+.gate inv1 a=n3570 O=n3571
+.gate and2 a=n2794 b=n980 O=n3572
+.gate and2 a=n3572 b=n3565 O=n3573
+.gate inv1 a=n3573 O=n3574
+.gate and2 a=n370 b=n364 O=n3575
+.gate and2 a=n3575 b=n369 O=n3576
+.gate inv1 a=n3576 O=n3577
+.gate inv1 a=n3575 O=n3578
+.gate and2 a=n3578 b=n368 O=n3579
+.gate inv1 a=n3579 O=n3580
+.gate and2 a=n3580 b=n3577 O=n3581
+.gate inv1 a=n3581 O=n3582
+.gate and2 a=n3582 b=n979 O=n3583
+.gate and2 a=n3583 b=n2794 O=n3584
+.gate inv1 a=n3584 O=n3585
+.gate and2 a=n3582 b=n3567 O=n3586
+.gate and2 a=n3586 b=n2795 O=n3587
+.gate inv1 a=n3587 O=n3588
+.gate and2 a=n3588 b=n3585 O=n3589
+.gate and2 a=n3589 b=n3574 O=n3590
+.gate and2 a=n3590 b=n3571 O=n3591
+.gate and2 a=n3591 b=n3557 O=n3592
+.gate inv1 a=n3592 O=n3593
+.gate inv1 a=n3591 O=n3594
+.gate and2 a=n3594 b=n3556 O=n3595
+.gate inv1 a=n3595 O=n3596
+.gate and2 a=n3596 b=n3593 O=G338
+.gate and2 a=n3100 b=n3123 O=n3598
+.gate inv1 a=n3598 O=n3599
+.gate inv1 a=n3100 O=n3600
+.gate and2 a=n3600 b=n866 O=n3601
+.gate inv1 a=n3601 O=n3602
+.gate and2 a=n3602 b=n3599 O=n3603
+.gate and2 a=n3603 b=n3114 O=n3604
+.gate inv1 a=n3604 O=n3605
+.gate inv1 a=n3114 O=n3606
+.gate inv1 a=n3603 O=n3607
+.gate and2 a=n3607 b=n3606 O=n3608
+.gate inv1 a=n3608 O=n3609
+.gate and2 a=n3609 b=n3605 O=n3610
+.gate and2 a=n3610 b=n3086 O=n3611
+.gate inv1 a=n3611 O=n3612
+.gate inv1 a=n3086 O=n3613
+.gate inv1 a=n3610 O=n3614
+.gate and2 a=n3614 b=n3613 O=n3615
+.gate inv1 a=n3615 O=n3616
+.gate and2 a=n3616 b=n3612 O=n3617
+.gate and2 a=n3617 b=n813 O=n3618
+.gate inv1 a=n3618 O=n3619
+.gate inv1 a=n3617 O=n3620
+.gate and2 a=n3620 b=n812 O=n3621
+.gate inv1 a=n3621 O=n3622
+.gate and2 a=n3622 b=n3619 O=n3623
+.gate and2 a=n3623 b=n786 O=n3624
+.gate inv1 a=n3624 O=n3625
+.gate inv1 a=n3623 O=n3626
+.gate and2 a=n3626 b=n785 O=n3627
+.gate inv1 a=n3627 O=n3628
+.gate and2 a=n3628 b=n3625 O=n3629
+.gate and2 a=n3629 b=n799 O=n3630
+.gate inv1 a=n3630 O=n3631
+.gate inv1 a=n3629 O=n3632
+.gate and2 a=n3632 b=n798 O=n3633
+.gate inv1 a=n3633 O=n3634
+.gate and2 a=n3634 b=n3631 O=n3635
+.gate and2 a=n3635 b=n826 O=n3636
+.gate inv1 a=n3636 O=n3637
+.gate inv1 a=n3635 O=n3638
+.gate and2 a=n3638 b=n825 O=n3639
+.gate inv1 a=n3639 O=n3640
+.gate and2 a=n3640 b=n3637 O=n3641
+.gate inv1 a=n3641 O=n3642
+.gate and2 a=n3642 b=n838 O=n3643
+.gate inv1 a=n3643 O=n3644
+.gate and2 a=n3641 b=n839 O=n3645
+.gate inv1 a=n3645 O=n3646
+.gate inv1 a=n1749 O=n3647
+.gate and2 a=n3647 b=n628 O=n3648
+.gate inv1 a=n3648 O=n3649
+.gate and2 a=n1781 b=G4526 O=n3650
+.gate inv1 a=n3650 O=n3651
+.gate and2 a=n3651 b=n704 O=n3652
+.gate inv1 a=n3652 O=n3653
+.gate and2 a=n3653 b=n3649 O=n3654
+.gate inv1 a=n3654 O=n3655
+.gate and2 a=n3652 b=n3029 O=n3656
+.gate inv1 a=n3656 O=n3657
+.gate and2 a=n3657 b=n3655 O=n3658
+.gate and2 a=n3658 b=n3646 O=n3659
+.gate and2 a=n3659 b=n3644 O=n3660
+.gate inv1 a=n3660 O=n3661
+.gate inv1 a=n3658 O=n3662
+.gate and2 a=n826 b=n813 O=n3663
+.gate and2 a=n839 b=n786 O=n3664
+.gate and2 a=n3664 b=n3663 O=n3665
+.gate inv1 a=n3665 O=n3666
+.gate and2 a=n3666 b=n3077 O=n3667
+.gate and2 a=n3667 b=n3085 O=n3668
+.gate inv1 a=n3668 O=n3669
+.gate inv1 a=n1757 O=n3670
+.gate and2 a=n3114 b=n3670 O=n3671
+.gate inv1 a=n3671 O=n3672
+.gate and2 a=n3663 b=n786 O=n3673
+.gate inv1 a=n3673 O=n3674
+.gate and2 a=n3674 b=n3100 O=n3675
+.gate inv1 a=n3675 O=n3676
+.gate and2 a=n805 b=G4394 O=n3677
+.gate inv1 a=n3677 O=n3678
+.gate and2 a=n3678 b=n3676 O=n3679
+.gate inv1 a=n3679 O=n3680
+.gate and2 a=n3677 b=n3675 O=n3681
+.gate inv1 a=n3681 O=n3682
+.gate and2 a=n3682 b=n3680 O=n3683
+.gate and2 a=n3683 b=n3672 O=n3684
+.gate inv1 a=n3684 O=n3685
+.gate inv1 a=n3683 O=n3686
+.gate and2 a=n3686 b=n3671 O=n3687
+.gate inv1 a=n3687 O=n3688
+.gate and2 a=n3688 b=n3685 O=n3689
+.gate and2 a=n3689 b=n3669 O=n3690
+.gate inv1 a=n3690 O=n3691
+.gate inv1 a=n3689 O=n3692
+.gate and2 a=n3692 b=n3668 O=n3693
+.gate inv1 a=n3693 O=n3694
+.gate and2 a=n3694 b=n3691 O=n3695
+.gate and2 a=n3695 b=n813 O=n3696
+.gate inv1 a=n3696 O=n3697
+.gate inv1 a=n3695 O=n3698
+.gate and2 a=n3698 b=n812 O=n3699
+.gate inv1 a=n3699 O=n3700
+.gate and2 a=n3700 b=n3697 O=n3701
+.gate and2 a=n3701 b=n786 O=n3702
+.gate inv1 a=n3702 O=n3703
+.gate inv1 a=n3701 O=n3704
+.gate and2 a=n3704 b=n785 O=n3705
+.gate inv1 a=n3705 O=n3706
+.gate and2 a=n3706 b=n3703 O=n3707
+.gate and2 a=n3707 b=n799 O=n3708
+.gate inv1 a=n3708 O=n3709
+.gate inv1 a=n3707 O=n3710
+.gate and2 a=n3710 b=n798 O=n3711
+.gate inv1 a=n3711 O=n3712
+.gate and2 a=n3712 b=n3709 O=n3713
+.gate and2 a=n3713 b=n826 O=n3714
+.gate inv1 a=n3714 O=n3715
+.gate inv1 a=n3713 O=n3716
+.gate and2 a=n3716 b=n825 O=n3717
+.gate inv1 a=n3717 O=n3718
+.gate and2 a=n3718 b=n3715 O=n3719
+.gate and2 a=n3719 b=n839 O=n3720
+.gate inv1 a=n3720 O=n3721
+.gate inv1 a=n3719 O=n3722
+.gate and2 a=n3722 b=n838 O=n3723
+.gate inv1 a=n3723 O=n3724
+.gate and2 a=n3724 b=n3721 O=n3725
+.gate inv1 a=n3725 O=n3726
+.gate and2 a=n3726 b=n3662 O=n3727
+.gate inv1 a=n3727 O=n3728
+.gate and2 a=n3728 b=n3661 O=n3729
+.gate inv1 a=n3729 O=n3730
+.gate and2 a=n3201 b=n3182 O=n3731
+.gate inv1 a=n3731 O=n3732
+.gate and2 a=n3200 b=n3179 O=n3733
+.gate inv1 a=n3733 O=n3734
+.gate and2 a=n3734 b=n3732 O=n3735
+.gate and2 a=n3735 b=n3158 O=n3736
+.gate inv1 a=n3736 O=n3737
+.gate inv1 a=n3735 O=n3738
+.gate and2 a=n3738 b=n3155 O=n3739
+.gate inv1 a=n3739 O=n3740
+.gate and2 a=n3740 b=n3737 O=n3741
+.gate and2 a=n3741 b=n771 O=n3742
+.gate inv1 a=n3742 O=n3743
+.gate inv1 a=n3741 O=n3744
+.gate and2 a=n3744 b=n770 O=n3745
+.gate inv1 a=n3745 O=n3746
+.gate and2 a=n3746 b=n3743 O=n3747
+.gate and2 a=n3747 b=n744 O=n3748
+.gate inv1 a=n3748 O=n3749
+.gate inv1 a=n3747 O=n3750
+.gate and2 a=n3750 b=n743 O=n3751
+.gate inv1 a=n3751 O=n3752
+.gate and2 a=n3752 b=n3749 O=n3753
+.gate and2 a=n3753 b=n731 O=n3754
+.gate inv1 a=n3754 O=n3755
+.gate inv1 a=n3753 O=n3756
+.gate and2 a=n3756 b=n730 O=n3757
+.gate inv1 a=n3757 O=n3758
+.gate and2 a=n3758 b=n3755 O=n3759
+.gate and2 a=n3759 b=n758 O=n3760
+.gate inv1 a=n3760 O=n3761
+.gate inv1 a=n3759 O=n3762
+.gate and2 a=n3762 b=n757 O=n3763
+.gate inv1 a=n3763 O=n3764
+.gate and2 a=n3764 b=n3761 O=n3765
+.gate inv1 a=n3765 O=n3766
+.gate inv1 a=n1760 O=n3767
+.gate and2 a=n3767 b=n887 O=n3768
+.gate inv1 a=n3768 O=n3769
+.gate and2 a=n3769 b=n3662 O=n3770
+.gate and2 a=n3770 b=n3766 O=n3771
+.gate inv1 a=n3771 O=n3772
+.gate and2 a=n3658 b=n888 O=n3773
+.gate and2 a=n3773 b=n3766 O=n3774
+.gate inv1 a=n3774 O=n3775
+.gate and2 a=n3169 b=n3191 O=n3776
+.gate inv1 a=n3776 O=n3777
+.gate and2 a=n3170 b=n848 O=n3778
+.gate inv1 a=n3778 O=n3779
+.gate and2 a=n3779 b=n3777 O=n3780
+.gate and2 a=n3780 b=n3143 O=n3781
+.gate inv1 a=n3781 O=n3782
+.gate inv1 a=n3780 O=n3783
+.gate and2 a=n3783 b=n3144 O=n3784
+.gate inv1 a=n3784 O=n3785
+.gate and2 a=n3785 b=n3782 O=n3786
+.gate and2 a=n3786 b=n771 O=n3787
+.gate inv1 a=n3787 O=n3788
+.gate inv1 a=n3786 O=n3789
+.gate and2 a=n3789 b=n770 O=n3790
+.gate inv1 a=n3790 O=n3791
+.gate and2 a=n3791 b=n3788 O=n3792
+.gate and2 a=n3792 b=n744 O=n3793
+.gate inv1 a=n3793 O=n3794
+.gate inv1 a=n3792 O=n3795
+.gate and2 a=n3795 b=n743 O=n3796
+.gate inv1 a=n3796 O=n3797
+.gate and2 a=n3797 b=n3794 O=n3798
+.gate and2 a=n3798 b=n731 O=n3799
+.gate inv1 a=n3799 O=n3800
+.gate inv1 a=n3798 O=n3801
+.gate and2 a=n3801 b=n730 O=n3802
+.gate inv1 a=n3802 O=n3803
+.gate and2 a=n3803 b=n3800 O=n3804
+.gate and2 a=n3804 b=n758 O=n3805
+.gate inv1 a=n3805 O=n3806
+.gate inv1 a=n3804 O=n3807
+.gate and2 a=n3807 b=n757 O=n3808
+.gate inv1 a=n3808 O=n3809
+.gate and2 a=n3809 b=n3806 O=n3810
+.gate inv1 a=n3810 O=n3811
+.gate and2 a=n3658 b=n887 O=n3812
+.gate and2 a=n3812 b=n3811 O=n3813
+.gate inv1 a=n3813 O=n3814
+.gate and2 a=n3768 b=n3662 O=n3815
+.gate and2 a=n3815 b=n3811 O=n3816
+.gate inv1 a=n3816 O=n3817
+.gate and2 a=n3817 b=n3814 O=n3818
+.gate and2 a=n3818 b=n3775 O=n3819
+.gate and2 a=n3819 b=n3772 O=n3820
+.gate and2 a=n3820 b=n3730 O=n3821
+.gate inv1 a=n3821 O=n3822
+.gate inv1 a=n3820 O=n3823
+.gate and2 a=n3823 b=n3729 O=n3824
+.gate inv1 a=n3824 O=n3825
+.gate and2 a=n3825 b=n3822 O=G370
+.gate and2 a=n1821 b=n1844 O=n3827
+.gate inv1 a=n3827 O=n3828
+.gate inv1 a=n1821 O=n3829
+.gate and2 a=n3829 b=n656 O=n3830
+.gate inv1 a=n3830 O=n3831
+.gate and2 a=n3831 b=n3828 O=n3832
+.gate and2 a=n3832 b=n1835 O=n3833
+.gate inv1 a=n3833 O=n3834
+.gate inv1 a=n1835 O=n3835
+.gate inv1 a=n3832 O=n3836
+.gate and2 a=n3836 b=n3835 O=n3837
+.gate inv1 a=n3837 O=n3838
+.gate and2 a=n3838 b=n3834 O=n3839
+.gate and2 a=n3839 b=n1807 O=n3840
+.gate inv1 a=n3840 O=n3841
+.gate inv1 a=n1807 O=n3842
+.gate inv1 a=n3839 O=n3843
+.gate and2 a=n3843 b=n3842 O=n3844
+.gate inv1 a=n3844 O=n3845
+.gate and2 a=n3845 b=n3841 O=n3846
+.gate and2 a=n3846 b=n354 O=n3847
+.gate inv1 a=n3847 O=n3848
+.gate inv1 a=n3846 O=n3849
+.gate and2 a=n3849 b=n353 O=n3850
+.gate inv1 a=n3850 O=n3851
+.gate and2 a=n3851 b=n3848 O=n3852
+.gate and2 a=n3852 b=n654 O=n3853
+.gate inv1 a=n3853 O=n3854
+.gate inv1 a=n3852 O=n3855
+.gate and2 a=n3855 b=n653 O=n3856
+.gate inv1 a=n3856 O=n3857
+.gate and2 a=n3857 b=n3854 O=n3858
+.gate and2 a=n3858 b=n682 O=n3859
+.gate inv1 a=n3859 O=n3860
+.gate inv1 a=n3858 O=n3861
+.gate and2 a=n3861 b=n681 O=n3862
+.gate inv1 a=n3862 O=n3863
+.gate and2 a=n3863 b=n3860 O=n3864
+.gate and2 a=n3864 b=n641 O=n3865
+.gate inv1 a=n3865 O=n3866
+.gate inv1 a=n3864 O=n3867
+.gate and2 a=n3867 b=n640 O=n3868
+.gate inv1 a=n3868 O=n3869
+.gate and2 a=n3869 b=n3866 O=n3870
+.gate inv1 a=n3870 O=n3871
+.gate and2 a=n3871 b=n668 O=n3872
+.gate inv1 a=n3872 O=n3873
+.gate and2 a=n3870 b=n669 O=n3874
+.gate inv1 a=n3874 O=n3875
+.gate and2 a=n3875 b=n343 O=n3876
+.gate and2 a=n3876 b=n3873 O=n3877
+.gate inv1 a=n3877 O=n3878
+.gate and2 a=n641 b=n354 O=n3879
+.gate and2 a=n669 b=n654 O=n3880
+.gate and2 a=n3880 b=n3879 O=n3881
+.gate inv1 a=n3881 O=n3882
+.gate and2 a=n3882 b=n1807 O=n3883
+.gate inv1 a=n3883 O=n3884
+.gate inv1 a=n1779 O=n3885
+.gate and2 a=n1835 b=n3885 O=n3886
+.gate inv1 a=n3886 O=n3887
+.gate and2 a=n3879 b=n654 O=n3888
+.gate inv1 a=n3888 O=n3889
+.gate and2 a=n3889 b=n1821 O=n3890
+.gate inv1 a=n3890 O=n3891
+.gate and2 a=n346 b=n349 O=n3892
+.gate inv1 a=n3892 O=n3893
+.gate and2 a=n3893 b=n3891 O=n3894
+.gate inv1 a=n3894 O=n3895
+.gate and2 a=n3892 b=n3890 O=n3896
+.gate inv1 a=n3896 O=n3897
+.gate and2 a=n3897 b=n3895 O=n3898
+.gate and2 a=n3898 b=n3887 O=n3899
+.gate inv1 a=n3899 O=n3900
+.gate inv1 a=n3898 O=n3901
+.gate and2 a=n3901 b=n3886 O=n3902
+.gate inv1 a=n3902 O=n3903
+.gate and2 a=n3903 b=n3900 O=n3904
+.gate and2 a=n3904 b=n3884 O=n3905
+.gate inv1 a=n3905 O=n3906
+.gate inv1 a=n3904 O=n3907
+.gate and2 a=n3907 b=n3883 O=n3908
+.gate inv1 a=n3908 O=n3909
+.gate and2 a=n3909 b=n3906 O=n3910
+.gate and2 a=n3910 b=n354 O=n3911
+.gate inv1 a=n3911 O=n3912
+.gate inv1 a=n3910 O=n3913
+.gate and2 a=n3913 b=n353 O=n3914
+.gate inv1 a=n3914 O=n3915
+.gate and2 a=n3915 b=n3912 O=n3916
+.gate and2 a=n3916 b=n654 O=n3917
+.gate inv1 a=n3917 O=n3918
+.gate inv1 a=n3916 O=n3919
+.gate and2 a=n3919 b=n653 O=n3920
+.gate inv1 a=n3920 O=n3921
+.gate and2 a=n3921 b=n3918 O=n3922
+.gate and2 a=n3922 b=n682 O=n3923
+.gate inv1 a=n3923 O=n3924
+.gate inv1 a=n3922 O=n3925
+.gate and2 a=n3925 b=n681 O=n3926
+.gate inv1 a=n3926 O=n3927
+.gate and2 a=n3927 b=n3924 O=n3928
+.gate and2 a=n3928 b=n641 O=n3929
+.gate inv1 a=n3929 O=n3930
+.gate inv1 a=n3928 O=n3931
+.gate and2 a=n3931 b=n640 O=n3932
+.gate inv1 a=n3932 O=n3933
+.gate and2 a=n3933 b=n3930 O=n3934
+.gate and2 a=n3934 b=n669 O=n3935
+.gate inv1 a=n3935 O=n3936
+.gate inv1 a=n3934 O=n3937
+.gate and2 a=n3937 b=n668 O=n3938
+.gate inv1 a=n3938 O=n3939
+.gate and2 a=n3939 b=n3936 O=n3940
+.gate inv1 a=n3940 O=n3941
+.gate and2 a=n3941 b=G4526 O=n3942
+.gate inv1 a=n3942 O=n3943
+.gate and2 a=n3943 b=n3878 O=n3944
+.gate inv1 a=n3944 O=n3945
+.gate and2 a=n1922 b=n1903 O=n3946
+.gate inv1 a=n3946 O=n3947
+.gate and2 a=n1921 b=n1900 O=n3948
+.gate inv1 a=n3948 O=n3949
+.gate and2 a=n3949 b=n3947 O=n3950
+.gate and2 a=n3950 b=n1879 O=n3951
+.gate inv1 a=n3951 O=n3952
+.gate inv1 a=n3950 O=n3953
+.gate and2 a=n3953 b=n1876 O=n3954
+.gate inv1 a=n3954 O=n3955
+.gate and2 a=n3955 b=n3952 O=n3956
+.gate and2 a=n3956 b=n712 O=n3957
+.gate inv1 a=n3957 O=n3958
+.gate inv1 a=n3956 O=n3959
+.gate and2 a=n3959 b=n711 O=n3960
+.gate inv1 a=n3960 O=n3961
+.gate and2 a=n3961 b=n3958 O=n3962
+.gate and2 a=n3962 b=n613 O=n3963
+.gate inv1 a=n3963 O=n3964
+.gate inv1 a=n3962 O=n3965
+.gate and2 a=n3965 b=n612 O=n3966
+.gate inv1 a=n3966 O=n3967
+.gate and2 a=n3967 b=n3964 O=n3968
+.gate and2 a=n3968 b=n578 O=n3969
+.gate inv1 a=n3969 O=n3970
+.gate inv1 a=n3968 O=n3971
+.gate and2 a=n3971 b=n577 O=n3972
+.gate inv1 a=n3972 O=n3973
+.gate and2 a=n3973 b=n3970 O=n3974
+.gate and2 a=n3974 b=n600 O=n3975
+.gate inv1 a=n3975 O=n3976
+.gate inv1 a=n3974 O=n3977
+.gate and2 a=n3977 b=n599 O=n3978
+.gate inv1 a=n3978 O=n3979
+.gate and2 a=n3979 b=n3976 O=n3980
+.gate inv1 a=n3980 O=n3981
+.gate inv1 a=n1781 O=n3982
+.gate and2 a=n3982 b=n704 O=n3983
+.gate inv1 a=n3983 O=n3984
+.gate and2 a=n3984 b=G4526 O=n3985
+.gate and2 a=n3985 b=n3981 O=n3986
+.gate inv1 a=n3986 O=n3987
+.gate and2 a=n705 b=n343 O=n3988
+.gate and2 a=n3988 b=n3981 O=n3989
+.gate inv1 a=n3989 O=n3990
+.gate and2 a=n1890 b=n1912 O=n3991
+.gate inv1 a=n3991 O=n3992
+.gate and2 a=n1891 b=n586 O=n3993
+.gate inv1 a=n3993 O=n3994
+.gate and2 a=n3994 b=n3992 O=n3995
+.gate and2 a=n3995 b=n1864 O=n3996
+.gate inv1 a=n3996 O=n3997
+.gate inv1 a=n3995 O=n3998
+.gate and2 a=n3998 b=n1865 O=n3999
+.gate inv1 a=n3999 O=n4000
+.gate and2 a=n4000 b=n3997 O=n4001
+.gate and2 a=n4001 b=n712 O=n4002
+.gate inv1 a=n4002 O=n4003
+.gate inv1 a=n4001 O=n4004
+.gate and2 a=n4004 b=n711 O=n4005
+.gate inv1 a=n4005 O=n4006
+.gate and2 a=n4006 b=n4003 O=n4007
+.gate and2 a=n4007 b=n613 O=n4008
+.gate inv1 a=n4008 O=n4009
+.gate inv1 a=n4007 O=n4010
+.gate and2 a=n4010 b=n612 O=n4011
+.gate inv1 a=n4011 O=n4012
+.gate and2 a=n4012 b=n4009 O=n4013
+.gate and2 a=n4013 b=n578 O=n4014
+.gate inv1 a=n4014 O=n4015
+.gate inv1 a=n4013 O=n4016
+.gate and2 a=n4016 b=n577 O=n4017
+.gate inv1 a=n4017 O=n4018
+.gate and2 a=n4018 b=n4015 O=n4019
+.gate and2 a=n4019 b=n600 O=n4020
+.gate inv1 a=n4020 O=n4021
+.gate inv1 a=n4019 O=n4022
+.gate and2 a=n4022 b=n599 O=n4023
+.gate inv1 a=n4023 O=n4024
+.gate and2 a=n4024 b=n4021 O=n4025
+.gate inv1 a=n4025 O=n4026
+.gate and2 a=n704 b=n343 O=n4027
+.gate and2 a=n4027 b=n4026 O=n4028
+.gate inv1 a=n4028 O=n4029
+.gate and2 a=n3983 b=G4526 O=n4030
+.gate and2 a=n4030 b=n4026 O=n4031
+.gate inv1 a=n4031 O=n4032
+.gate and2 a=n4032 b=n4029 O=n4033
+.gate and2 a=n4033 b=n3990 O=n4034
+.gate and2 a=n4034 b=n3987 O=n4035
+.gate and2 a=n4035 b=n3945 O=n4036
+.gate inv1 a=n4036 O=n4037
+.gate inv1 a=n4035 O=n4038
+.gate and2 a=n4038 b=n3944 O=n4039
+.gate inv1 a=n4039 O=n4040
+.gate and2 a=n4040 b=n4037 O=G399
+.gate buf  a=IN-G339 O=G339
+.gate buf  a=G1 O=G2
+.gate buf  a=G1 O=G3
+.gate buf  a=G1459 O=G450
+.gate buf  a=G1469 O=G448
+.gate buf  a=G1480 O=G444
+.gate buf  a=G1486 O=G442
+.gate buf  a=G1492 O=G440
+.gate buf  a=G1496 O=G438
+.gate buf  a=G2208 O=G496
+.gate buf  a=G2218 O=G494
+.gate buf  a=G2224 O=G492
+.gate buf  a=G2230 O=G490
+.gate buf  a=G2236 O=G488
+.gate buf  a=G2239 O=G486
+.gate buf  a=G2247 O=G484
+.gate buf  a=G2253 O=G482
+.gate buf  a=G2256 O=G480
+.gate buf  a=G3698 O=G560
+.gate buf  a=G3701 O=G542
+.gate buf  a=G3705 O=G558
+.gate buf  a=G3711 O=G556
+.gate buf  a=G3717 O=G554
+.gate buf  a=G3723 O=G552
+.gate buf  a=G3729 O=G550
+.gate buf  a=G3737 O=G548
+.gate buf  a=G3743 O=G546
+.gate buf  a=G3749 O=G544
+.gate buf  a=G4393 O=G540
+.gate buf  a=G4400 O=G538
+.gate buf  a=G4405 O=G536
+.gate buf  a=G4410 O=G534
+.gate buf  a=G4415 O=G532
+.gate buf  a=G4420 O=G530
+.gate buf  a=G4427 O=G528
+.gate buf  a=G4432 O=G526
+.gate buf  a=G4437 O=G524
+.gate buf  a=G1462 O=G436
+.gate buf  a=G2211 O=G478
+.gate buf  a=G4394 O=G522
+.gate buf  a=G1 O=G432
+.gate buf  a=G106 O=G446
+.gate inv1 a=G15 O=G286
+.gate inv1 a=n337 O=G289
+.gate inv1 a=G15 O=G341
+.gate inv1 a=n340 O=G281
+.gate buf  a=G1 O=G453
+.gate inv1 a=n1733 O=G264
+.gate inv1 a=n3063 O=G469
+.gate inv1 a=n3069 O=G471
+.end

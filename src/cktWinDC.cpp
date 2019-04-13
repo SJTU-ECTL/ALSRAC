@@ -5,7 +5,7 @@ using namespace std;
 using namespace abc;
 
 
-int Ckt_WinMfsTest( Abc_Ntk_t * pNtk, int nWinTfiLevs)
+int Ckt_WinMfsTest(Abc_Ntk_t * pNtk, int nWinTfiLevs, int frameNumber)
 {
     // set parameters
     Mfs_Par_t mfsPars, * pPars = &mfsPars;
@@ -75,7 +75,7 @@ int Ckt_WinMfsTest( Abc_Ntk_t * pNtk, int nWinTfiLevs)
             if ( !p->pPars->fVeryVerbose )
                 Extra_ProgressBarUpdate( pProgress, i, NULL );
             if ( pPars->fResub )
-                Ckt_WinMfsResub(p, pObj, nWinTfiLevs);
+                Ckt_WinMfsResub(p, pObj, nWinTfiLevs, frameNumber);
             else {
                 DEBUG_ASSERT(0, module_a{}, "pPars->fResub = 0");
             }
@@ -105,11 +105,14 @@ int Ckt_WinMfsTest( Abc_Ntk_t * pNtk, int nWinTfiLevs)
 }
 
 
-int Ckt_WinMfsResub(Mfs_Man_t * p, Abc_Obj_t * pNode, int nWinTfiLevs)
+int Ckt_WinMfsResub(Mfs_Man_t * p, Abc_Obj_t * pNode, int nWinTfiLevs, int frameNumber)
 {
     // perform logic simulation
     shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pNode->pNtk, false);
-    pCktNtk->Init(64);
+    if (frameNumber % 64 == 0)
+        pCktNtk->Init(frameNumber);
+    else
+        pCktNtk->Init((frameNumber / 64 + 1) * 64);
     // pCktNtk->PrintObjs();
     pCktNtk->LogicSim(false);
 
@@ -138,8 +141,8 @@ clk = Abc_Clock();
     {
         // Abc_Obj_t * pObj;
         // int i;
-        cout << Abc_ObjName(pNode) << " : ";
-        cout << "vWinPIs (" << Vec_PtrSize(vWinPIs) << ")\n";
+        // cout << Abc_ObjName(pNode) << " : ";
+        // cout << "vWinPIs (" << Vec_PtrSize(vWinPIs) << ")\n";
         // cout << "vRoots (" << Vec_PtrSize(p->vRoots) << ")\t";
         // Vec_PtrForEachEntry(Abc_Obj_t *, p->vRoots, pObj, i)
         //     cout << Abc_ObjName(pObj) << "(" << Abc_ObjLevel(pObj) << ")" << "\t";
@@ -162,7 +165,7 @@ clk = Abc_Clock();
 p->timeDiv += Abc_Clock() - clk;
     // construct AIG for the window
 clk = Abc_Clock();
-    p->pAigWin = Ckt_WinConstructAppAig(p, pNode, vWinPIs, pCktNtk);
+    p->pAigWin = Ckt_WinConstructAppAig(p, pNode, vWinPIs, pCktNtk, frameNumber);
 p->timeAig += Abc_Clock() - clk;
 
     // translate it into CNF
@@ -234,7 +237,7 @@ void Ckt_WinSetMfsPars( Mfs_Par_t * pPars )
 }
 
 
-Aig_Man_t * Ckt_WinConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode, Vec_Ptr_t * vWinPIs, shared_ptr <Ckt_Ntk_t> pCktNtk)
+Aig_Man_t * Ckt_WinConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode, Vec_Ptr_t * vWinPIs, shared_ptr <Ckt_Ntk_t> pCktNtk, int frameNumber)
 {
     Aig_Man_t * pMan;
     Abc_Obj_t * pFanin;
@@ -244,7 +247,7 @@ Aig_Man_t * Ckt_WinConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode, Vec_Ptr_t *
     pMan = Aig_ManStart( 1000 );
     // construct the root node's AIG cone
     // pObjAig = Ckt_WinConstructAppAig_rec(p, pNode, pMan, vWinPIs, pCktNtk);
-    pObjAig = Ckt_WinConstructAppAig2_rec(p, pNode, pMan, vWinPIs, pCktNtk);
+    pObjAig = Ckt_WinConstructAppAig2_rec(p, pNode, pMan, vWinPIs, pCktNtk, frameNumber);
     Aig_ObjCreateCo( pMan, pObjAig );
     if ( p->pCare )
     {
@@ -314,7 +317,7 @@ Aig_Obj_t * Ckt_WinConstructAppAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Ma
 }
 
 
-Aig_Obj_t * Ckt_WinConstructAppAig2_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t * pMan, Vec_Ptr_t * vWinPIs, shared_ptr <Ckt_Ntk_t> pCktNtk)
+Aig_Obj_t * Ckt_WinConstructAppAig2_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t * pMan, Vec_Ptr_t * vWinPIs, shared_ptr <Ckt_Ntk_t> pCktNtk, int frameNumber)
 {
     Aig_Obj_t * pRoot, * pCare;
     Abc_Obj_t * pObj;
@@ -330,8 +333,53 @@ Aig_Obj_t * Ckt_WinConstructAppAig2_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_M
         Ckt_WinMfsConvertHopToAig2( pObj, pMan );
 
     pRoot = Aig_ManConst0(pMan);
+    // int totBit = Vec_PtrSize(vWinPIs);
+    // int totPat = (1 << totBit);
+    // cout << "#total bit = " << totBit << " #total pattern = " << totPat << endl;
+    // vector <int> assignment(totBit, 0);
+    // for (int j = 0; j < totPat; ++j) {
+    //     for (int k = 0; k < totBit; ++k) {
+    //         assignment[k + 1] += assignment[k] >> 1;
+    //         assignment[k] = assignment[k] % 2;
+    //     }
+    //     // for (int k = totBit - 1; k >= 0; --k)
+    //     //     cout << assignment[k];
+    //     // cout << endl;
+
+    //     Vec_PtrForEachEntry(Abc_Obj_t *, vWinPIs, pObj, k) {
+    //         pCare = Aig_ManConst1(pMan);
+    //         if (!assignment[k])
+    //             pCare = Aig_And(pMan, pCare, Aig_Not((Aig_Obj_t *)pObj->pCopy));
+    //         else
+    //             pCare = Aig_And(pMan, pCare, (Aig_Obj_t *)pObj->pCopy);
+    //         pRoot = Aig_Or(pMan, pRoot, pCare);
+    //     }
+
+    //     ++assignment[0];
+    // }
+
+    int totBit = Vec_PtrSize(vWinPIs);
+    int totPat = (1 << totBit);
+    set <string> occPat;
     for (int i = 0; i < pCktNtk->GetSimNum(); ++i) {
         for (int j = 0; j < 64; ++j) {
+            string pat = "";
+            Vec_PtrForEachEntry(Abc_Obj_t *, vWinPIs, pObj, k) {
+                shared_ptr <Ckt_Obj_t> pCktObj = pCktNtk->GetCktObj(pObj->Id);
+                if (!pCktObj->GetSimVal(i, j))
+                    pat += '0';
+                else
+                    pat += '1';
+            }
+            // cout << pat << endl;
+            occPat.insert(pat);
+        }
+    }
+    cout << "#total bit = " << totBit << " #total pattern = " << totPat << " #occured pattern = " << occPat.size() << endl;
+    for (int f = 0; f < frameNumber; ++f) {
+        int i = f / 64;
+        int j = f % 64;
+        {
             pCare = Aig_ManConst1(pMan);
             Vec_PtrForEachEntry(Abc_Obj_t *, vWinPIs, pObj, k) {
                 shared_ptr <Ckt_Obj_t> pCktObj = pCktNtk->GetCktObj(pObj->Id);

@@ -1,8 +1,9 @@
 #include <bits/stdc++.h>
 #include "cmdline.h"
 #include "cktNtk.h"
-#include "cktPIDC.h"
+#include "cktSynthesis.h"
 #include "cktWinDC.h"
+#include "cktPIDC.h"
 
 using namespace std;
 using namespace abc;
@@ -36,6 +37,7 @@ void MeasureErrorRate(string file, string approx, int nFrame)
     shared_ptr <Ckt_Ntk_t> pCktNtkApp = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc));
     pCktNtkApp->Init(nFrame);
 
+    cout << "area = " << Ckt_GetArea(pCktNtkApp->GetAbcNtk()) << endl;
     cout << "error rate = " << pCktNtkApp->MeasureError(pCktNtkOri, 666) << endl;
 }
 
@@ -93,7 +95,7 @@ void ALS_WinDC(string file, string approx, int nFrame, int level)
     string command = "read_blif " + file;
     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{}, "read_blif failed");
 
-    Ckt_WinMfsTest(Abc_FrameReadNtk(pAbc), level);
+    Ckt_WinMfsTest(Abc_FrameReadNtk(pAbc), level, nFrame);
 
     command = "map -a; print_stats";
     DEBUG_ASSERT( Cmd_CommandExecute(pAbc, command.c_str()) == 0, module_a{});
