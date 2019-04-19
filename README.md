@@ -1,5 +1,6 @@
-# Circuit
-This is a personal C++ wrapper of [ABC](https://people.eecs.berkeley.edu/~alanmi/abc/),
+# DCALS
+Don't-care based Approximate Logic Synthesis
+The system is an extension of [ABC](https://people.eecs.berkeley.edu/~alanmi/abc/),
 A System for Sequential Synthesis and Verification.
 
 ## Requirements
@@ -32,7 +33,7 @@ make
 And it will generate a program named `main`.
 
 Use `./main -?` to get help.
-- usage: ./main [options] ... 
+- usage: ./main [options] ...
 - options:
 -   -f, --file      Original Circuit file (string [=data/sop/c880.blif])
 -   -a, --approx    Approxiamte Circuit file (string [=])
