@@ -1,5 +1,4 @@
-# DCALS
-Don't-care based Approximate Logic Synthesis
+# DCALS(Don't-care based Approximate Logic Synthesis)
 The system is an extension of [ABC](https://people.eecs.berkeley.edu/~alanmi/abc/),
 A System for Sequential Synthesis and Verification.
 
