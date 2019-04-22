@@ -1,0 +1,141 @@
+\documentclass{rpt}
+
+\title{Weekly Report}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Targets}
+
+\subsection{Urgent}
+\begin{itemize}
+    \item Randomly selecting a node,
+        compute its care set,
+        change its care set,
+        synthesize the local circuit,
+        evaluate its area and error rate,
+        accept it with a certain probability.
+\end{itemize}
+
+\subsection{Important}
+\begin{itemize}
+    \item Use model counting to compute error rate, i.e., how many assignments satisfying a SAT problem.
+    \item Use approximate confidence interval / hypothesis testing of Bernoulli experiments to evaluate the accuracy of error rate.
+    \item Trade off the accuracy of batch error estimation for speed
+        (even directly use Su's equation to update Boolean difference),
+        perhaps use hypothesis testing to evaluate the accuracy.
+    \item Combine the simulation of circuits with the simulation of Monte Carlo Tree Search.
+        In other words,
+        in one loop of Monte Carlo Tree Search,
+        merge logic simulation and playout (only simulate circuit once and playout once).
+    \item Represent circuit with AIG because of more potential LAC candidates.
+        For each round, select one or more input wires and replace them with constant 0 or 1.
+        Consider how to combine Wu's method (choose a subset of input wires and substitute).
+    \item Accelerate Approximate Logic Synthesis Ordered by Monte Carlo Tree Search:
+        reuse the result of batch error estimation in playout.
+    \item How DC affects BDD
+    \item Induce DC with PLA files
+\end{itemize}
+
+\subsection{Worth Trying}
+\begin{itemize}
+    \item Enhance default policy with greedy approach or field domain knowledge.
+    \item In expansion process of MCTS, expand more than one layers.
+    \item Tune parameters in MCTS\@.
+    \item Perform greedy flow on leaves of the final Monte Carlo Search Tree.
+    \item Combine beam search and MCTS\@.
+\end{itemize}
+
+\subsection{Potential Topics}
+\begin{itemize}
+    \item Relationship between power simulation and logic simulation.
+    \item Combine Binarized Neural Network with approximate computing.
+    \item Relationship between Boolean network and Bayesian Network.
+    \item Approximate TMR\@.
+\end{itemize}
+
+\section{Progress}
+
+To implement
+\[
+    \mathbf{\hat{y}} = (\hat{f}_1(\mathbf{x}), \ldots, \hat{f}_O(\mathbf{x})),
+\]
+where
+\[
+    \hat{f}_i(\mathbf{x}) = f_i(\mathbf{x})|_{\mathbf{x} = \mathbf{a}_1} \lor \ldots \lor f_i(\mathbf{x})|_{\mathbf{x} = \mathbf{a}_R}
+\]
+I did 2 experiments.
+
+\subsection{Experiment 1}
+Directly build the level circuit according to its SOP expression,
+and synthesize it with the script ``resyn2''.
+
+For c880, original area is 607,
+when $R=100$, approximate circuit has an area of 3324.
+It is impractical,
+since it seems hard for the multi-level synthesis tool to simplify a 2-level SOP expression circuit.
+
+\subsection{Experiment 2}
+Let $\mathbf{A} = [\mathbf{a}_1, \ldots, \mathbf{a}_R]$ be the care set.
+Simplify the windows $\mathbb{W}$ with the care set.
+
+Also for c880,
+
+\begin{tabular}{ccc}
+    \hline
+    $R$ & area & ER \\
+    \hline
+    100 & 526 & 0.11104 \\
+    \hline
+    200 & 539 & 0.024631 \\
+    \hline
+    206 & 539 & 0.024631 \\
+    \hline
+    212 & 542 & 0.004503 \\
+    \hline
+    225 & 542 & 0.004503 \\
+    \hline
+    250 & 542 & 0.004503 \\
+    \hline
+    300 & 543 & 0.004503 \\
+    \hline
+    500 & 554 & 0.003345 \\
+    \hline
+    1000 & 553 & 0.000701 \\
+    \hline
+\end{tabular}
+
+For c1908,
+
+\begin{tabular}{ccc}
+    \hline
+    $R$ & area & ER \\
+    \hline
+    100 & 374 &  0.082238 \\
+    \hline
+    1000 & 567 & 0.028422 \\
+    \hline
+    2000 & 625 & 0.008439 \\ 
+    \hline
+    2500 & 657 & 0.000369 \\
+\end{tabular}
+
+When $ER$ is small, similar result compared with Su-TCAD is generated.
+But $ER$ changes abruptly near $R=210$.
+
+Reason of great change might be:
+\begin{itemize}
+    \item
+        I use interpolation method to simplify the circuit.
+        Sometimes when care set changes,
+        interpolation does not change.
+    \item
+        I directly change the care set of primary input.
+        Slightly change on PIs may cause large disturbance.
+        Maybe partial change will work more elaborately.
+\end{itemize}
+
+\end{document}

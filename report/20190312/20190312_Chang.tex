@@ -1,0 +1,122 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+
+%----------------------------------------------------------------------------------------
+
+\usepackage{listings} % Required for inserting code snippets
+\usepackage[usenames,dvipsnames]{color} % Required for specifying custom colors and referring to colors by name
+
+\definecolor{DarkGreen}{rgb}{0.0,0.4,0.0} % Comment color
+\definecolor{highlight}{RGB}{255,251,204} % Code highlight color
+
+\lstdefinestyle{Style1}{ % Define a style for your code snippet, multiple definitions can be made if, for example, you wish to insert multiple code snippets using different programming languages into one document
+language=c, % Detects keywords, comments, strings, functions, etc for the language specified
+backgroundcolor=\color{highlight}, % Set the background color for the snippet - useful for highlighting
+basicstyle=\footnotesize\ttfamily, % The default font size and style of the code
+breakatwhitespace=false, % If true, only allows line breaks at white space
+breaklines=true, % Automatic line breaking (prevents code from protruding outside the box)
+captionpos=b, % Sets the caption position: b for bottom; t for top
+commentstyle=\usefont{T1}{pcr}{m}{sl}\color{DarkGreen}, % Style of comments within the code - dark green courier font
+deletekeywords={}, % If you want to delete any keywords from the current language separate them by commas
+%escapeinside={\%}, % This allows you to escape to LaTeX using the character in the bracket
+firstnumber=1, % Line numbers begin at line 1
+frame=single, % Frame around the code box, value can be: none, leftline, topline, bottomline, lines, single, shadowbox
+frameround=tttt, % Rounds the corners of the frame for the top left, top right, bottom left and bottom right positions
+keywordstyle=\color{Blue}\bf, % Functions are bold and blue
+morekeywords={}, % Add any functions no included by default here separated by commas
+numbers=left, % Location of line numbers, can take the values of: none, left, right
+numbersep=10pt, % Distance of line numbers from the code box
+numberstyle=\tiny\color{Gray}, % Style used for line numbers
+rulecolor=\color{black}, % Frame border color
+showstringspaces=false, % Don't put marks in string spaces
+showtabs=false, % Display tabs in the code as lines
+stepnumber=5, % The step distance between line numbers, i.e. how often will lines be numbered
+stringstyle=\color{Purple}, % Strings are purple
+tabsize=2, % Number of spaces per tab in the code
+}
+
+% Create a command to cleanly insert a snippet with the style above anywhere in the document
+\newcommand{\insertcode}[2]{\begin{itemize}\item[]\lstinputlisting[caption=#2,label=#1,style=Style1]{#1}\end{itemize}} % The first argument is the script location/filename and the second is a caption for the listing
+
+%----------------------------------------------------------------------------------------
+
+
+\title{Weekly Report}
+
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Targets}
+
+\subsection{Urgent}
+\begin{itemize}
+    \item Randomly selecting a node,
+        compute its care set,
+        change its care set,
+        synthesize the local circuit,
+        evaluate its area and error rate,
+        accept it with a certain probability.
+\end{itemize}
+
+\subsection{Important}
+\begin{itemize}
+    \item Use approximate confidence interval / hypothesis testing of Bernoulli experiments to evaluate the accuracy of error rate.
+    \item Trade off the accuracy of batch error estimation for speed
+        (even directly use Su's equation to update Boolean difference),
+        perhaps use hypothesis testing to evaluate the accuracy.
+    \item Combine the simulation of circuits with the simulation of Monte Carlo Tree Search.
+        In other words,
+        in one loop of Monte Carlo Tree Search,
+        merge logic simulation and playout (only simulate circuit once and playout once).
+    \item Represent circuit with AIG because of more potential LAC candidates.
+        For each round, select one or more input wires and replace them with constant 0 or 1.
+        Consider how to combine Wu's method (choose a subset of input wires and substitute).
+    \item Accelerate Approximate Logic Synthesis Ordered by Monte Carlo Tree Search:
+        reuse the result of batch error estimation in playout.
+\end{itemize}
+
+\subsection{Worth Trying}
+\begin{itemize}
+    \item Enhance default policy with greedy approach or field domain knowledge.
+    \item In expansion process of MCTS, expand more than one layers.
+    \item Tune parameters in MCTS\@.
+    \item Perform greedy flow on leaves of the final Monte Carlo Search Tree.
+    \item Combine beam search and MCTS\@.
+\end{itemize}
+
+\subsection{Potential Topics}
+\begin{itemize}
+    \item Relationship between power simulation and logic simulation.
+    \item Combine Binarized Neural Network with approximate computing.
+    \item Relationship between Boolean network and Bayesian Network.
+    \item Approximate TMR\@.
+\end{itemize}
+
+\section{Progress}
+\subsection{Map Wu's Result with ABC}
+See \textit{single-selection-result-20190312.xls}.
+
+In general,
+Su's result is slightly better:
+Wu's average area ratio is 81.12\%, Su's average ratio is 80.40\%,
+Wu's geomean of area ratio is 79.78\%, Su's is 79.10\%,
+Wu's geomean of area delay product is 48493, Su's is 47546.
+
+However,
+Wu's final approximate circuits for c1908, c5315 and mul8 are better.
+
+\subsection{Troubles in approximate mfs}
+Given a DC set and a circuit,
+I don't know how to synthesize it up to now.
+I tried to find a proper function in ABC but have not succeeded.
+
+Also,
+how to expand the range of DC set is another problem puzzling me.
+
+\end{document}
