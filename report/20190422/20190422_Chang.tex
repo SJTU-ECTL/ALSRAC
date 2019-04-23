@@ -1,0 +1,256 @@
+\documentclass{rpt}
+
+\title{Weekly Report}
+\author{}
+\date{\today}
+\usepackage[ruled, vlined, linesnumbered]{algorithm2e}
+
+\begin{document}
+
+\maketitle
+
+\section{Targets}
+
+\subsection{Urgent}
+\begin{itemize}
+    \item
+        Change window don't care set.
+\end{itemize}
+
+\subsection{Important}
+\begin{itemize}
+    \item
+        Randomly selecting a node,
+        compute its care set,
+        change its care set,
+        synthesize the local circuit,
+        evaluate its area and error rate,
+        accept it with a certain probability.
+    \item How DC affects BDD\@.
+        Change simplification method (mfs$\rightarrow$bdd).
+    \item Introduce DC with PLA files
+    \item Use model counting to compute error rate, i.e., how many assignments satisfying a SAT problem.
+    \item Use approximate confidence interval / hypothesis testing of Bernoulli experiments to evaluate the accuracy of error rate.
+    \item Trade off the accuracy of batch error estimation for speed
+        (even directly use Su's equation to update Boolean difference),
+        perhaps use hypothesis testing to evaluate the accuracy.
+    \item Combine the simulation of circuits with the simulation of Monte Carlo Tree Search.
+        In other words,
+        in one loop of Monte Carlo Tree Search,
+        merge logic simulation and playout (only simulate circuit once and playout once).
+    \item Represent circuit with AIG because of more potential LAC candidates.
+        For each round, select one or more input wires and replace them with constant 0 or 1.
+        Consider how to combine Wu's method (choose a subset of input wires and substitute).
+    \item Accelerate Approximate Logic Synthesis Ordered by Monte Carlo Tree Search:
+        reuse the result of batch error estimation in playout.
+    \item
+        Use UCB1's bound to guide the simulation time.
+        Find relationship of different bounds.
+\end{itemize}
+
+\subsection{Worth Trying}
+\begin{itemize}
+    \item Enhance default policy with greedy approach or field domain knowledge.
+    \item In expansion process of MCTS, expand more than one layers.
+    \item Tune parameters in MCTS\@.
+    \item Perform greedy flow on leaves of the final Monte Carlo Search Tree.
+    \item Combine beam search and MCTS\@.
+    \item
+        Influence of network representation on synthesis.
+        Why does mfs use local AIG function to represent the circuit,
+        is it more fittable to LUT mapping?
+\end{itemize}
+
+\subsection{Potential Topics}
+\begin{itemize}
+    \item Relationship between power simulation and logic simulation.
+    \item Combine Binarized Neural Network with approximate computing.
+    \item Relationship between Boolean network and Bayesian Network.
+    \item Approximate TMR\@.
+\end{itemize}
+
+\section{Progress}
+
+\subsection{Issues of Last Meeting}
+\subsubsection*{Pseudo code}
+
+\SetKwFunction{ApproxWinResub}{ApproxWinResub}
+\SetKwFunction{Simulate}{Simulate}
+\SetKwFunction{FindRoots}{FindRoots}
+\SetKwFunction{FindTFICone}{FindTFICone}
+\SetKwFunction{FindWinInputs}{FindWinInputs}
+\SetKwFunction{FindDivisors}{FindDivisors}
+\SetKwFunction{BuildAppAig}{BuildAppAig}
+\SetKwFunction{AigToCnf}{AigToCnf}
+\SetKwFunction{CreateSolver}{CreateSolver}
+\SetKwFunction{ResubNode}{ResubNode}
+\SetKwFunction{AigConstOne}{AigConstOne}
+\SetKwFunction{AigAnd}{AigAnd}
+\SetKwFunction{AigOr}{AigOr}
+\SetKwFunction{AigNot}{AigNot}
+\begin{algorithm}[H]
+    \caption{\small DCALS}
+    \begin{small}
+        \KwIn{$C_{ori}, original circuit$\\
+        $E$, error threshold\\
+        $nWinTfoLevs$, maximum level of TFO cone of windows\\
+        $nWinTfiLevs$, maximum level of TFI cone of windows\\
+        $nFanoutMax$, maximum branch factor of TFO cone of windows\\
+        }
+        \KwOut{approximate circuit $C_{ax}$}
+
+        \vspace{1em}
+        $C_{ax} $\leftarrow$ C_{ori}$\\
+
+        \vspace{1em}
+        // Directly given so far\\
+        Determine a proper simulation number $N$ according to $E$\\
+
+        \vspace{1em}
+        \ForAll{node $V$ in $C_{ori}$}{
+        // not the topological order, just select nodes one by one\\
+            \ApproxWinResub($C_{ax}$, $V$, $N$, $nWinTfoLevs$, $nWinTfiLevs$)
+        }
+
+        \vspace{1em}
+        \KwRet{$C_{ax}$;}
+    \end{small}
+\end{algorithm}
+
+\begin{algorithm}[H]
+    \caption{\small ApproxWinResub}
+    \begin{small}
+        \KwIn{$C_{ax}$, current approximate circuit\\
+        $V$, the pivot node\\
+        $N$, the frame number of simulation}\\
+        $nWinTfoLevs$, maximum level of TFO cone of windows\\
+        $nWinTfiLevs$, maximum level of TFI cone of windows\\
+        \KwOut{None}
+
+        \vspace{1em}
+        Update levels of each node in $C_{ax}$\\
+
+        \vspace{1em}
+        // Logic simulation, generate approximate care set\\
+        \Simulate($C_{ax}$, $N$)\\
+
+        \vspace{1em}
+        // From $V$, traverse its TFO cone, collect nodes satisfying one of conditions:\\
+        // (i) POs or nodes with many fanouts less than $nWinTfiLevs$ levels away from $V$\\
+        // (ii) $nWinTfoLevs$ levels away from $V$\\
+        $vRoots$ $\leftarrow$ \FindRoots($C_{ax}$, $V$, $nWinTfoLevs$, $nFanoutMax$)\\
+
+        \vspace{1em}
+        // from each node in $vRoots$, traverse their TFI cone, collect all nodes\\
+        $vTFICone$ $\leftarrow$ \FindTFICone($C_{ax}$, $vRoots$)\\
+
+        \vspace{1em}
+        // from each node in $vRoots$, traverse their TFI cones, collect all nodes that are:\\
+        // (i) PIs less than $nWinTfiLevs$ levels from $V$ (ii) $nWinTfiLevs$ levels from $V$\\
+        $vWinInputs$ $\leftarrow$ \FindWinInputs($C_{ax}$, $vRoots$, $V.level - nWinTfiLevs$)\\
+
+        \vspace{1em}
+        // PIs are divided into: (a) those in the TFI cone of the pivot node, and (b) the remainder.\\
+        // All nodes on paths between $V$ and the PIs of type (a) are added to the set of candidates,
+        excluding the node itself and any node in the fanout free cone of $V$.\\
+        // Other nodes of in $vTFICone$ are added if they have no type (b) structural support.
+        $vDivs$ $\leftarrow$ \FindDivisors($C_{ax}$, $V$)\\
+
+        \vspace{1em}
+        // build aig with approximate care set and divisors\\
+        $aig$ $\leftarrow$ \BuildAppAig($vTFICone$, $vWinInputs$, $vDivs$, $N$)\\
+        // convert to cnf\\
+        $cnf$ $\leftarrow$ \AigToCnf($aig$)\\
+        // create sat solver by adding condition of the existence of resubstitution\\
+        $sat$ $\leftarrow$ \CreateSolver($cnf$, $vWinInputs$)\\
+
+        \vspace{1em}
+        // simplify the circuit according to sat solver, I cannot understand proof of unsatisfiability\\
+        \ResubNode($C_{ax}, $V$, $sat$)\\
+    \end{small}
+\end{algorithm}
+
+\begin{algorithm}[H]
+    \caption{\small BuildAppAig}
+    \begin{small}
+        \KwIn{$vTFICone$, the TFI cone of $vRoots$\\
+        $vWinInputs$, window inputs\\
+        $vDivs$, divisor candidates\\
+        $N$, simulation frame number}
+        \KwOut{$aig$, an aig containing $vTFICone$ and expressions of approximate care set}
+
+        \vspace{1em}
+        $aig \leftarrow\emptyset$\\
+        // add original function\\
+        \ForAll{node $X$ in $vTFICone$}{
+            transform $X$ and add it into $aig$
+        }
+
+        \vspace{1em}
+        // add approximate care set\\
+        \For{i = 1 \emph{\KwTo} $N$}{
+            $pCare \leftarrow$ \AigConstOne()\\
+            \ForAll{node $X$ in $vWinInputs$}{
+                \If{value of $X$ is 1 in the $i$-th frame}{
+                    $pCare \leftarrow$ \AigAnd(pCare, X)
+                }
+                \Else{
+                    $pCare \leftarrow$ \AigAnd(pCare, \AigNot(X))
+                }
+            }
+            $aig \leftarrow$ \AigOr(aig, pCare)
+        }
+
+        \vspace{1em}
+        // add divisors\\
+        Set nodes in $vDivs$ as outputs of $aig$
+
+        \vspace{1em}
+        \KwRet{aig}
+    \end{small}
+\end{algorithm}
+
+\subsubsection*{Choices in design}
+Note: current parameters are presented in brackets.
+\begin{enumerate}
+    \item Simulation
+        \begin{itemize}
+            \item Number of simulation frame $N$ controls the error rate of circuit.
+            \item Various input combinations generate distinct resubstitution.
+        \end{itemize}
+    \item Window construction
+        \begin{itemize}
+            \item $nWinTfoLevs$, maximum level of TFO cone. (2)
+            \item $nWinTfiLevs$, maximum level of TFI cone. (1-5)
+            \item $nFanoutMax$, maximum branch factor of TFO cone of windows. (30)
+            \item How to select divisors. (non-FFC nodes in $V$'s TFI cone, part of nodes in window but not in $V$'s TFI cone)
+        \end{itemize}
+    \item Don't-cares
+        \begin{itemize}
+            \item Manipulate care set or don't care set. (care set)
+            \item Manipulate global set on PIs or local set on window inputs. (local set on window inputs)
+            \item Select all cares or part of cares according to appearance probability. (all)
+        \end{itemize}
+    \item Simplification order of each node. (one by one)
+    \item Approach that coping with EXDCs. (mfs)
+\end{enumerate}
+
+\subsubsection*{Questions}
+\begin{enumerate}
+    \item Is mfs a state-of-the-art method for logic synthesis with EXDC?
+    \item Is it reasonable to insert care set on window inputs?
+    \item Is there any toy example for proof of unsatisfiability?
+    \item An interesting observation: I use the simulation results as approximate care set,
+        when I increase simulation number,
+        the circuit might be simplified significantly due to the addition of one simulation frame.
+        Is it caused by the property of mfs?
+\end{enumerate}
+
+\subsubsection*{Explaination of that error rate is not monotonous to simulation number}
+When I increase simulation number,
+the size of approximate care set increases,
+while the size of approximate don't-care set decreases.
+Mfs only utilizes part of don't-cares to synthesize the circuit.
+It is possible that mfs utilizes less don't-cares after increasing simulation number.
+
+\end{document}
