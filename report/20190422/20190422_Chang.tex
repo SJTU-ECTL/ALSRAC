@@ -91,7 +91,7 @@
 \begin{algorithm}[H]
     \caption{\small DCALS}
     \begin{small}
-        \KwIn{$C_{ori}, original circuit$\\
+        \KwIn{$C_{ori}$, original circuit\\
         $E$, error threshold\\
         $nWinTfoLevs$, maximum level of TFO cone of windows\\
         $nWinTfiLevs$, maximum level of TFI cone of windows\\
@@ -107,7 +107,7 @@
         Determine a proper simulation number $N$ according to $E$\\
 
         \vspace{1em}
-        \ForAll{node $V$ in $C_{ori}$}{
+        \ForAll{node $V$ in $C_{ax}$}{
         // not the topological order, just select nodes one by one\\
             \ApproxWinResub($C_{ax}$, $V$, $N$, $nWinTfoLevs$, $nWinTfiLevs$)
         }
@@ -136,7 +136,7 @@
 
         \vspace{1em}
         // From $V$, traverse its TFO cone, collect nodes satisfying one of conditions:\\
-        // (i) POs or nodes with many fanouts less than $nWinTfiLevs$ levels away from $V$\\
+        // (i) POs or nodes with many fanouts less than $nWinTfoLevs$ levels away from $V$\\
         // (ii) $nWinTfoLevs$ levels away from $V$\\
         $vRoots$ $\leftarrow$ \FindRoots($C_{ax}$, $V$, $nWinTfoLevs$, $nFanoutMax$)\\
 
@@ -158,11 +158,11 @@
 
         \vspace{1em}
         // build aig with approximate care set and divisors\\
-        $aig$ $\leftarrow$ \BuildAppAig($vTFICone$, $vWinInputs$, $vDivs$, $N$)\\
+        $aig$ $\leftarrow$ \BuildAppAig($vTFICone$, $vWinInputs$, $N$)\\
         // convert to cnf\\
         $cnf$ $\leftarrow$ \AigToCnf($aig$)\\
         // create sat solver by adding condition of the existence of resubstitution\\
-        $sat$ $\leftarrow$ \CreateSolver($cnf$, $vWinInputs$)\\
+        $sat$ $\leftarrow$ \CreateSolver($cnf$, $vWinInputs$, $vDivs$)\\
 
         \vspace{1em}
         // simplify the circuit according to sat solver, I cannot understand proof of unsatisfiability\\
@@ -175,19 +175,18 @@
     \begin{small}
         \KwIn{$vTFICone$, the TFI cone of $vRoots$\\
         $vWinInputs$, window inputs\\
-        $vDivs$, divisor candidates\\
+        % $vDivs$, divisor candidates\\
         $N$, simulation frame number}
         \KwOut{$aig$, an aig containing $vTFICone$ and expressions of approximate care set}
 
         \vspace{1em}
         $aig \leftarrow\emptyset$\\
         // add original function\\
-        \ForAll{node $X$ in $vTFICone$}{
-            transform $X$ and add it into $aig$
-        }
+        transform $vTFICone$ and add nodes to $aig$
 
         \vspace{1em}
         // add approximate care set\\
+        % transform approximate care set and add nodes to $aig$
         \For{i = 1 \emph{\KwTo} $N$}{
             $pCare \leftarrow$ \AigConstOne()\\
             \ForAll{node $X$ in $vWinInputs$}{
@@ -201,9 +200,9 @@
             $aig \leftarrow$ \AigOr(aig, pCare)
         }
 
-        \vspace{1em}
-        // add divisors\\
-        Set nodes in $vDivs$ as outputs of $aig$
+        % \vspace{1em}
+        % // add divisors\\
+        % Set nodes in $vDivs$ as outputs of $aig$
 
         \vspace{1em}
         \KwRet{aig}
@@ -211,7 +210,7 @@
 \end{algorithm}
 
 \subsubsection*{Choices in design}
-Note: current parameters are presented in brackets.
+Note: current parameters are presented in parentheses.
 \begin{enumerate}
     \item Simulation
         \begin{itemize}
@@ -251,6 +250,6 @@ When I increase simulation number,
 the size of approximate care set increases,
 while the size of approximate don't-care set decreases.
 Mfs only utilizes part of don't-cares to synthesize the circuit.
-It is possible that mfs utilizes less don't-cares after increasing simulation number.
+It is possible that mfs utilizes more don't-cares after increasing simulation number.
 
 \end{document}
