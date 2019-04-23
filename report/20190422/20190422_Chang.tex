@@ -100,7 +100,7 @@
         \KwOut{approximate circuit $C_{ax}$}
 
         \vspace{1em}
-        $C_{ax} $\leftarrow$ C_{ori}$\\
+        $C_{ax} \leftarrow C_{ori}$\\
 
         \vspace{1em}
         // Directly given so far\\
@@ -122,9 +122,9 @@
     \begin{small}
         \KwIn{$C_{ax}$, current approximate circuit\\
         $V$, the pivot node\\
-        $N$, the frame number of simulation}\\
+        $N$, the frame number of simulation
         $nWinTfoLevs$, maximum level of TFO cone of windows\\
-        $nWinTfiLevs$, maximum level of TFI cone of windows\\
+        $nWinTfiLevs$, maximum level of TFI cone of windows}
         \KwOut{None}
 
         \vspace{1em}
@@ -166,7 +166,7 @@
 
         \vspace{1em}
         // simplify the circuit according to sat solver, I cannot understand proof of unsatisfiability\\
-        \ResubNode($C_{ax}, $V$, $sat$)\\
+        \ResubNode($C_{ax}$, $V$, $sat$)
     \end{small}
 \end{algorithm}
 
