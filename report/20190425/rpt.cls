@@ -1,6 +1,6 @@
 \ProvidesClass{report}[Weekly Report Template]
 \LoadClass{article}[10pt, a4paper]
-\RequirePackage{amsmath, amssymb, amsfonts, graphicx, subfig, ulem, booktabs}
+\RequirePackage{amsmath, amssymb, amsfonts, graphicx, subfig, ulem, booktabs, enumerate}
 \RequirePackage[top=1.5in, bottom=1.5in, left=1.5in, right=1.5in]{geometry}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% indent %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
