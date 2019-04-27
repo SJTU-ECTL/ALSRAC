@@ -1,0 +1,107 @@
+# Benchmark "c880" written by ABC on Sat Apr 27 21:58:29 2019
+.model c880
+.inputs G1gat G8gat G13gat G17gat G26gat G29gat G36gat G42gat G51gat G55gat \
+ G59gat G68gat G72gat G73gat G74gat G75gat G80gat G85gat G86gat G87gat \
+ G88gat G89gat G90gat G91gat G96gat G101gat G106gat G111gat G116gat G121gat \
+ G126gat G130gat G135gat G138gat G143gat G146gat G149gat G152gat G153gat \
+ G156gat G159gat G165gat G171gat G177gat G183gat G189gat G195gat G201gat \
+ G207gat G210gat G219gat G228gat G237gat G246gat G255gat G259gat G260gat \
+ G261gat G267gat G268gat
+.outputs G388gat G389gat G390gat G391gat G418gat G419gat G420gat G421gat \
+ G422gat G423gat G446gat G447gat G448gat G449gat G450gat G767gat G768gat \
+ G850gat G863gat G864gat G865gat G866gat G874gat G878gat G879gat G880gat
+.gate inv1   a=G29gat O=G446gat
+.gate inv1   a=G42gat O=n88
+.gate inv1   a=G75gat O=n89
+.gate nor3   a=n89 b=n88 c=G446gat O=G388gat
+.gate and2   a=G86gat b=G85gat O=G391gat
+.gate and2   a=G8gat b=G1gat O=G418gat
+.gate nand2  a=G446gat b=G26gat O=G419gat
+.gate nand2  a=G80gat b=G75gat O=G420gat
+.gate nand2  a=G80gat b=G59gat O=G421gat
+.gate nand2  a=G59gat b=G42gat O=G422gat
+.gate or2    a=G88gat b=G87gat O=G423gat
+.gate nand2  a=G51gat b=G26gat O=n98
+.gate inv1   a=n98 O=G447gat
+.gate nand3  a=G418gat b=G55gat c=G13gat O=n100
+.gate nor2   a=n100 b=G446gat O=G448gat
+.gate nand3  a=G74gat b=G68gat c=G59gat O=n102
+.gate nor2   a=n102 b=n100 O=G449gat
+.gate and2   a=G423gat b=G89gat O=G450gat
+.gate inv1   a=G165gat O=n105
+.gate inv1   a=G159gat O=n106
+.gate nor2   a=n106 b=G130gat O=n107
+.gate nor2   a=G207gat b=G177gat O=n108
+.gate nand4  a=n108 b=n107 c=G171gat d=n105 O=G768gat
+.gate inv1   a=G246gat O=n110
+.gate nand3  a=G73gat b=G72gat c=G68gat O=n111
+.gate nor3   a=n111 b=n100 c=G422gat O=n112
+.gate nand2  a=G261gat b=G219gat O=n113
+.gate nor2   a=G267gat b=G237gat O=n114
+.gate nand2  a=n114 b=n113 O=n115
+.gate aoi21  a=n112 b=G201gat c=n115 O=n116
+.gate inv1   a=G126gat O=n117
+.gate nand4  a=G447gat b=G59gat c=n88 d=G17gat O=n118
+.gate nor2   a=n118 b=n117 O=n119
+.gate nand4  a=n119 b=n116 c=n110 d=G201gat O=G850gat
+.gate nand2  a=n112 b=G183gat O=n121
+.gate or2    a=G143gat b=G111gat O=n122
+.gate nand2  a=n122 b=G183gat O=n123
+.gate nand2  a=n123 b=G228gat O=n124
+.gate nand3  a=n122 b=G237gat c=G183gat O=n125
+.gate oai21  a=G146gat b=G116gat c=G189gat O=n126
+.gate inv1   a=n126 O=n127
+.gate aoi21  a=n122 b=G246gat c=n127 O=n128
+.gate nand4  a=n128 b=n125 c=n124 d=n121 O=G863gat
+.gate inv1   a=G210gat O=n130
+.gate nand2  a=n126 b=G228gat O=n131
+.gate nand2  a=n127 b=G237gat O=n132
+.gate oai21  a=G146gat b=G116gat c=G246gat O=n133
+.gate nand4  a=n133 b=n132 c=n131 d=n130 O=G864gat
+.gate nand2  a=n119 b=G201gat O=n135
+.gate oai21  a=n135 b=G195gat c=G219gat O=n136
+.gate inv1   a=n118 O=n137
+.gate and2   a=G246gat b=G121gat O=n138
+.gate inv1   a=G237gat O=n139
+.gate nand3  a=n139 b=n130 c=G195gat O=n140
+.gate aoi21  a=n138 b=n137 c=n140 O=n141
+.gate nand2  a=n141 b=n136 O=G865gat
+.gate aoi21  a=G152gat b=G138gat c=G106gat O=n143
+.gate inv1   a=n143 O=n144
+.gate nand2  a=n144 b=G177gat O=n145
+.gate nand2  a=n137 b=G91gat O=n146
+.gate nor2   a=n146 b=n106 O=n147
+.gate inv1   a=n147 O=n148
+.gate nand2  a=n148 b=n145 O=G866gat
+.gate nand2  a=n112 b=G177gat O=n150
+.gate nand2  a=n123 b=G219gat O=n151
+.gate inv1   a=G228gat O=n152
+.gate nand2  a=n139 b=n152 O=n153
+.gate aoi21  a=n144 b=G246gat c=n153 O=n154
+.gate nand3  a=n154 b=n151 c=n150 O=G874gat
+.gate nand2  a=n148 b=G228gat O=n156
+.gate nand2  a=n147 b=G237gat O=n157
+.gate nand2  a=n112 b=G159gat O=n158
+.gate nand3  a=n137 b=G246gat c=G91gat O=n159
+.gate nand4  a=n159 b=n158 c=n157 d=n156 O=G878gat
+.gate inv1   a=G171gat O=n161
+.gate nor2   a=n123 b=n161 O=n162
+.gate nor2   a=G96gat b=G51gat O=n163
+.gate nor2   a=n163 b=n105 O=n164
+.gate nand2  a=n164 b=n161 O=n165
+.gate and2   a=n164 b=G219gat O=n166
+.gate oai21  a=n165 b=n162 c=n166 O=n167
+.gate nand2  a=n112 b=G165gat O=n168
+.gate oai21  a=n163 b=n110 c=n152 O=n169
+.gate aoi21  a=n164 b=G237gat c=n169 O=n170
+.gate nand3  a=n170 b=n168 c=n167 O=G879gat
+.gate inv1   a=G101gat O=n172
+.gate nand3  a=G447gat b=G149gat c=G55gat O=n173
+.gate oai21  a=n118 b=n172 c=n173 O=n174
+.gate nand2  a=n174 b=G246gat O=n175
+.gate aoi21  a=n112 b=G171gat c=n153 O=n176
+.gate nand2  a=n176 b=n175 O=G880gat
+.gate buf    a=G29gat O=G389gat
+.gate buf    a=G29gat O=G390gat
+.gate buf    a=G130gat O=G767gat
+.end
