@@ -125,8 +125,8 @@ clk = Abc_Clock();
     p->vRoots = Abc_MfsComputeRoots(pNode, p->pPars->nWinTfoLevs, p->pPars->nFanoutsMax);
     p->vSupp  = Abc_NtkNodeSupport(p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots));
     p->vNodes = Abc_NtkDfsNodes(p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots));
-    Vec_Ptr_t * vWinPIs = Ckt_WinNtkNodeSupport(p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots), Abc_ObjLevel(pNode) - nWinTfiLevs);
-    // Vec_Ptr_t * vWinPIs = Ckt_FindLocalInput(pNode, 20);
+    // Vec_Ptr_t * vWinPIs = Ckt_WinNtkNodeSupport(p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots), Abc_ObjLevel(pNode) - nWinTfiLevs);
+    Vec_Ptr_t * vWinPIs = Ckt_FindLocalInput(pNode, nWinTfiLevs);
 
 p->timeWin += Abc_Clock() - clk;
     if ( p->pPars->nWinMax && Vec_PtrSize(p->vNodes) > p->pPars->nWinMax )
