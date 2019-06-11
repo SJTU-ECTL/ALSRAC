@@ -10,7 +10,7 @@ TARGET  := main
 
 #compiling parameters
 CC      := g++
-LIBS    := -labc -lm -ldl -rdynamic -lreadline -ltermcap -lpthread -lstdc++ -lrt
+LIBS    := -labc -lm -ldl -rdynamic -lreadline -ltermcap -lpthread -lstdc++ -lrt -lgtest
 LDFLAGS := -L ${DIR_ABC_LIB}
 DEFINES := $(FLAG) -DLIN64
 INCLUDE := -I ${DIR_INC} -I ${DIR_ABC_INC}
