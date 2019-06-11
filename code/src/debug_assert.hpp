@@ -383,4 +383,9 @@ struct module_a : debug_assert::default_handler,          // it uses the default
 {
 };
 
+#define DASSERT1(val) (DEBUG_ASSERT((val), module_a{}))
+#define DASSERT2(val, str) (DEBUG_ASSERT((val), module_a{}, (str)))
+#define GetMacro(_1, _2, NAME, ...) NAME
+#define DASSERT(...) GetMacro(__VA_ARGS__, DASSERT2, DASSERT1, ...) (__VA_ARGS__)
+
 #endif // DEBUG_ASSERT_HPP_INCLUDED
