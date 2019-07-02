@@ -1,0 +1,1056 @@
+.model wal8
+.inputs multiplicand[0] multiplicand[1] multiplicand[2] multiplicand[3] \
+multiplicand[4] multiplicand[5] multiplicand[6] multiplicand[7] multiplier[0] \
+multiplier[1] multiplier[2] multiplier[3] multiplier[4] multiplier[5] \
+multiplier[6] multiplier[7]
+.outputs product[0] product[1] product[2] product[3] product[4] product[5] \
+product[6] product[7] product[8] product[9] product[10] product[11] \
+product[12] product[13] product[14] product[15]
+.names multiplicand[0] multiplier[0] product[0]
+11 1
+.names n87 n80 product[1]
+01 1
+10 1
+.names n122 n117 product[2]
+01 1
+10 1
+.names n202 n207 product[3]
+01 1
+10 1
+.names n310 n313 product[4]
+01 1
+10 1
+.names n392 n395 product[5]
+01 1
+10 1
+.names n490 n394 product[6]
+01 1
+10 1
+.names n486 n503 product[7]
+11 1
+00 1
+.names n407 n512 product[8]
+11 1
+00 1
+.names n505 n514 product[9]
+01 1
+10 1
+.names n516 n529 product[10]
+11 1
+00 1
+.names n526 n537 product[11]
+01 1
+10 1
+.names n541 n546 product[12]
+11 1
+00 1
+.names n551 n555 product[13]
+11 1
+00 1
+.names n559 n562 product[14]
+11 1
+00 1
+.names n574 n567 product[15]
+0- 1
+-1 1
+.names multiplicand[0] multiplier[1] n87
+11 1
+.names multiplicand[1] multiplier[0] n80
+11 1
+.names n86 n120 n122
+01 1
+10 1
+.names n87 n80 n117
+11 1
+.names n122 n117 n202
+11 1
+.names n85 n205 n207
+01 1
+10 1
+.names n202 n207 n310
+11 1
+.names n206 n211 n313
+11 1
+00 1
+.names n310 n313 n392
+11 1
+.names n312 n317 n395
+01 1
+10 1
+.names n398 n483 n490
+01 1
+10 1
+.names n312 n317 n394
+11 1
+.names n398 n485 n486
+10 1
+.names n400 n406 n503
+11 1
+00 1
+.names n405 n402 n407
+0- 1
+-0 1
+.names n418 n497 n512
+01 1
+10 1
+.names n507 n506 n505
+00 1
+.names n524 n523 n514
+0- 1
+-0 1
+.names n520 n517 n516
+00 1
+.names n453 n431 n532 n529
+--0 1
+00- 1
+.names n516 n532 n528 n526
+1-0 1
+-00 1
+.names n444 n456 n537
+01 1
+10 1
+.names n526 n535 n536 n541
+1-0 1
+-00 1
+.names n543 n553 n546
+0- 1
+-1 1
+.names n541 n543 n553 n551
+1-0 1
+-00 1
+.names n479 n471 n555
+11 1
+00 1
+.names n551 n556 n560 n559
+1-0 1
+-00 1
+.names n482 n480 n562
+11 1
+00 1
+.names n567 n309 n574
+1- 1
+-0 1
+.names n559 n563 n566 n567
+1-0 1
+-00 1
+.names multiplicand[0] multiplier[2] n86
+11 1
+.names n72 n79 n120
+01 1
+10 1
+.names multiplicand[0] multiplier[3] n85
+11 1
+.names n121 n126 n205
+11 1
+00 1
+.names n85 n121 n126 n205 n206
+01-- 1
+0-0- 1
+-1-0 1
+--00 1
+.names n160 n209 n211
+01 1
+10 1
+.names n206 n211 n312
+01 1
+.names n159 n315 n317
+01 1
+10 1
+.names n401 n399 n398
+0- 1
+-0 1
+.names n392 n395 n483
+11 1
+.names n394 n483 n485
+00 1
+.names n316 n324 n400
+01 1
+.names n416 n410 n406
+0- 1
+-0 1
+.names n329 n413 n405
+0- 1
+-0 1
+.names n268 n322 n402
+0- 1
+-0 1
+.names n423 n427 n418
+0- 1
+-0 1
+.names n493 n495 n497
+0- 1
+-0 1
+.names n497 n509 n507
+11 1
+.names n418 n407 n506
+00 1
+.names n417 n442 n524
+1- 1
+-0 1
+.names n417 n442 n523
+0- 1
+-1 1
+.names n505 n515 n520
+00 1
+.names n417 n442 n517
+00 1
+.names n450 n454 n453
+0- 1
+-0 1
+.names n432 n439 n431
+0- 1
+-0 1
+.names n431 n453 n532
+0- 1
+-0 1
+.names n453 n431 n528
+00 1
+.names n280 n451 n452 n444
+--0 1
+00- 1
+.names n466 n457 n456
+0- 1
+-0 1
+.names n444 n456 n535
+0- 1
+-0 1
+.names n444 n456 n536
+00 1
+.names n470 n463 n543
+0- 1
+-0 1
+.names n470 n463 n553
+00 1
+.names n301 n476 n479
+11 1
+00 1
+.names n299 n382 n388 n468 n471
+-11- 1
+0--0 1
+.names n479 n471 n556
+0- 1
+-0 1
+.names n555 n556 n560
+11 1
+.names n309 n33 n482
+01 1
+10 1
+.names n301 n308 n389 n476 n480
+-11- 1
+1--0 1
+.names n97 n34 n309
+11 1
+.names n482 n480 n563
+0- 1
+-0 1
+.names n562 n563 n566
+11 1
+.names multiplicand[2] multiplier[0] n72
+11 1
+.names multiplicand[1] multiplier[1] n79
+11 1
+.names n79 n72 n120 n86 n121
+0-0- 1
+-00- 1
+0--0 1
+-0-0 1
+.names n78 n124 n126
+01 1
+10 1
+.names n84 n77 n160
+01 1
+10 1
+.names n125 n130 n209
+11 1
+00 1
+.names n84 n77 n159
+11 1
+.names n210 n215 n315
+11 1
+00 1
+.names n316 n324 n401
+1- 1
+-1 1
+.names n316 n324 n399
+0- 1
+-0 1
+.names n159 n210 n215 n315 n316
+01-- 1
+0-0- 1
+-1-0 1
+--00 1
+.names n326 n325 n324
+0- 1
+-0 1
+.names n329 n404 n416
+1- 1
+-0 1
+.names n329 n404 n410
+0- 1
+-1 1
+.names n330 n336 n329
+0- 1
+-0 1
+.names n268 n322 n413
+1- 1
+-1 1
+.names n82 n163 n268
+10 1
+.names n327 n319 n322
+00 1
+.names n347 n421 n423
+0- 1
+-0 1
+.names n347 n429 n424 n427
+1-- 1
+-0- 1
+--0 1
+.names n486 n494 n493
+1- 1
+-0 1
+.names n400 n406 n495
+1- 1
+-1 1
+.names n418 n407 n509
+0- 1
+-0 1
+.names n424 n426 n417
+0- 1
+-0 1
+.names n441 n443 n442
+0- 1
+-0 1
+.names n417 n442 n515
+11 1
+.names n449 n357 n450
+0- 1
+-0 1
+.names n449 n357 n454
+1- 1
+-1 1
+.names n352 n360 n432
+0- 1
+-0 1
+.names n276 n352 n360 n439
+1-- 1
+-00 1
+.names n58 n65 n175 n279 n280
+00-- 1
+-01- 1
+0--0 1
+--10 1
+.names n374 n357 n451
+00 1
+.names n357 n374 n452
+0- 1
+-0 1
+.names n458 n287 n466
+1- 1
+-1 1
+.names n287 n458 n457
+0- 1
+-0 1
+.names n299 n468 n470
+01 1
+10 1
+.names n287 n372 n384 n459 n463
+-11- 1
+1--1 1
+.names n41 n100 n201 n304 n301
+-11- 1
+1--0 1
+.names n308 n389 n476
+11 1
+00 1
+.names n42 n49 n187 n289 n299
+00-- 1
+-00- 1
+0--1 1
+--01 1
+.names n200 n293 n382
+11 1
+.names n35 n302 n388
+01 1
+10 1
+.names n472 n469 n468
+0- 1
+-0 1
+.names multiplicand[7] multiplier[7] n33
+11 1
+.names n34 n97 n308
+01 1
+10 1
+.names n35 n302 n389
+11 1
+.names multiplier[7] multiplicand[6] n97
+11 1
+.names multiplicand[7] multiplier[6] n34
+11 1
+.names multiplicand[1] multiplier[2] n78
+11 1
+.names n64 n71 n124
+01 1
+10 1
+.names multiplicand[0] multiplier[4] n84
+11 1
+.names multiplicand[1] multiplier[3] n77
+11 1
+.names n71 n64 n124 n78 n125
+0-0- 1
+-00- 1
+0--0 1
+-0-0 1
+.names n70 n128 n130
+01 1
+10 1
+.names n125 n130 n160 n209 n210
+1-0- 1
+-00- 1
+1--0 1
+-0-0 1
+.names n164 n213 n215
+01 1
+10 1
+.names n320 n222 n326
+0- 1
+-0 1
+.names n222 n320 n325
+1- 1
+-1 1
+.names n412 n415 n404
+0- 1
+-0 1
+.names n236 n333 n330
+0- 1
+-1 1
+.names n236 n333 n336
+1- 1
+-0 1
+.names multiplicand[0] multiplier[6] n82
+11 1
+.names n76 n69 n162 n83 n163
+0-0- 1
+-00- 1
+0--0 1
+-0-0 1
+.names n222 n321 n327
+00 1
+.names n214 n269 n319
+10 1
+.names n349 n348 n347
+0- 1
+-0 1
+.names n429 n424 n421
+0- 1
+-0 1
+.names n272 n340 n429
+0- 1
+-1 1
+.names n272 n340 n424
+1- 1
+-0 1
+.names n406 n400 n494
+0- 1
+-0 1
+.names n429 n347 n426
+0- 1
+-0 1
+.names n360 n440 n441
+0- 1
+-1 1
+.names n360 n440 n443
+1- 1
+-0 1
+.names n447 n448 n449
+0- 1
+-0 1
+.names n363 n358 n357
+0- 1
+-0 1
+.names n344 n346 n352
+0- 1
+-0 1
+.names n364 n361 n360
+0- 1
+-0 1
+.names n66 n73 n171 n275 n276
+00-- 1
+-01- 1
+0--0 1
+--10 1
+.names multiplicand[3] multiplier[6] n58
+11 1
+.names multiplicand[2] multiplier[7] n65
+11 1
+.names n52 n45 n174 n59 n175
+0-0- 1
+-00- 1
+0--0 1
+-0-0 1
+.names n58 n175 n279
+11 1
+00 1
+.names n371 n375 n374
+0- 1
+-0 1
+.names n460 n459 n458
+0- 1
+-0 1
+.names n57 n285 n286 n287
+--0 1
+10- 1
+.names n190 n260 n282 n378 n372
+11-- 1
+--10 1
+.names n386 n385 n384
+0- 1
+-0 1
+.names n372 n384 n459
+1- 1
+-1 1
+.names multiplicand[5] multiplier[7] n41
+11 1
+.names multiplicand[6] multiplier[6] n100
+11 1
+.names n36 n106 n201
+11 1
+.names n306 n305 n304
+0- 1
+-0 1
+.names multiplicand[5] multiplier[6] n42
+11 1
+.names multiplicand[4] multiplier[7] n49
+11 1
+.names n43 n193 n194 n187
+--0 1
+10- 1
+.names n291 n290 n289
+0- 1
+-0 1
+.names n36 n106 n200
+01 1
+10 1
+.names n295 n294 n293
+0- 1
+-0 1
+.names multiplicand[7] multiplier[5] n35
+11 1
+.names n304 n41 n302
+11 1
+00 1
+.names n388 n382 n472
+0- 1
+-0 1
+.names n382 n388 n469
+1- 1
+-1 1
+.names multiplicand[3] multiplier[0] n64
+11 1
+.names multiplicand[2] multiplier[1] n71
+11 1
+.names multiplicand[2] multiplier[2] n70
+11 1
+.names n56 n63 n128
+01 1
+10 1
+.names n83 n162 n164
+01 1
+10 1
+.names n129 n134 n213
+11 1
+00 1
+.names n214 n269 n320
+01 1
+10 1
+.names n223 n226 n222
+0- 1
+-0 1
+.names n268 n322 n412
+0- 1
+-1 1
+.names n268 n322 n415
+1- 1
+-0 1
+.names n229 n235 n236
+0- 1
+-0 1
+.names n335 n334 n333
+0- 1
+-0 1
+.names multiplicand[1] multiplier[4] n76
+11 1
+.names multiplicand[2] multiplier[3] n69
+11 1
+.names n69 n76 n162
+01 1
+10 1
+.names multiplicand[0] multiplier[5] n83
+11 1
+.names n214 n269 n321
+01 1
+.names n129 n134 n164 n213 n214
+1-0- 1
+-00- 1
+1--0 1
+-0-0 1
+.names n82 n163 n269
+11 1
+00 1
+.names n247 n350 n349
+1- 1
+-0 1
+.names n247 n350 n348
+0- 1
+-1 1
+.names n74 n81 n167 n271 n272
+00-- 1
+-01- 1
+0--0 1
+--10 1
+.names n337 n332 n340
+0- 1
+-0 1
+.names n434 n438 n440
+0- 1
+-0 1
+.names n280 n374 n447
+0- 1
+-1 1
+.names n280 n374 n448
+1- 1
+-0 1
+.names n256 n254 n363
+0- 1
+-0 1
+.names n281 n359 n358
+0- 1
+-0 1
+.names n345 n247 n344
+0- 1
+-0 1
+.names n277 n240 n346
+0- 1
+-0 1
+.names n256 n366 n364
+1- 1
+-0 1
+.names n256 n366 n361
+0- 1
+-1 1
+.names multiplicand[2] multiplier[6] n66
+11 1
+.names multiplicand[1] multiplier[7] n73
+11 1
+.names n60 n53 n170 n67 n171
+0-0- 1
+-00- 1
+0--0 1
+-0-0 1
+.names n66 n171 n275
+11 1
+00 1
+.names multiplicand[4] multiplier[4] n52
+11 1
+.names multiplicand[5] multiplier[3] n45
+11 1
+.names n45 n52 n174
+01 1
+10 1
+.names multiplicand[3] multiplier[5] n59
+11 1
+.names n378 n282 n371
+0- 1
+-0 1
+.names n282 n378 n375
+1- 1
+-1 1
+.names n384 n372 n460
+0- 1
+-0 1
+.names multiplicand[3] multiplier[7] n57
+11 1
+.names n185 n50 n285
+00 1
+.names n50 n185 n286
+0- 1
+-0 1
+.names n192 n191 n190
+0- 1
+-0 1
+.names n264 n158 n260
+0- 1
+-1 1
+.names n185 n283 n282
+11 1
+00 1
+.names n376 n379 n378
+0- 1
+-0 1
+.names n200 n293 n386
+1- 1
+-0 1
+.names n200 n293 n385
+0- 1
+-1 1
+.names multiplicand[7] multiplier[4] n36
+11 1
+.names multiplicand[6] multiplier[5] n106
+11 1
+.names n201 n100 n306
+0- 1
+-0 1
+.names n100 n201 n305
+1- 1
+-1 1
+.names multiplicand[5] multiplier[5] n43
+11 1
+.names n196 n194 n193
+0- 1
+-0 1
+.names n107 n37 n194
+0- 1
+-0 1
+.names n187 n42 n291
+0- 1
+-0 1
+.names n42 n187 n290
+1- 1
+-1 1
+.names n289 n49 n295
+0- 1
+-0 1
+.names n49 n289 n294
+1- 1
+-1 1
+.names multiplicand[4] multiplier[0] n56
+11 1
+.names multiplicand[3] multiplier[1] n63
+11 1
+.names n63 n56 n128 n70 n129
+0-0- 1
+-00- 1
+0--0 1
+-0-0 1
+.names n62 n132 n134
+01 1
+10 1
+.names n136 n220 n223
+1- 1
+-1 1
+.names n136 n220 n226
+0- 1
+-0 1
+.names n149 n227 n229
+0- 1
+-1 1
+.names n149 n227 n235
+1- 1
+-0 1
+.names n219 n273 n335
+0- 1
+-1 1
+.names n219 n273 n334
+1- 1
+-0 1
+.names n248 n249 n247
+0- 1
+-0 1
+.names n355 n354 n350
+0- 1
+-0 1
+.names multiplicand[1] multiplier[6] n74
+11 1
+.names multiplicand[0] multiplier[7] n81
+11 1
+.names n68 n61 n166 n75 n167
+0-0- 1
+-00- 1
+0--0 1
+-0-0 1
+.names n74 n167 n271
+11 1
+00 1
+.names n236 n342 n337
+0- 1
+-0 1
+.names n273 n219 n332
+0- 1
+-0 1
+.names n276 n352 n434
+1- 1
+-1 1
+.names n276 n352 n438
+0- 1
+-0 1
+.names n257 n266 n256
+0- 1
+-0 1
+.names n251 n250 n254
+0- 1
+-0 1
+.names n65 n279 n281
+01 1
+10 1
+.names n254 n256 n359
+1- 1
+-1 1
+.names n240 n277 n345
+1- 1
+-1 1
+.names n73 n275 n277
+01 1
+10 1
+.names n237 n241 n240
+0- 1
+-0 1
+.names n367 n368 n366
+0- 1
+-0 1
+.names multiplicand[3] multiplier[4] n60
+11 1
+.names multiplicand[4] multiplier[3] n53
+11 1
+.names n53 n60 n170
+01 1
+10 1
+.names multiplicand[2] multiplier[5] n67
+11 1
+.names n51 n179 n180 n185
+--0 1
+10- 1
+.names multiplicand[4] multiplier[6] n50
+11 1
+.names n43 n193 n192
+0- 1
+-0 1
+.names n43 n193 n191
+1- 1
+-1 1
+.names n265 n182 n264
+0- 1
+-0 1
+.names n39 n98 n158
+10 1
+.names n57 n50 n283
+11 1
+00 1
+.names n190 n260 n376
+0- 1
+-0 1
+.names n190 n260 n379
+1- 1
+-1 1
+.names n37 n107 n196
+1- 1
+-1 1
+.names multiplicand[6] multiplier[4] n107
+11 1
+.names multiplicand[7] multiplier[3] n37
+11 1
+.names multiplicand[3] multiplier[2] n62
+11 1
+.names n48 n55 n132
+01 1
+10 1
+.names n137 n139 n136
+0- 1
+-0 1
+.names n133 n168 n220
+01 1
+10 1
+.names n152 n150 n149
+0- 1
+-0 1
+.names n239 n233 n227
+0- 1
+-0 1
+.names n225 n217 n219
+0- 1
+-0 1
+.names n81 n271 n273
+01 1
+10 1
+.names n153 n243 n248
+0- 1
+-1 1
+.names n153 n243 n249
+1- 1
+-0 1
+.names n240 n277 n355
+0- 1
+-1 1
+.names n240 n277 n354
+1- 1
+-0 1
+.names multiplicand[2] multiplier[4] n68
+11 1
+.names multiplicand[3] multiplier[3] n61
+11 1
+.names n61 n68 n166
+01 1
+10 1
+.names multiplicand[1] multiplier[5] n75
+11 1
+.names n219 n273 n342
+1- 1
+-1 1
+.names n267 n182 n257
+0- 1
+-0 1
+.names n158 n265 n182 n266
+1-- 1
+-0- 1
+--1 1
+.names n176 n147 n153 n251
+--0 1
+00- 1
+.names n147 n176 n250
+0- 1
+-0 1
+.names n143 n149 n172 n237
+-0- 1
+0-0 1
+.names n143 n172 n241
+0- 1
+-0 1
+.names n254 n281 n367
+1- 1
+-0 1
+.names n254 n281 n368
+0- 1
+-1 1
+.names multiplicand[4] multiplier[5] n51
+11 1
+.names n44 n95 n179
+01 1
+.names n44 n95 n180
+0- 1
+-1 1
+.names n38 n158 n265
+1- 1
+-1 1
+.names n183 n184 n182
+0- 1
+-0 1
+.names multiplicand[5] multiplier[0] n48
+11 1
+.names multiplicand[4] multiplier[1] n55
+11 1
+.names n138 n109 n137
+0- 1
+-0 1
+.names n109 n138 n139
+1- 1
+-1 1
+.names n55 n48 n132 n62 n133
+0-0- 1
+-00- 1
+0--0 1
+-0-0 1
+.names n75 n166 n168
+01 1
+10 1
+.names n108 n146 n152
+1- 1
+-1 1
+.names n146 n108 n150
+0- 1
+-0 1
+.names n143 n172 n239
+0- 1
+-1 1
+.names n143 n172 n233
+1- 1
+-0 1
+.names n136 n218 n225
+0- 1
+-0 1
+.names n133 n168 n217
+1- 1
+-0 1
+.names n156 n154 n153
+0- 1
+-0 1
+.names n253 n244 n243
+0- 1
+-0 1
+.names n158 n265 n267
+1- 1
+-0 1
+.names n59 n174 n176
+01 1
+10 1
+.names n108 n144 n145 n147
+-0- 1
+1-0 1
+.names n109 n141 n142 n143
+--0 1
+10- 1
+.names n67 n170 n172
+01 1
+10 1
+.names multiplicand[5] multiplier[4] n44
+11 1
+.names multiplicand[6] multiplier[3] n95
+0- 1
+-0 1
+.names multiplicand[7] multiplier[2] n38
+11 1
+.names n95 n178 n183
+0- 1
+-1 1
+.names n95 n178 n184
+1- 1
+-0 1
+.names n47 n54 n138
+11 1
+00 1
+.names multiplicand[6] multiplier[0] n109
+11 1
+.names multiplicand[6] multiplier[1] n108
+11 1
+.names n40 n46 n146
+11 1
+00 1
+.names n133 n168 n218
+0- 1
+-1 1
+.names n39 n98 n156
+1- 1
+-1 1
+.names n39 n98 n154
+0- 1
+-0 1
+.names n147 n176 n253
+0- 1
+-1 1
+.names n147 n176 n244
+1- 1
+-0 1
+.names n40 n46 n144
+0- 1
+-0 1
+.names n46 n40 n145
+00 1
+.names n54 n47 n141
+00 1
+.names n47 n54 n142
+0- 1
+-0 1
+.names multiplicand[7] multiplier[1] n39
+11 1
+.names multiplicand[6] multiplier[2] n98
+0- 1
+-0 1
+.names n51 n44 n178
+11 1
+00 1
+.names multiplicand[7] multiplier[0] n40
+11 1
+.names multiplicand[5] multiplier[2] n46
+11 1
+.names multiplicand[5] multiplier[1] n47
+11 1
+.names multiplicand[4] multiplier[2] n54
+11 1
+.end
