@@ -96,6 +96,7 @@ public:
     inline int                                              GetFanoutNum(void) const                                                    {return static_cast <int> (pCktFanouts.size());}
     inline bool                                             IsPI        (void) const                                                    {return type == Ckt_ObjType_t::PI;}
     inline bool                                             IsPO        (void) const                                                    {return type == Ckt_ObjType_t::PO;}
+    inline bool                                             IsPIO       (void) const                                                    {return type == Ckt_ObjType_t::PI || type == Ckt_ObjType_t::PO;}
     inline bool                                             IsConst     (void) const                                                    {return type == Ckt_ObjType_t::CONST0 || type == Ckt_ObjType_t::CONST1;}
     inline bool                                             IsConst0    (void) const                                                    {return type == Ckt_ObjType_t::CONST0;}
     inline bool                                             IsConst1    (void) const                                                    {return type == Ckt_ObjType_t::CONST1;}
