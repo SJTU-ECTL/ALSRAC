@@ -41,7 +41,6 @@ struct Abc_ManTime_t_
 };
 typedef struct Abc_ManTime_t_ Abc_ManTime_t;
 
-
 }
 
 #endif // ABC_API_H
