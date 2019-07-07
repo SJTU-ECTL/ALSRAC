@@ -36,7 +36,7 @@ void Ckt_FullSimplifyTest(int argc, char * argv[])
     DASSERT(Cmd_CommandExecute(pAbc, command.c_str()) == 0);
     command = "read_blif " + input;
     DASSERT(Cmd_CommandExecute(pAbc, command.c_str()) == 0);
-    shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc), false);
+    shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc));
     // Ckt_Visualize(pCktNtk->GetAbcNtk(), "test.dot");
 
     pCktNtk->Init(nFrame);
@@ -45,6 +45,7 @@ void Ckt_FullSimplifyTest(int argc, char * argv[])
     vector < shared_ptr <Ckt_Obj_t> > vRoots;
     vector < shared_ptr <Ckt_Obj_t> > vSupp;
     vector < shared_ptr <Ckt_Obj_t> > vNodes;
+    vector < shared_ptr <Ckt_Obj_t> > vMffc;
     DASSERT(system("if [ ! -d tmp ]; then mkdir tmp; fi") != -1);
     DASSERT(system("rm tmp/*") != -1);
     for (int i = 0; i < pCktNtk->GetObjNum(); ++i) {
@@ -57,7 +58,12 @@ void Ckt_FullSimplifyTest(int argc, char * argv[])
         Ckt_CollectNodes(vRoots, vSupp, vNodes);
         string fileName = "./tmp/" + pPivot->GetName();
         Ckt_GenerateNtk(vRoots, vSupp, vNodes, fileName + ".blif");
-        Ckt_EvaluateNtk(fileName);
+        Ckt_SimplifyNtk(fileName);
+        int nSavedLits = Ckt_CollectMffc(vNodes, vMffc);
+        int nAddedLits = Ckt_ReadNewNtk(fileName + "_out.blif");
+        cout << nSavedLits << "\t" << nAddedLits << endl;
+        if (nSavedLits > nAddedLits)
+            cout << "reduce " << nSavedLits - nAddedLits << endl;
     }
 
     Abc_Stop();
@@ -211,9 +217,6 @@ void Ckt_GenerateNtk(vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < shared
     }
 
     // exdc network
-    Abc_Ntk_t * pExdc = Abc_NtkAlloc(ABC_NTK_LOGIC, ABC_FUNC_SOP, 1);
-    pWinNtk->pExdc = pExdc;
-
     int bitWidth = static_cast <int> (vSupp.size());
     vector <bool> careSet(1 << bitWidth);
     for (int i = 0; i < vSupp[0]->GetSimNum(); ++i) {
@@ -233,6 +236,9 @@ void Ckt_GenerateNtk(vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < shared
             ++dcNum;
     cout << dcNum << "\t" << careSet.size() << "\t" << dcNum / static_cast <double>(careSet.size()) << endl;
     if (dcNum) {
+        Abc_Ntk_t * pExdc = Abc_NtkAlloc(ABC_NTK_LOGIC, ABC_FUNC_SOP, 1);
+        pWinNtk->pExdc = pExdc;
+
         char * pSop = Abc_SopStart((Mem_Flex_t *)pExdc->pManFunc, dcNum, bitWidth);
         char * pCube = pSop;
         for (int i = 0; i < static_cast <int>(careSet.size()); ++i) {
@@ -279,15 +285,51 @@ void Ckt_GenerateNtk(vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < shared
 }
 
 
-void Ckt_EvaluateNtk(string fileName)
+void Ckt_SimplifyNtk(string fileName)
 {
     FILE * fp = fopen((fileName + ".rug").c_str(), "w");
     DASSERT(fp != nullptr);
     fprintf(fp, "read_blif %s.blif;\n", fileName.c_str());
-    fprintf(fp, "print_stats;\n");
+    // fprintf(fp, "print_stats;\n");
     fprintf(fp, "full_simplify;\n");
     fprintf(fp, "write_blif %s_out.blif;\n", fileName.c_str());
-    fprintf(fp, "print_stats;\n");
+    // fprintf(fp, "print_stats;\n");
     fclose(fp);
     DASSERT(system(("sis -x -f " + fileName + ".rug").c_str()) != -1);
+}
+
+
+int Ckt_CollectMffc(vector < shared_ptr <Ckt_Obj_t> > & vNodes, vector < shared_ptr <Ckt_Obj_t> > & vMffc)
+{
+    DASSERT(vNodes.size());
+    vMffc.clear();
+    vNodes[0]->GetCktNtk()->SetUnvisited();
+    for (auto & pCktObj : vNodes)
+        Ckt_CollectMffc_Rec(pCktObj, vMffc, true);
+    int nLits = 0;
+    for (auto pCktObj : vMffc)
+        nLits += Abc_SopGetLitNum((char *)(pCktObj->GetAbcObj()->pData));
+    return nLits;
+}
+
+
+void Ckt_CollectMffc_Rec(shared_ptr <Ckt_Obj_t> pCktObj, vector < shared_ptr <Ckt_Obj_t> > & vMffc, bool isTop)
+{
+    if (pCktObj->GetVisited())
+        return;
+    pCktObj->SetVisited();
+    if (!isTop && (pCktObj->IsPI() || pCktObj->GetFanoutNum()))
+        return;
+    for (int i = 0; i < pCktObj->GetFaninNum(); ++i)
+        Ckt_CollectMffc_Rec(pCktObj->GetFanin(i), vMffc, 0);
+    vMffc.emplace_back(pCktObj);
+}
+
+
+int Ckt_ReadNewNtk(string fileName)
+{
+    Abc_Ntk_t * pNtk = Io_Read(const_cast <char *>(fileName.c_str()), IO_FILE_BLIF, 1, 0);
+    int nLits = Abc_NtkGetLitNum(pNtk);
+    Abc_NtkDelete(pNtk);
+    return nLits;
 }

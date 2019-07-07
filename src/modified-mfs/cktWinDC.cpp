@@ -108,7 +108,7 @@ int Ckt_WinMfsTest(Abc_Ntk_t * pNtk, int nWinTfiLevs, int frameNumber)
 int Ckt_WinMfsResub(Mfs_Man_t * p, Abc_Obj_t * pNode, int nWinTfiLevs, int frameNumber)
 {
     // perform logic simulation
-    shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pNode->pNtk, false);
+    shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pNode->pNtk);
     if (frameNumber % 64 == 0)
         pCktNtk->Init(frameNumber);
     else

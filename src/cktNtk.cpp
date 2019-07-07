@@ -576,23 +576,19 @@ bool Ckt_Obj_t::NodeIsOAI22(void)
 }
 
 
-Ckt_Ntk_t::Ckt_Ntk_t(Abc_Ntk_t * p_abc_ntk, bool is_dup_abc_ntk)
-    : isDupAbcNtk(is_dup_abc_ntk)
+Ckt_Ntk_t::Ckt_Ntk_t(Abc_Ntk_t * p_abc_ntk)
 {
-    DEBUG_ASSERT(p_abc_ntk != nullptr, module_a{}, "empty network!");
-    if (isDupAbcNtk)
-        pAbcNtk = Abc_NtkDup(p_abc_ntk);
-    else
-        pAbcNtk = p_abc_ntk;
+    cout << "construct network" << endl;
+    DASSERT(p_abc_ntk != nullptr, "empty network!");
+    pAbcNtk = Abc_NtkDup(p_abc_ntk);
 }
 
 
 Ckt_Ntk_t::~Ckt_Ntk_t(void)
 {
-    if (isDupAbcNtk) {
-        DEBUG_ASSERT(pAbcNtk != nullptr, module_a{}, "empty network!");
-        Abc_NtkDelete(pAbcNtk);
-    }
+    cout << "deconstruct network" << endl;
+    DASSERT(pAbcNtk != nullptr, "empty network!");
+    Abc_NtkDelete(pAbcNtk);
 }
 
 
@@ -613,6 +609,7 @@ void Ckt_Ntk_t::Init(int frame_number)
     // pCktObjs
     Abc_Obj_t * pAbcObj;
     int i;
+    unordered_map < int, shared_ptr <Ckt_Obj_t> > abcId2Ckt;
     Abc_NtkForEachObj(pAbcNtk, pAbcObj, i) {
         shared_ptr <Ckt_Obj_t> pCktObj = make_shared <Ckt_Obj_t> (pAbcObj);
         AddObj(pCktObj);
@@ -851,12 +848,12 @@ float Ckt_Ntk_t::MeasureError(shared_ptr <Ckt_Ntk_t> pRefNtk, int seed)
 }
 
 
-std::shared_ptr <Ckt_Obj_t> Ckt_Ntk_t::GetCktObj(int id) const
-{
-    unordered_map < int, shared_ptr <Ckt_Obj_t> >::const_iterator ppCktObj = abcId2Ckt.find(id);
-    DEBUG_ASSERT(ppCktObj != abcId2Ckt.end(), module_a{}, "object not found");
-    return ppCktObj->second;
-}
+// std::shared_ptr <Ckt_Obj_t> Ckt_Ntk_t::GetCktObj(int id) const
+// {
+//     unordered_map < int, shared_ptr <Ckt_Obj_t> >::const_iterator ppCktObj = abcId2Ckt.find(id);
+//     DEBUG_ASSERT(ppCktObj != abcId2Ckt.end(), module_a{}, "object not found");
+//     return ppCktObj->second;
+// }
 
 
 

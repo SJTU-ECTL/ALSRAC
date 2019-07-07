@@ -116,19 +116,18 @@ class Ckt_Ntk_t
 {
 private:
     abc::Abc_Ntk_t *                                        pAbcNtk;                                                                    // the ABC network
-    bool                                                    isDupAbcNtk;
     int                                                     nSim;
     Ckt_Func_t                                              funcType;
     std::vector < std::shared_ptr <Ckt_Obj_t> >             pCktObjs;                                                                   // CKT objects
     std::vector < std::shared_ptr <Ckt_Obj_t> >             pCktPis;
     std::vector < std::shared_ptr <Ckt_Obj_t> >             pCktPos;
-    std::unordered_map < int, std::shared_ptr <Ckt_Obj_t> > abcId2Ckt;
+    // std::unordered_map < int, std::shared_ptr <Ckt_Obj_t> > abcId2Ckt;
 
     Ckt_Ntk_t &                                             operator =  (const Ckt_Ntk_t &);                                            // forbid assignment constructor
                                                             Ckt_Ntk_t   (const Ckt_Ntk_t & other);                                      // forbid copy constructor
 
 public:
-    explicit                                                Ckt_Ntk_t   (abc::Abc_Ntk_t * p_abc_ntk, bool is_dup_abc_ntk = true);
+    explicit                                                Ckt_Ntk_t   (abc::Abc_Ntk_t * p_abc_ntk);
                                                             ~Ckt_Ntk_t  (void);
 
     void                                                    Init        (int frame_number = 10240);
@@ -143,7 +142,7 @@ public:
     void                                                    LogicSim    (bool isVerbose = true);
     void                                                    CheckSim    (void);
     float                                                   MeasureError(std::shared_ptr <Ckt_Ntk_t> pRefNtk, int seed = 314);
-    std::shared_ptr <Ckt_Obj_t>                             GetCktObj   (int id) const;
+    // std::shared_ptr <Ckt_Obj_t>                             GetCktObj   (int id) const;
 
 
     inline std::string                                      GetName     (void) const                                                    {return std::string(pAbcNtk->pName);}
