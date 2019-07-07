@@ -14,6 +14,7 @@ void Ckt_ComputeSupport(std::vector < std::shared_ptr <Ckt_Obj_t> > & vRoots, st
 void Ckt_CollectNodes(std::vector < std::shared_ptr <Ckt_Obj_t> > & vRoots, std::vector < std::shared_ptr <Ckt_Obj_t> > & vSupp, std::vector < std::shared_ptr <Ckt_Obj_t> > & vNodes);
 void Ckt_CollectNodes_Rec(std::shared_ptr <Ckt_Obj_t> pCktObj, std::set < std::shared_ptr <Ckt_Obj_t> > & vSuppSet, std::vector < std::shared_ptr <Ckt_Obj_t> > & vNodes);
 void Ckt_GenerateNtk(std::vector < std::shared_ptr <Ckt_Obj_t> > & vRoots, std::vector < std::shared_ptr <Ckt_Obj_t> > & vSupp, std::vector < std::shared_ptr <Ckt_Obj_t> > & vNodes, std::string fileName);
+void Ckt_EvaluateNtk(std::string fileName);
 
 
 #endif

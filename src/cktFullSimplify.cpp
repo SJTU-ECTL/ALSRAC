@@ -55,7 +55,9 @@ void Ckt_FullSimplifyTest(int argc, char * argv[])
         Ckt_ComputeRoot(pPivot, vRoots, level, nLocalPI);
         Ckt_ComputeSupport(vRoots, vSupp, nLocalPI);
         Ckt_CollectNodes(vRoots, vSupp, vNodes);
-        Ckt_GenerateNtk(vRoots, vSupp, vNodes, "./tmp/" + pPivot->GetName() + ".blif");
+        string fileName = "./tmp/" + pPivot->GetName();
+        Ckt_GenerateNtk(vRoots, vSupp, vNodes, fileName + ".blif");
+        Ckt_EvaluateNtk(fileName);
     }
 
     Abc_Stop();
@@ -118,6 +120,7 @@ void Ckt_ComputeSupport(vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < sha
         // cout << "pop " << pCktObj << endl;
         if (pCktObj->IsPI() || pCktObj->IsConst()) {
             vSupp.emplace_back(pCktObj);
+            --nLocalPI;
             // cout << "update vSupp " << pCktObj << endl;
         }
         for (int i = 0; i < pCktObj->GetFaninNum(); ++i) {
@@ -273,4 +276,18 @@ void Ckt_GenerateNtk(vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < shared
 
     Io_Write(pWinNtk, const_cast <char *>(fileName.c_str()), IO_FILE_BLIF);
     Abc_NtkDelete(pWinNtk);
+}
+
+
+void Ckt_EvaluateNtk(string fileName)
+{
+    FILE * fp = fopen((fileName + ".rug").c_str(), "w");
+    DASSERT(fp != nullptr);
+    fprintf(fp, "read_blif %s.blif;\n", fileName.c_str());
+    fprintf(fp, "print_stats;\n");
+    fprintf(fp, "full_simplify;\n");
+    fprintf(fp, "write_blif %s_out.blif;\n", fileName.c_str());
+    fprintf(fp, "print_stats;\n");
+    fclose(fp);
+    DASSERT(system(("sis -x -f " + fileName + ".rug").c_str()) != -1);
 }
