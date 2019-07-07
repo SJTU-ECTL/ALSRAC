@@ -49,9 +49,9 @@ void Ckt_FullSimplifyTest(int argc, char * argv[])
     DASSERT(system("rm tmp/*") != -1);
     for (int i = 0; i < pCktNtk->GetObjNum(); ++i) {
         shared_ptr <Ckt_Obj_t> pPivot = pCktNtk->GetObj(i);
-        cout << pPivot << endl;
         if (pPivot->IsPIO())
             continue;
+        cout << "pivot: " << pPivot << endl;
         Ckt_ComputeRoot(pPivot, vRoots, level, nLocalPI);
         Ckt_ComputeSupport(vRoots, vSupp, nLocalPI);
         Ckt_CollectNodes(vRoots, vSupp, vNodes);
@@ -110,13 +110,16 @@ void Ckt_ComputeSupport(vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < sha
         if (!pCktObj->GetVisited()) {
             pCktObj->SetVisited();
             fringe.emplace_back(pCktObj);
+            // cout << "push " << pCktObj << endl;
         }
     }
     while (fringe.size() && static_cast <int>(fringe.size()) < nLocalPI) {
         shared_ptr <Ckt_Obj_t> pCktObj = fringe.front();
         // cout << "pop " << pCktObj << endl;
-        if (pCktObj->IsPI() || pCktObj->IsConst())
+        if (pCktObj->IsPI() || pCktObj->IsConst()) {
             vSupp.emplace_back(pCktObj);
+            // cout << "update vSupp " << pCktObj << endl;
+        }
         for (int i = 0; i < pCktObj->GetFaninNum(); ++i) {
             shared_ptr <Ckt_Obj_t> pFanin = pCktObj->GetFanin(i);
             if (!pFanin->GetVisited()) {
@@ -128,10 +131,8 @@ void Ckt_ComputeSupport(vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < sha
         fringe.pop_front();
     }
     for (auto & pCktObj: fringe) {
-        if (static_cast <int> (vSupp.size()) < nLocalPI)
-            vSupp.emplace_back(pCktObj);
-        else
-            break;
+        vSupp.emplace_back(pCktObj);
+        // cout << "update vSupp " << pCktObj << endl;
     }
 }
 
@@ -171,9 +172,10 @@ void Ckt_GenerateNtk(vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < shared
     DASSERT(vSupp.size());
     DASSERT(vRoots.size());
 
+    // core network
     Abc_Ntk_t * pWinNtk = Abc_NtkAlloc(ABC_NTK_LOGIC, ABC_FUNC_SOP, 1);
 
-    for (auto & pCktObj: vSupp) {
+    for (auto & pCktObj : vSupp) {
         // cout << "adding pis " << pCktObj << endl;
         Abc_Obj_t * pOldObj = pCktObj->GetAbcObj();
         Abc_Obj_t * pNewObj = Abc_NtkCreatePi(pWinNtk);
@@ -181,10 +183,11 @@ void Ckt_GenerateNtk(vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < shared
         pOldObj->pCopy = pNewObj;
     }
 
-    for (auto & pCktObj: vNodes) {
+    for (auto & pCktObj : vNodes) {
         // cout << "copying nodes " << pCktObj << endl;
         Abc_Obj_t * pOldObj = pCktObj->GetAbcObj();
         Abc_Obj_t * pNewObj = Abc_NtkDupObj(pWinNtk, pOldObj, 0);
+        // cout << Abc_ObjName(pOldObj) << "\t" << Abc_ObjType(pOldObj) << endl;
         Abc_ObjAssignName(pNewObj, Abc_ObjName(pOldObj), nullptr);
         DASSERT(pNewObj == Abc_ObjCopy(pOldObj), "Error: the copy of the original object is not exactly the current object!");
         Abc_Obj_t * pFanin = nullptr;
@@ -194,13 +197,78 @@ void Ckt_GenerateNtk(vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < shared
             Abc_ObjAddFanin(Abc_ObjCopy(pOldObj), Abc_ObjCopy(pFanin));
         }
     }
+    DASSERT(static_cast <int> (vSupp.size()) == Abc_NtkPiNum(pWinNtk));
 
-    for (auto & pCktObj: vRoots) {
+    for (auto & pCktObj : vRoots) {
         // cout << "adding pos " << pCktObj << endl;
         Abc_Obj_t * pOldObj = pCktObj->GetAbcObj();
-        Abc_Obj_t * pNewPo = Abc_NtkCreatePo(pWinNtk);
-        Abc_ObjAssignName(pNewPo, Abc_ObjName(pOldObj), nullptr);
-        Abc_ObjAddFanin(pNewPo, Abc_ObjCopy(pOldObj));
+        Abc_Obj_t * pNewObj = Abc_NtkCreatePo(pWinNtk);
+        Abc_ObjAssignName(pNewObj, Abc_ObjName(pOldObj), nullptr);
+        Abc_ObjAddFanin(pNewObj, Abc_ObjCopy(pOldObj));
+    }
+
+    // exdc network
+    Abc_Ntk_t * pExdc = Abc_NtkAlloc(ABC_NTK_LOGIC, ABC_FUNC_SOP, 1);
+    pWinNtk->pExdc = pExdc;
+
+    int bitWidth = static_cast <int> (vSupp.size());
+    vector <bool> careSet(1 << bitWidth);
+    for (int i = 0; i < vSupp[0]->GetSimNum(); ++i) {
+        for (int j = 0; j < 64; ++j) {
+            uint32_t value = 0;
+            for (auto & pCktObj : vSupp) {
+                // cout << pCktObj->GetSimVal(i, j);
+                value = (value << 1) + pCktObj->GetSimVal(i, j);
+            }
+            // cout << endl;
+            careSet[value] = true;
+        }
+    }
+    int dcNum = 0;
+    for (int i = 0; i < static_cast <int>(careSet.size()); ++i)
+        if (!careSet[i])
+            ++dcNum;
+    cout << dcNum << "\t" << careSet.size() << "\t" << dcNum / static_cast <double>(careSet.size()) << endl;
+    if (dcNum) {
+        char * pSop = Abc_SopStart((Mem_Flex_t *)pExdc->pManFunc, dcNum, bitWidth);
+        char * pCube = pSop;
+        for (int i = 0; i < static_cast <int>(careSet.size()); ++i) {
+            if (!careSet[i]) {
+                DASSERT(pCube != nullptr);
+                for (int k = bitWidth - 1; k >= 0; --k) {
+                    // cout << Ckt_GetBit(i, k);
+                    *(pCube++) = Ckt_GetBit(i, k)? '1': '0';
+                }
+                pCube += 3;
+            }
+        }
+
+        for (auto & pCktObj : vSupp) {
+            // cout << "adding exdc pis " << pCktObj << endl;
+            Abc_Obj_t * pOldObj = pCktObj->GetAbcObj();
+            Abc_Obj_t * pNewObj = Abc_NtkCreatePi(pExdc);
+            Abc_ObjAssignName(pNewObj, Abc_ObjName(pOldObj), nullptr);
+            pOldObj->pCopy = pNewObj;
+        }
+
+        for (auto & pCktObj : vRoots) {
+            // cout << "adding exdc pos" << pCktObj << endl;
+            Abc_Obj_t * pOldObj = pCktObj->GetAbcObj();
+            Abc_Obj_t * pNewObj = Abc_NtkCreateNode(pExdc);
+            Abc_ObjAssignName(pNewObj, Abc_ObjName(pOldObj), nullptr);
+            pOldObj->pCopy = pNewObj;
+
+            Abc_Obj_t * pPo = Abc_NtkCreatePo(pExdc);
+            Abc_ObjAssignName(pPo, Abc_ObjName(pOldObj), nullptr);
+            Abc_ObjAddFanin(pPo, pNewObj);
+        }
+
+        for (auto & pLocalOut : vRoots)
+            for (auto & pLocalIn: vSupp)
+                Abc_ObjAddFanin(Abc_ObjCopy(pLocalOut->GetAbcObj()), Abc_ObjCopy(pLocalIn->GetAbcObj()));
+
+        for (auto & pLocalOut : vRoots)
+            Abc_ObjCopy(pLocalOut->GetAbcObj())->pData = pSop;
     }
 
     Io_Write(pWinNtk, const_cast <char *>(fileName.c_str()), IO_FILE_BLIF);
