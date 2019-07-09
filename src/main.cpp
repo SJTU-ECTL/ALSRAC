@@ -21,7 +21,5 @@ int main(int argc, char * argv[])
     // Abc_NtkDelete(pNtk);
     // Abc_Stop();
 
-    // cout << "5" << endl;
-
     return 0;
 }

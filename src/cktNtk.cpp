@@ -578,7 +578,6 @@ bool Ckt_Obj_t::NodeIsOAI22(void)
 
 Ckt_Ntk_t::Ckt_Ntk_t(Abc_Ntk_t * p_abc_ntk)
 {
-    cout << "construct network" << endl;
     DASSERT(p_abc_ntk != nullptr, "empty network!");
     pAbcNtk = Abc_NtkDup(p_abc_ntk);
 }
@@ -586,7 +585,6 @@ Ckt_Ntk_t::Ckt_Ntk_t(Abc_Ntk_t * p_abc_ntk)
 
 Ckt_Ntk_t::~Ckt_Ntk_t(void)
 {
-    cout << "deconstruct network" << endl;
     DASSERT(pAbcNtk != nullptr, "empty network!");
     Abc_NtkDelete(pAbcNtk);
 }
