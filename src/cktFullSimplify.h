@@ -18,6 +18,7 @@ void Ckt_SimplifyNtk(std::string fileName);
 int Ckt_CollectMffc(std::vector < std::shared_ptr <Ckt_Obj_t> > & vNodes, std::vector < std::shared_ptr <Ckt_Obj_t> > & vMffc);
 void Ckt_CollectMffc_Rec(std::shared_ptr <Ckt_Obj_t> pCktObj, std::vector < std::shared_ptr <Ckt_Obj_t> > & vMffc, bool isTop);
 int Ckt_ReadNewNtk(std::string fileName);
+void Ckt_ReplaceNtk(abc::Abc_Ntk_t * pOldNtk, std::string fileName);
 
 
 #endif

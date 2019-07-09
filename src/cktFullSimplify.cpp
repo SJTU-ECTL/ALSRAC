@@ -37,7 +37,7 @@ void Ckt_FullSimplifyTest(int argc, char * argv[])
     command = "read_blif " + input;
     DASSERT(Cmd_CommandExecute(pAbc, command.c_str()) == 0);
     shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc));
-    // Ckt_Visualize(pCktNtk->GetAbcNtk(), "test.dot");
+    shared_ptr <Ckt_Ntk_t> pCktNtkOri = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc));
 
     pCktNtk->Init(nFrame);
     pCktNtk->LogicSim(false);
@@ -47,23 +47,26 @@ void Ckt_FullSimplifyTest(int argc, char * argv[])
     vector < shared_ptr <Ckt_Obj_t> > vNodes;
     vector < shared_ptr <Ckt_Obj_t> > vMffc;
     DASSERT(system("if [ ! -d tmp ]; then mkdir tmp; fi") != -1);
-    DASSERT(system("rm tmp/*") != -1);
+    // DASSERT(system("rm tmp/*") != -1);
     for (int i = 0; i < pCktNtk->GetObjNum(); ++i) {
         shared_ptr <Ckt_Obj_t> pPivot = pCktNtk->GetObj(i);
+        if (pPivot->GetName() != "G223gat")
+            continue;
         if (pPivot->IsPIO())
             continue;
-        cout << "pivot: " << pPivot << endl;
         Ckt_ComputeRoot(pPivot, vRoots, level, nLocalPI);
         Ckt_ComputeSupport(vRoots, vSupp, nLocalPI);
         Ckt_CollectNodes(vRoots, vSupp, vNodes);
         string fileName = "./tmp/" + pPivot->GetName();
         Ckt_GenerateNtk(vRoots, vSupp, vNodes, fileName + ".blif");
-        Ckt_SimplifyNtk(fileName);
-        int nSavedLits = Ckt_CollectMffc(vNodes, vMffc);
-        int nAddedLits = Ckt_ReadNewNtk(fileName + "_out.blif");
-        cout << nSavedLits << "\t" << nAddedLits << endl;
-        if (nSavedLits > nAddedLits)
-            cout << "reduce " << nSavedLits - nAddedLits << endl;
+        // Ckt_SimplifyNtk(fileName);
+        // int nSavedLits = Ckt_CollectMffc(vNodes, vMffc);
+        // int nAddedLits = Ckt_ReadNewNtk(fileName + "_out.blif");
+        // cout << pPivot << "," << nSavedLits << "," << nAddedLits << endl;
+
+        Abc_Ntk_t * pTmpNtk = Abc_NtkDup(pCktNtk->GetAbcNtk());
+        Ckt_ReplaceNtk(pTmpNtk, fileName + "_out.blif");
+        Abc_NtkDelete(pTmpNtk);
     }
 
     Abc_Stop();
@@ -234,7 +237,7 @@ void Ckt_GenerateNtk(vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < shared
     for (int i = 0; i < static_cast <int>(careSet.size()); ++i)
         if (!careSet[i])
             ++dcNum;
-    cout << dcNum << "\t" << careSet.size() << "\t" << dcNum / static_cast <double>(careSet.size()) << endl;
+    // cout << dcNum << "\t" << careSet.size() << "\t" << dcNum / static_cast <double>(careSet.size()) << endl;
     if (dcNum) {
         Abc_Ntk_t * pExdc = Abc_NtkAlloc(ABC_NTK_LOGIC, ABC_FUNC_SOP, 1);
         pWinNtk->pExdc = pExdc;
@@ -321,7 +324,7 @@ void Ckt_CollectMffc_Rec(shared_ptr <Ckt_Obj_t> pCktObj, vector < shared_ptr <Ck
     if (!isTop && (pCktObj->IsPI() || pCktObj->GetFanoutNum()))
         return;
     for (int i = 0; i < pCktObj->GetFaninNum(); ++i)
-        Ckt_CollectMffc_Rec(pCktObj->GetFanin(i), vMffc, 0);
+        Ckt_CollectMffc_Rec(pCktObj->GetFanin(i), vMffc, false);
     vMffc.emplace_back(pCktObj);
 }
 
@@ -332,4 +335,34 @@ int Ckt_ReadNewNtk(string fileName)
     int nLits = Abc_NtkGetLitNum(pNtk);
     Abc_NtkDelete(pNtk);
     return nLits;
+}
+
+
+void Ckt_ReplaceNtk(Abc_Ntk_t * pOldNtk, string fileName)
+{
+    // read new network
+    Abc_Ntk_t * pNewNtk = Io_Read(const_cast <char *>(fileName.c_str()), IO_FILE_BLIF, 1, 0);
+    Vec_Ptr_t * vNodes = Abc_NtkDfs(pNewNtk, 0);
+    Abc_Obj_t * pNewObj;
+    int i;
+
+    // mark necessary support
+    Abc_NtkIncrementTravId(pOldNtk);
+    Abc_NtkForEachPi(pNewNtk, pNewObj, i) {
+        Abc_Obj_t * pOldPi = Abc_NtkFindCi(pOldNtk, Abc_ObjName(pNewObj));
+        if (pOldPi == nullptr)
+            pOldPi = Abc_NtkFindNode(pOldNtk, Abc_ObjName(pNewObj));
+        DASSERT(pOldPi != nullptr);
+        if (Abc_ObjFanoutNum(pNewObj)) {
+            Abc_NodeSetTravIdCurrent(pOldPi);
+            cout << "mark " << Abc_ObjName(pOldPi) << endl;
+        }
+    }
+
+    // delete old network, mark new pi
+
+    // replace
+
+    Vec_PtrFree(vNodes);
+    Abc_NtkDelete(pNewNtk);
 }
