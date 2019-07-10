@@ -99,7 +99,8 @@ Ckt_MapType_t Ckt_Obj_t::RenewMapType(void)
 bool Ckt_Obj_t::RenewIsCompl()
 {
     char * pSop = static_cast <char *> (GetAbcObj()->pData);
-    DEBUG_ASSERT(GetFaninNum() == Abc_SopGetVarNum(pSop), module_a{}, "# sop var != # fanin");
+    // cout << GetName() << "," << GetFaninNum() << "," << pSop << endl;
+    DASSERT(GetFaninNum() == Abc_SopGetVarNum(pSop), "# sop var != # fanin");
     isCompl = make_shared <bool> ( Abc_SopIsComplement(pSop) );
     return *isCompl;
 }

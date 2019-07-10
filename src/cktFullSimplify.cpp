@@ -36,8 +36,11 @@ void Ckt_FullSimplifyTest(int argc, char * argv[])
     DASSERT(Cmd_CommandExecute(pAbc, command.c_str()) == 0);
     command = "read_blif " + input;
     DASSERT(Cmd_CommandExecute(pAbc, command.c_str()) == 0);
-    shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc));
-    shared_ptr <Ckt_Ntk_t> pCktNtkOri = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc));
+    Abc_Ntk_t * pOriNtk = Abc_FrameReadNtk(pAbc);
+    Abc_NtkCleanup(pOriNtk, 0);
+    shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pOriNtk);
+    shared_ptr <Ckt_Ntk_t> pCktNtkOri = make_shared <Ckt_Ntk_t> (pOriNtk);
+    pCktNtkOri->Init(102400);
 
     pCktNtk->Init(nFrame);
     pCktNtk->LogicSim(false);
@@ -47,11 +50,9 @@ void Ckt_FullSimplifyTest(int argc, char * argv[])
     vector < shared_ptr <Ckt_Obj_t> > vNodes;
     vector < shared_ptr <Ckt_Obj_t> > vMffc;
     DASSERT(system("if [ ! -d tmp ]; then mkdir tmp; fi") != -1);
-    // DASSERT(system("rm tmp/*") != -1);
+    DASSERT(system("rm tmp/*") != -1);
     for (int i = 0; i < pCktNtk->GetObjNum(); ++i) {
         shared_ptr <Ckt_Obj_t> pPivot = pCktNtk->GetObj(i);
-        if (pPivot->GetName() != "G223gat")
-            continue;
         if (pPivot->IsPIO())
             continue;
         Ckt_ComputeRoot(pPivot, vRoots, level, nLocalPI);
@@ -59,14 +60,18 @@ void Ckt_FullSimplifyTest(int argc, char * argv[])
         Ckt_CollectNodes(vRoots, vSupp, vNodes);
         string fileName = "./tmp/" + pPivot->GetName();
         Ckt_GenerateNtk(vRoots, vSupp, vNodes, fileName + ".blif");
-        // Ckt_SimplifyNtk(fileName);
-        // int nSavedLits = Ckt_CollectMffc(vNodes, vMffc);
-        // int nAddedLits = Ckt_ReadNewNtk(fileName + "_out.blif");
-        // cout << pPivot << "," << nSavedLits << "," << nAddedLits << endl;
-
+        if (!vNodes.size())
+            continue;
+        Ckt_SimplifyNtk(fileName);
         Abc_Ntk_t * pTmpNtk = Abc_NtkDup(pCktNtk->GetAbcNtk());
-        Ckt_ReplaceNtk(pTmpNtk, fileName + "_out.blif");
+        int nLitsBef = Abc_NtkGetLitNum(pTmpNtk);
+        Ckt_ReplaceNtk(pTmpNtk, vRoots, vNodes, fileName + "_out.blif");
+        int nLitsAft = Abc_NtkGetLitNum(pTmpNtk);
+        shared_ptr <Ckt_Ntk_t> pCktNtkTmp = make_shared <Ckt_Ntk_t> (pTmpNtk);
+        pCktNtkTmp->Init(102400);
         Abc_NtkDelete(pTmpNtk);
+
+        cout << pPivot << "," << nLitsBef << "," << nLitsAft << "," << pCktNtkTmp->MeasureError(pCktNtkOri) << endl;
     }
 
     Abc_Stop();
@@ -127,6 +132,13 @@ void Ckt_ComputeSupport(vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < sha
     while (fringe.size() && static_cast <int>(fringe.size()) < nLocalPI) {
         shared_ptr <Ckt_Obj_t> pCktObj = fringe.front();
         // cout << "pop " << pCktObj << endl;
+        if (pCktObj->GetFanoutNum() && pCktObj->GetFanout(0)->IsPO()) {
+            vSupp.emplace_back(pCktObj);
+            --nLocalPI;
+            // cout << "update vSupp " << pCktObj << endl;
+            fringe.pop_front();
+            continue;
+        }
         if (pCktObj->IsPI() || pCktObj->IsConst()) {
             vSupp.emplace_back(pCktObj);
             --nLocalPI;
@@ -338,31 +350,95 @@ int Ckt_ReadNewNtk(string fileName)
 }
 
 
-void Ckt_ReplaceNtk(Abc_Ntk_t * pOldNtk, string fileName)
+void Ckt_ReplaceNtk(Abc_Ntk_t * pHostNtk, vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < shared_ptr <Ckt_Obj_t> > & vNodes, string fileName)
 {
     // read new network
     Abc_Ntk_t * pNewNtk = Io_Read(const_cast <char *>(fileName.c_str()), IO_FILE_BLIF, 1, 0);
-    Vec_Ptr_t * vNodes = Abc_NtkDfs(pNewNtk, 0);
-    Abc_Obj_t * pNewObj;
-    int i;
 
-    // mark necessary support
-    Abc_NtkIncrementTravId(pOldNtk);
-    Abc_NtkForEachPi(pNewNtk, pNewObj, i) {
-        Abc_Obj_t * pOldPi = Abc_NtkFindCi(pOldNtk, Abc_ObjName(pNewObj));
-        if (pOldPi == nullptr)
-            pOldPi = Abc_NtkFindNode(pOldNtk, Abc_ObjName(pNewObj));
-        DASSERT(pOldPi != nullptr);
-        if (Abc_ObjFanoutNum(pNewObj)) {
-            Abc_NodeSetTravIdCurrent(pOldPi);
-            cout << "mark " << Abc_ObjName(pOldPi) << endl;
+    // generate set of vRoots
+    set < shared_ptr <Ckt_Obj_t> > vRootSet(vRoots.begin(), vRoots.end());
+
+    // // delete old nodes
+    // for (auto & pCktObj: vNodes) {
+    //     if (vRootSet.count(pCktObj))
+    //         continue;
+    //     Abc_Obj_t * pOldObj = pCktObj->GetAbcObj();
+    //     Abc_Obj_t * pHostObj = Abc_NtkFindNode(pHostNtk, Abc_ObjName(pOldObj));
+    //     DASSERT(pHostObj != nullptr);
+    //     // cout << "delete " << Abc_ObjName(pHostObj) << "," << Abc_ObjType(pHostObj) << endl;
+    //     Abc_NtkDeleteObj(pHostObj);
+    // }
+
+    // add new nodes
+    Vec_Ptr_t * vTopoSeq = Abc_NtkDfs(pNewNtk, 0);
+    Abc_Obj_t * pObj;
+    int i;
+    Vec_PtrForEachEntry(Abc_Obj_t *, vTopoSeq, pObj, i) {
+        Abc_Obj_t * pHostNewObj = Abc_NtkDupObj(pHostNtk, pObj, 1);
+        // cout << "create node " << Abc_ObjName(pHostNewObj) << endl;
+        Abc_Obj_t * pFanin;
+        int j;
+        Abc_ObjForEachFanin(pObj, pFanin, j) {
+            Abc_Obj_t * pHostFanin = Abc_NtkFindCi(pHostNtk, Abc_ObjName(pFanin));
+            if (pHostFanin == nullptr)
+                pHostFanin = Abc_NtkFindNode(pHostNtk, Abc_ObjName(pFanin));
+            DASSERT(pHostFanin != nullptr);
+            // cout << "add fanin " << Abc_ObjName(pHostFanin) << endl;
+            Abc_ObjAddFanin(pHostNewObj, pHostFanin);
         }
     }
 
-    // delete old network, mark new pi
+    // patch local POs
+    Abc_NtkForEachPo(pNewNtk, pObj, i) {
+        Abc_Obj_t * pDriver = Abc_ObjFanin0(pObj);
+        // cout << "patching " << Abc_ObjName(pDriver) << endl;
+        Abc_Obj_t * pHostOldLPO = Abc_NtkFindNode(pHostNtk, Abc_ObjName(pDriver));
+        DASSERT(pHostOldLPO != nullptr);
+        Abc_Obj_t * pHostNewLPO = Abc_NtkDupObj(pHostNtk, pDriver, 0);
 
-    // replace
+        Abc_Obj_t * pFanin;
+        int j;
+        Abc_ObjForEachFanin(pDriver, pFanin, j) {
+            Abc_Obj_t * pHostFanin = Abc_NtkFindCi(pHostNtk, Abc_ObjName(pFanin));
+            if (pHostFanin == nullptr)
+                pHostFanin = Abc_NtkFindNode(pHostNtk, Abc_ObjName(pFanin));
+            DASSERT(pHostFanin != nullptr);
+            // cout << "add fanin " << Abc_ObjName(pHostFanin) << endl;
+            Abc_ObjAddFanin(pHostNewLPO, pHostFanin);
+        }
 
-    Vec_PtrFree(vNodes);
+
+        Abc_ObjReplace(pHostOldLPO, pHostNewLPO);
+        Abc_ObjAssignName(pHostNewLPO, Abc_ObjName(pDriver), nullptr);
+    }
+
+    // cleanup dangling nodes
+    Abc_NtkCleanup(pHostNtk, 0);
+
+    // memory cleanup
+    Vec_PtrFree(vTopoSeq);
     Abc_NtkDelete(pNewNtk);
+}
+
+
+void Abc_NodeMffcConeSupp_rec( Abc_Obj_t * pNode, Vec_Ptr_t * vCone, Vec_Ptr_t * vSupp, int fTopmost )
+{
+    Abc_Obj_t * pFanin;
+    int i;
+    // skip visited nodes
+    if ( Abc_NodeIsTravIdCurrent(pNode) )
+        return;
+    Abc_NodeSetTravIdCurrent(pNode);
+    // add to the new support nodes
+    if ( !fTopmost && (Abc_ObjIsCi(pNode) || pNode->vFanouts.nSize > 0) )
+    {
+        if ( vSupp ) Vec_PtrPush( vSupp, pNode );
+        return;
+    }
+    // recur on the children
+    Abc_ObjForEachFanin( pNode, pFanin, i )
+        Abc_NodeMffcConeSupp_rec( pFanin, vCone, vSupp, 0 );
+    // collect the internal node
+    if ( vCone ) Vec_PtrPush( vCone, pNode );
+//    printf( "%d ", pNode->Id );
 }
