@@ -59,19 +59,19 @@ void Ckt_FullSimplifyTest(int argc, char * argv[])
         Ckt_ComputeSupport(vRoots, vSupp, nLocalPI);
         Ckt_CollectNodes(vRoots, vSupp, vNodes);
         string fileName = "./tmp/" + pPivot->GetName();
-        Ckt_GenerateNtk(vRoots, vSupp, vNodes, fileName + ".blif");
+        Ckt_GenerateNtk(vRoots, vSupp, vNodes, fileName);
         if (!vNodes.size())
             continue;
         Ckt_SimplifyNtk(fileName);
-        Abc_Ntk_t * pTmpNtk = Abc_NtkDup(pCktNtk->GetAbcNtk());
-        int nLitsBef = Abc_NtkGetLitNum(pTmpNtk);
-        Ckt_ReplaceNtk(pTmpNtk, vRoots, vNodes, fileName + "_out.blif");
-        int nLitsAft = Abc_NtkGetLitNum(pTmpNtk);
-        shared_ptr <Ckt_Ntk_t> pCktNtkTmp = make_shared <Ckt_Ntk_t> (pTmpNtk);
-        pCktNtkTmp->Init(102400);
-        Abc_NtkDelete(pTmpNtk);
+        // Abc_Ntk_t * pTmpNtk = Abc_NtkDup(pCktNtk->GetAbcNtk());
+        // int nLitsBef = Abc_NtkGetLitNum(pTmpNtk);
+        // Ckt_ReplaceNtk(pTmpNtk, vRoots, vNodes, fileName + "_out.blif");
+        // int nLitsAft = Abc_NtkGetLitNum(pTmpNtk);
+        // shared_ptr <Ckt_Ntk_t> pCktNtkTmp = make_shared <Ckt_Ntk_t> (pTmpNtk);
+        // pCktNtkTmp->Init(102400);
+        // Abc_NtkDelete(pTmpNtk);
 
-        cout << pPivot << "," << nLitsBef << "," << nLitsAft << "," << pCktNtkTmp->MeasureError(pCktNtkOri) << endl;
+        // cout << pPivot << "," << nLitsBef << "," << nLitsAft << "," << pCktNtkTmp->MeasureError(pCktNtkOri) << endl;
     }
 
     Abc_Stop();
@@ -231,7 +231,7 @@ void Ckt_GenerateNtk(vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < shared
         Abc_ObjAddFanin(pNewObj, Abc_ObjCopy(pOldObj));
     }
 
-    // exdc network
+    // compute care set
     int bitWidth = static_cast <int> (vSupp.size());
     vector <bool> careSet(1 << bitWidth);
     for (int i = 0; i < vSupp[0]->GetSimNum(); ++i) {
@@ -245,6 +245,7 @@ void Ckt_GenerateNtk(vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < shared
             careSet[value] = true;
         }
     }
+    // exdc network
     int dcNum = 0;
     for (int i = 0; i < static_cast <int>(careSet.size()); ++i)
         if (!careSet[i])
@@ -295,8 +296,60 @@ void Ckt_GenerateNtk(vector < shared_ptr <Ckt_Obj_t> > & vRoots, vector < shared
             Abc_ObjCopy(pLocalOut->GetAbcObj())->pData = pSop;
     }
 
-    Io_Write(pWinNtk, const_cast <char *>(fileName.c_str()), IO_FILE_BLIF);
+    string fileNameComp = fileName + ".blif";
+    Io_Write(pWinNtk, const_cast <char *>(fileNameComp.c_str()), IO_FILE_BLIF);
     Abc_NtkDelete(pWinNtk);
+
+    // // care network
+    // int cNum = 0;
+    // for (int i = 0; i < static_cast <int>(careSet.size()); ++i)
+    //     if (careSet[i])
+    //         ++cNum;
+    // if (cNum != (1 << bitWidth))
+    // {
+    //     Abc_Ntk_t * pCare = Abc_NtkAlloc(ABC_NTK_LOGIC, ABC_FUNC_SOP, 1);
+
+    //     char * pSop = Abc_SopStart((Mem_Flex_t *)pCare->pManFunc, cNum, bitWidth);
+    //     char * pCube = pSop;
+    //     for (int i = 0; i < static_cast <int>(careSet.size()); ++i) {
+    //         if (careSet[i]) {
+    //             DASSERT(pCube != nullptr);
+    //             for (int k = bitWidth - 1; k >= 0; --k) {
+    //                 *(pCube++) = Ckt_GetBit(i, k)? '1': '0';
+    //             }
+    //             pCube += 3;
+    //         }
+    //     }
+
+    //     for (auto & pCktObj : vSupp) {
+    //         Abc_Obj_t * pOldObj = pCktObj->GetAbcObj();
+    //         Abc_Obj_t * pNewObj = Abc_NtkCreatePi(pCare);
+    //         Abc_ObjAssignName(pNewObj, Abc_ObjName(pOldObj), nullptr);
+    //         pOldObj->pCopy = pNewObj;
+    //     }
+
+    //     for (auto & pCktObj : vRoots) {
+    //         Abc_Obj_t * pOldObj = pCktObj->GetAbcObj();
+    //         Abc_Obj_t * pNewObj = Abc_NtkCreateNode(pCare);
+    //         Abc_ObjAssignName(pNewObj, Abc_ObjName(pOldObj), nullptr);
+    //         pOldObj->pCopy = pNewObj;
+
+    //         Abc_Obj_t * pPo = Abc_NtkCreatePo(pCare);
+    //         Abc_ObjAssignName(pPo, Abc_ObjName(pOldObj), nullptr);
+    //         Abc_ObjAddFanin(pPo, pNewObj);
+    //     }
+
+    //     for (auto & pLocalOut : vRoots)
+    //         for (auto & pLocalIn: vSupp)
+    //             Abc_ObjAddFanin(Abc_ObjCopy(pLocalOut->GetAbcObj()), Abc_ObjCopy(pLocalIn->GetAbcObj()));
+
+    //     for (auto & pLocalOut : vRoots)
+    //         Abc_ObjCopy(pLocalOut->GetAbcObj())->pData = pSop;
+
+    //     string fileNameCare = fileName + "_care.blif";
+    //     Io_Write(pCare, const_cast <char *>(fileNameCare.c_str()), IO_FILE_BLIF);
+    //     Abc_NtkDelete(pCare);
+    // }
 }
 
 
@@ -305,12 +358,24 @@ void Ckt_SimplifyNtk(string fileName)
     FILE * fp = fopen((fileName + ".rug").c_str(), "w");
     DASSERT(fp != nullptr);
     fprintf(fp, "read_blif %s.blif;\n", fileName.c_str());
-    // fprintf(fp, "print_stats;\n");
     fprintf(fp, "full_simplify;\n");
     fprintf(fp, "write_blif %s_out.blif;\n", fileName.c_str());
-    // fprintf(fp, "print_stats;\n");
     fclose(fp);
     DASSERT(system(("sis -x -f " + fileName + ".rug").c_str()) != -1);
+
+    // FILE * fp = fopen((fileName + ".rug").c_str(), "w");
+    // DASSERT(fp != nullptr);
+    // fprintf(fp, "read_blif %s.blif;\n", fileName.c_str());
+    // // string fileNameC = fileName + "_care.blif";
+    // // ifstream f(fileNameC.c_str());
+    // // if (f.good())
+    // //     fprintf(fp, "care_set %s_care.blif;\n", fileName.c_str());
+    // fprintf(fp, "mfs;\n");
+    // fprintf(fp, "write_blif %s_out.blif;\n", fileName.c_str());
+    // fclose(fp);
+    // DASSERT(system(("abc -x -f " + fileName + ".rug").c_str()) != -1);
+
+    cout << fileName << "," << Ckt_ReadNewNtk(fileName + ".blif") << "," << Ckt_ReadNewNtk(fileName + "_out.blif") << endl;
 }
 
 
