@@ -33,6 +33,9 @@ abc::sat_solver * Abc_MfsCreateSolverResub_Test(abc::Mfs_Man_t * p, int * pCands
 int Abc_MfsSatAddXor(abc::sat_solver * pSat, int iVarA, int iVarB, int iVarC);
 int sat_solver_addclause_Test(abc::sat_solver* s, abc::lit* begin, abc::lit* end);
 int Abc_NtkMfsResubNode_Test(abc::Mfs_Man_t * p, abc::Abc_Obj_t * pNode);
+abc::Hop_Obj_t * Abc_NtkMfsInterplate_Test(abc::Mfs_Man_t * p, int * pCands, int nCands);
+abc::Hop_Obj_t * Kit_GraphToHop(abc::Hop_Man_t * pMan, abc::Kit_Graph_t * pGraph);
+abc::Hop_Obj_t * Kit_GraphToHopInternal(abc::Hop_Man_t * pMan, abc::Kit_Graph_t * pGraph);
 
 
 #endif

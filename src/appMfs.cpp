@@ -596,7 +596,8 @@ int Abc_WinNode(Mfs_Man_t * p, Abc_Obj_t *pNode)
 
 int Abc_NtkMfsSolveSatResub( Mfs_Man_t * p, Abc_Obj_t * pNode, int iFanin, int fOnlyRemove, int fSkipUpdate )
 {
-    int fVeryVerbose = 0;//p->pPars->fVeryVerbose && Vec_PtrSize(p->vDivs) < 200;// || pNode->Id == 556;
+    cout << "Abc_NtkMfsSolveSatResub " << pNode->Id << " " << iFanin << endl;
+    int fVeryVerbose = 1;//p->pPars->fVeryVerbose && Vec_PtrSize(p->vDivs) < 200;// || pNode->Id == 556;
     unsigned * pData;
     int pCands[MFS_FANIN_MAX];
     int RetValue, iVar, i, nCands, nWords, w;
@@ -642,7 +643,7 @@ int Abc_NtkMfsSolveSatResub( Mfs_Man_t * p, Abc_Obj_t * pNode, int iFanin, int f
             return 1;
 clk = Abc_Clock();
         // derive the function
-        pFunc = Abc_NtkMfsInterplate( p, pCands, nCands );
+        pFunc = Abc_NtkMfsInterplate_Test( p, pCands, nCands );
         if ( pFunc == NULL )
             return 0;
         // update the network
@@ -719,7 +720,7 @@ p->timeInt += Abc_Clock() - clk;
                 return 1;
 clk = Abc_Clock();
             // derive the function
-            pFunc = Abc_NtkMfsInterplate( p, pCands, nCands+1 );
+            pFunc = Abc_NtkMfsInterplate_Test( p, pCands, nCands+1 );
             if ( pFunc == NULL )
                 return 0;
             // update the network
@@ -757,7 +758,8 @@ void Abc_NtkMfsUpdateNetwork( Mfs_Man_t * p, Abc_Obj_t * pObj, Vec_Ptr_t * vMfsF
 
 int Abc_NtkMfsTryResubOnce( Mfs_Man_t * p, int * pCands, int nCands )
 {
-    int fVeryVerbose = 0;
+    cout << "Abc_NtkMfsTryResubOnce " << nCands << endl;
+    int fVeryVerbose = 1;
     unsigned * pData;
     int RetValue, RetValue2 = -1, iVar, i;//, clk = Abc_Clock();
 /*
@@ -780,18 +782,18 @@ p->timeGia += Abc_Clock() - clk;
     if ( RetValue == l_False )
     {
         if ( fVeryVerbose )
-        printf( "U " );
+        printf( "U\n" );
         return 1;
     }
     if ( RetValue != l_True )
     {
         if ( fVeryVerbose )
-        printf( "T " );
+        printf( "T\n" );
         p->nTimeOuts++;
         return -1;
     }
     if ( fVeryVerbose )
-    printf( "S " );
+    printf( "S\n" );
     p->nSatCexes++;
     // store the counter-example
     Vec_IntForEachEntry( p->vProjVarsSat, iVar, i )
@@ -805,7 +807,6 @@ p->timeGia += Abc_Clock() - clk;
     }
     p->nCexes++;
     return 0;
-
 }
 
 
@@ -1642,6 +1643,7 @@ int sat_solver_addclause_Test(sat_solver* s, lit* begin, lit* end)
 
 int Abc_NtkMfsResubNode_Test( Mfs_Man_t * p, Abc_Obj_t * pNode )
 {
+    cout << "Abc_NtkMfsResubNode_Test" << endl;
     Abc_Obj_t * pFanin;
     int i;
     // try replacing area critical fanins
@@ -1673,4 +1675,103 @@ int Abc_NtkMfsResubNode_Test( Mfs_Man_t * p, Abc_Obj_t * pNode )
         }
 */
     return 0;
+}
+
+
+Hop_Obj_t * Abc_NtkMfsInterplate_Test( Mfs_Man_t * p, int * pCands, int nCands )
+{
+    extern Hop_Obj_t * Kit_GraphToHop( Hop_Man_t * pMan, Kit_Graph_t * pGraph );
+    int fDumpFile = 1;
+    char FileName[32];
+    sat_solver * pSat;
+    Sto_Man_t * pCnf = NULL;
+    unsigned * puTruth;
+    Kit_Graph_t * pGraph;
+    Hop_Obj_t * pFunc;
+    int nFanins, status;
+    int c, i, * pGloVars;
+//    abctime clk = Abc_Clock();
+//    p->nDcMints += Abc_NtkMfsInterplateEval( p, pCands, nCands );
+
+    // derive the SAT solver for interpolation
+    pSat = Abc_MfsCreateSolverResub( p, pCands, nCands, 0 );
+
+    // dump CNF file (remember to uncomment two-lit clases in clause_create_new() in 'satSolver.c')
+    if ( fDumpFile )
+    {
+        static int Counter = 0;
+        sprintf( FileName, "cnf\\pj1_if6_mfs%03d.cnf", Counter++ );
+        Sat_SolverWriteDimacs( pSat, FileName, NULL, NULL, 1 );
+    }
+
+    // solve the problem
+    status = sat_solver_solve( pSat, NULL, NULL, (ABC_INT64_T)p->pPars->nBTLimit, (ABC_INT64_T)0, (ABC_INT64_T)0, (ABC_INT64_T)0 );
+    if ( fDumpFile )
+        printf( "File %s has UNSAT problem with %d conflicts.\n", FileName, (int)pSat->stats.conflicts );
+    if ( status != l_False )
+    {
+        p->nTimeOuts++;
+        return NULL;
+    }
+//printf( "%d\n", pSat->stats.conflicts );
+//    ABC_PRT( "S", Abc_Clock() - clk );
+    // get the learned clauses
+    pCnf = (Sto_Man_t *)sat_solver_store_release( pSat );
+    sat_solver_delete( pSat );
+
+    // set the global variables
+    pGloVars = Int_ManSetGlobalVars( p->pMan, nCands );
+    for ( c = 0; c < nCands; c++ )
+    {
+        // get the variable number of this divisor
+        i = lit_var( pCands[c] ) - 2 * p->pCnf->nVars;
+        // get the corresponding SAT variable
+        pGloVars[c] = Vec_IntEntry( p->vProjVarsCnf, i );
+    }
+
+    // derive the interpolant
+    nFanins = Int_ManInterpolate( p->pMan, pCnf, 0, &puTruth );
+    Sto_ManFree( pCnf );
+    assert( nFanins == nCands );
+
+    // transform interpolant into AIG
+    pGraph = Kit_TruthToGraph( puTruth, nFanins, p->vMem );
+    pFunc = Kit_GraphToHop( (Hop_Man_t *)p->pNtk->pManFunc, pGraph );
+    Kit_GraphFree( pGraph );
+    return pFunc;
+}
+
+
+Hop_Obj_t * Kit_GraphToHop( Hop_Man_t * pMan, Kit_Graph_t * pGraph )
+{
+    Kit_Node_t * pNode = NULL;
+    int i;
+    // collect the fanins
+    Kit_GraphForEachLeaf( pGraph, pNode, i )
+        pNode->pFunc = Hop_IthVar( pMan, i );
+    // perform strashing
+    return Kit_GraphToHopInternal( pMan, pGraph );
+}
+
+
+Hop_Obj_t * Kit_GraphToHopInternal( Hop_Man_t * pMan, Kit_Graph_t * pGraph )
+{
+    Kit_Node_t * pNode = NULL;
+    Hop_Obj_t * pAnd0, * pAnd1;
+    int i;
+    // check for constant function
+    if ( Kit_GraphIsConst(pGraph) )
+        return Hop_NotCond( Hop_ManConst1(pMan), Kit_GraphIsComplement(pGraph) );
+    // check for a literal
+    if ( Kit_GraphIsVar(pGraph) )
+        return Hop_NotCond( (Hop_Obj_t *)Kit_GraphVar(pGraph)->pFunc, Kit_GraphIsComplement(pGraph) );
+    // build the AIG nodes corresponding to the AND gates of the graph
+    Kit_GraphForEachNode( pGraph, pNode, i )
+    {
+        pAnd0 = Hop_NotCond( (Hop_Obj_t *)Kit_GraphNode(pGraph, pNode->eEdge0.Node)->pFunc, pNode->eEdge0.fCompl );
+        pAnd1 = Hop_NotCond( (Hop_Obj_t *)Kit_GraphNode(pGraph, pNode->eEdge1.Node)->pFunc, pNode->eEdge1.fCompl );
+        pNode->pFunc = Hop_And( pMan, pAnd0, pAnd1 );
+    }
+    // complement the result if necessary
+    return Hop_NotCond( (Hop_Obj_t *)pNode->pFunc, Kit_GraphIsComplement(pGraph) );
 }
