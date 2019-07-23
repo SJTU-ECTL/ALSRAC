@@ -418,7 +418,7 @@ void Abc_NtkMfsPowerResub( Mfs_Man_t * p, Mfs_Par_t * pPars)
 
 int Abc_NtkMfsResub( Mfs_Man_t * p, Abc_Obj_t * pNode )
 {
-    cout << "Abc_NtkMfsResub " << Abc_ObjName(pNode) << endl;
+    cout << "Abc_NtkMfsResub " << Abc_ObjId(pNode) << endl;
     abctime clk;
     p->nNodesTried++;
     // prepare data structure for this node
@@ -433,15 +433,15 @@ clk = Abc_Clock();
     int i;
     cout << "vRoots:";
     Vec_PtrForEachEntry(Abc_Obj_t *, p->vRoots, pObj, i)
-        cout << Abc_ObjName(pObj) << ",";
+        cout << Abc_ObjId(pObj) << ",";
     cout << endl;
     cout << "vSupp:";
     Vec_PtrForEachEntry(Abc_Obj_t *, p->vSupp, pObj, i)
-        cout << Abc_ObjName(pObj) << ",";
+        cout << Abc_ObjId(pObj) << ",";
     cout << endl;
     cout << "vNodes:";
     Vec_PtrForEachEntry(Abc_Obj_t *, p->vNodes, pObj, i)
-        cout << Abc_ObjName(pObj) << ",";
+        cout << Abc_ObjId(pObj) << ",";
     cout << endl;
 
 p->timeWin += Abc_Clock() - clk;
@@ -458,7 +458,7 @@ p->timeDiv += Abc_Clock() - clk;
 
     cout << "vDivs:";
     Vec_PtrForEachEntry(Abc_Obj_t *, p->vDivs, pObj, i)
-        cout << Abc_ObjName(pObj) << ",";
+        cout << Abc_ObjId(pObj) << ",";
     cout << endl;
 
     // construct AIG for the window
@@ -596,7 +596,7 @@ int Abc_WinNode(Mfs_Man_t * p, Abc_Obj_t *pNode)
 
 int Abc_NtkMfsSolveSatResub( Mfs_Man_t * p, Abc_Obj_t * pNode, int iFanin, int fOnlyRemove, int fSkipUpdate )
 {
-    cout << "Abc_NtkMfsSolveSatResub " << pNode->Id << " " << iFanin << endl;
+    cout << "Abc_NtkMfsSolveSatResub, pNode->Id " << pNode->Id << " iFanin " << iFanin << " fOnlyRemove " << fOnlyRemove << endl;
     int fVeryVerbose = 1;//p->pPars->fVeryVerbose && Vec_PtrSize(p->vDivs) < 200;// || pNode->Id == 556;
     unsigned * pData;
     int pCands[MFS_FANIN_MAX];
@@ -758,10 +758,14 @@ void Abc_NtkMfsUpdateNetwork( Mfs_Man_t * p, Abc_Obj_t * pObj, Vec_Ptr_t * vMfsF
 
 int Abc_NtkMfsTryResubOnce( Mfs_Man_t * p, int * pCands, int nCands )
 {
-    cout << "Abc_NtkMfsTryResubOnce " << nCands << endl;
     int fVeryVerbose = 1;
     unsigned * pData;
     int RetValue, RetValue2 = -1, iVar, i;//, clk = Abc_Clock();
+
+    cout << "Abc_NtkMfsTryResubOnce, nCands " << nCands << endl;
+    for (i = 0; i < nCands; ++i)
+        cout << pCands[i] << ",";
+    cout << endl;
 /*
     if ( p->pPars->fGiaSat )
     {
@@ -1090,7 +1094,7 @@ void Gia_ManFromAig_rec( Gia_Man_t * pNew, Aig_Man_t * p, Aig_Obj_t * pObj )
 
 Aig_Man_t * Abc_NtkConstructAig_Test( Mfs_Man_t * p, Abc_Obj_t * pNode )
 {
-    cout << "Abc_NtkConstructAig_Test " << Abc_ObjName(pNode) << endl;
+    cout << "Abc_NtkConstructAig_Test " << Abc_ObjId(pNode) << endl;
     Aig_Man_t * pMan;
     Abc_Obj_t * pFanin;
     Aig_Obj_t * pObjAig, * pPi, * pPo;
@@ -1205,7 +1209,7 @@ Aig_Obj_t * Abc_NtkConstructAig_rec( Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t
 
 void Abc_MfsConvertHopToAig( Abc_Obj_t * pObjOld, Aig_Man_t * pMan )
 {
-    cout << "Abc_MfsConvertHopToAig " << Abc_ObjName(pObjOld) << endl;
+    cout << "Abc_MfsConvertHopToAig " << Abc_ObjId(pObjOld) << endl;
     Hop_Man_t * pHopMan;
     Hop_Obj_t * pRoot;
     Abc_Obj_t * pFanin;
@@ -1281,19 +1285,19 @@ Cnf_Dat_t * Cnf_DeriveSimple_Test( Aig_Man_t * p, int nOutputs )
     int i, nLiterals, nClauses, Number;
 
 
-    // Aig_Obj_t * pAigObj;
-    // cout << "aig network" << endl;
-    // Aig_ManForEachObj(p, pAigObj, i) {
-    //     cout << pAigObj->Id << "," <<
-    //         pAigObj->Type << "," <<
-    //         Aig_ObjFaninId0(pAigObj) << "(" <<
-    //         (Aig_ObjFaninC0(pAigObj)?"neg":"pos") << ")," <<
-    //         Aig_ObjFaninId1(pAigObj) << "(" <<
-    //         (Aig_ObjFaninC1(pAigObj)?"neg":"pos") << ")" << endl;
-    // }
-    // cout << "Aig_ManNodeNum " << Aig_ManNodeNum(p) << endl;
-    // cout << "Aig_ManCoNum " << Aig_ManCoNum(p) << endl;
-    // cout << "nOutputs " << nOutputs << endl;
+    Aig_Obj_t * pAigObj;
+    cout << "aig network" << endl;
+    Aig_ManForEachObj(p, pAigObj, i) {
+        cout << pAigObj->Id << "," <<
+            pAigObj->Type << "," <<
+            Aig_ObjFaninId0(pAigObj) << "(" <<
+            (Aig_ObjFaninC0(pAigObj)?"neg":"pos") << ")," <<
+            Aig_ObjFaninId1(pAigObj) << "(" <<
+            (Aig_ObjFaninC1(pAigObj)?"neg":"pos") << ")" << endl;
+    }
+    cout << "Aig_ManNodeNum " << Aig_ManNodeNum(p) << endl;
+    cout << "Aig_ManCoNum " << Aig_ManCoNum(p) << endl;
+    cout << "nOutputs " << nOutputs << endl;
 
 
     // count the number of literals and clauses
@@ -1529,6 +1533,14 @@ sat_solver * Abc_MfsCreateSolverResub_Test( Mfs_Man_t * p, int * pCands, int nCa
             Vec_IntPush( p->vProjVarsSat, 2 * p->pCnf->nVars + i );
         }
         assert( Vec_IntSize(p->vProjVarsCnf) == Vec_IntSize(p->vProjVarsSat) );
+        cout << "vProjVarsSat: ";
+        Vec_IntForEachEntry(p->vProjVarsSat, iVar, i)
+            cout << iVar << ",";
+        cout << endl;
+        cout << "vProjVarsCnf: ";
+        Vec_IntForEachEntry(p->vProjVarsCnf, iVar, i)
+            cout << iVar << ",";
+        cout << endl;
         // simplify the solver
         status = sat_solver_simplify(pSat);
         if ( status == 0 )
@@ -1580,16 +1592,13 @@ int sat_solver_addclause_Test(sat_solver* s, lit* begin, lit* end)
     int maxvar;
     lit last;
     assert( begin < end );
+    s->fPrintClause = 1;
     if ( s->fPrintClause )
     {
         for ( i = begin; i < end; i++ )
             printf( "%s%d ", (*i)&1 ? "!":"", (*i)>>1 );
         printf( "\n" );
     }
-
-    for (i = begin; i < end; ++i)
-        cout << *i << "\t";
-    cout << endl;
 
     veci_resize( &s->temp_clause, 0 );
     for ( i = begin; i < end; i++ )

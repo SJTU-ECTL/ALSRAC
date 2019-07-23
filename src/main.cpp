@@ -30,11 +30,11 @@ int main(int argc, char * argv[])
     string input = option.get <string> ("input");
 
     Abc_Start();
-    Abc_Ntk_t * pNtk = Io_Read(const_cast <char *>(input.c_str()), IO_FILE_BLIF, 1, 0);
-    Abc_Ntk_t * pNtkCare = Io_Read("./data/test/care.blif", IO_FILE_BLIF, 1, 0);
+    Abc_Ntk_t * pNtk = Io_Read("./data/test/sim.blif", IO_FILE_BLIF, 1, 0);
+    Abc_Ntk_t * pNtkCare = Io_Read("./data/test/sim_care.blif", IO_FILE_BLIF, 1, 0);
     pNtk->pExcare = pNtkCare;
     Abc_CommandMfs_Test(pNtk);
-    Io_Write(pNtk, "test.blif", IO_FILE_BLIF);
+    Io_Write(pNtk, "sim_out.blif", IO_FILE_BLIF);
     Abc_NtkDelete(pNtk);
 
     // int nConfLimit = 10000;
