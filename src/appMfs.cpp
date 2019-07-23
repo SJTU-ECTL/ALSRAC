@@ -584,7 +584,7 @@ int Abc_WinNode(Mfs_Man_t * p, Abc_Obj_t *pNode)
     // translate it into CNF
     p->pCnf = Cnf_DeriveSimple( p->pAigWin, 1 + Vec_PtrSize(p->vDivs) );
     // create the SAT problem
-    p->pSat = Abc_MfsCreateSolverResub( p, NULL, 0, 0 );
+    p->pSat = Abc_MfsCreateSolverResub_Test( p, NULL, 0, 0 );
     if ( p->pSat == NULL )
     {
         p->nNodesBad++;
@@ -597,6 +597,7 @@ int Abc_WinNode(Mfs_Man_t * p, Abc_Obj_t *pNode)
 int Abc_NtkMfsSolveSatResub( Mfs_Man_t * p, Abc_Obj_t * pNode, int iFanin, int fOnlyRemove, int fSkipUpdate )
 {
     cout << "Abc_NtkMfsSolveSatResub, pNode->Id " << pNode->Id << " iFanin " << iFanin << " fOnlyRemove " << fOnlyRemove << endl;
+
     int fVeryVerbose = 1;//p->pPars->fVeryVerbose && Vec_PtrSize(p->vDivs) < 200;// || pNode->Id == 556;
     unsigned * pData;
     int pCands[MFS_FANIN_MAX];
@@ -762,9 +763,9 @@ int Abc_NtkMfsTryResubOnce( Mfs_Man_t * p, int * pCands, int nCands )
     unsigned * pData;
     int RetValue, RetValue2 = -1, iVar, i;//, clk = Abc_Clock();
 
-    cout << "Abc_NtkMfsTryResubOnce, nCands " << nCands << endl;
+    cout << "Abc_NtkMfsTryResubOnce, pCands ";
     for (i = 0; i < nCands; ++i)
-        cout << pCands[i] << ",";
+        printf( "%s%d ", pCands[i]&1 ? "!":"", pCands[i]>>1 );
     cout << endl;
 /*
     if ( p->pPars->fGiaSat )
@@ -1425,6 +1426,7 @@ sat_solver * Abc_MfsCreateSolverResub_Test( Mfs_Man_t * p, int * pCands, int nCa
 
     // start the solver
     pSat = sat_solver_new();
+    pSat->fVerbose = 1;
     sat_solver_setnvars( pSat, 2 * p->pCnf->nVars + Vec_PtrSize(p->vDivs) );
     if ( pCands )
         sat_solver_store_alloc( pSat );
@@ -1703,7 +1705,8 @@ Hop_Obj_t * Abc_NtkMfsInterplate_Test( Mfs_Man_t * p, int * pCands, int nCands )
 //    p->nDcMints += Abc_NtkMfsInterplateEval( p, pCands, nCands );
 
     // derive the SAT solver for interpolation
-    pSat = Abc_MfsCreateSolverResub( p, pCands, nCands, 0 );
+    cout << "derive the SAT solver for interpolation" << endl;
+    pSat = Abc_MfsCreateSolverResub_Test( p, pCands, nCands, 0 );
 
     // dump CNF file (remember to uncomment two-lit clases in clause_create_new() in 'satSolver.c')
     if ( fDumpFile )
