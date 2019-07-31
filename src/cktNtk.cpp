@@ -608,7 +608,7 @@ void Ckt_Ntk_t::Init(int frame_number)
     // pCktObjs
     Abc_Obj_t * pAbcObj;
     int i;
-    unordered_map < int, shared_ptr <Ckt_Obj_t> > abcId2Ckt;
+    // unordered_map < int, shared_ptr <Ckt_Obj_t> > abcId2Ckt;
     Abc_NtkForEachObj(pAbcNtk, pAbcObj, i) {
         shared_ptr <Ckt_Obj_t> pCktObj = make_shared <Ckt_Obj_t> (pAbcObj);
         AddObj(pCktObj);
@@ -847,12 +847,12 @@ float Ckt_Ntk_t::MeasureError(shared_ptr <Ckt_Ntk_t> pRefNtk, int seed)
 }
 
 
-// std::shared_ptr <Ckt_Obj_t> Ckt_Ntk_t::GetCktObj(int id) const
-// {
-//     unordered_map < int, shared_ptr <Ckt_Obj_t> >::const_iterator ppCktObj = abcId2Ckt.find(id);
-//     DEBUG_ASSERT(ppCktObj != abcId2Ckt.end(), module_a{}, "object not found");
-//     return ppCktObj->second;
-// }
+std::shared_ptr <Ckt_Obj_t> Ckt_Ntk_t::GetCktObj(int id) const
+{
+    unordered_map < int, shared_ptr <Ckt_Obj_t> >::const_iterator ppCktObj = abcId2Ckt.find(id);
+    DEBUG_ASSERT(ppCktObj != abcId2Ckt.end(), module_a{}, "object not found");
+    return ppCktObj->second;
+}
 
 
 
