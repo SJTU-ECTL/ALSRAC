@@ -203,7 +203,7 @@ clk = Abc_Clock();
         DASSERT(0);
     else
     {
-        Abc_NtkMfsResubNode( p, pNode );
+        App_NtkMfsResubNode( p, pNode );
         if ( p->pPars->fMoreEffort )
             DASSERT(0);
     }
