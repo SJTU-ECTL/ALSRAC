@@ -293,6 +293,7 @@ void Ckt_Obj_t::RenewSimValA(void)
                 pHopObj = Hop_ManPi(pMan, i);
                 hopSimValue[pHopObj->Id].assign(pCktFanins[i]->simValue.begin(), pCktFanins[i]->simValue.end());
             }
+
             // simulate
             Vec_PtrForEachEntry( Hop_Obj_t *, vNodes, pHopObj, i ) {
                 if (Hop_ObjType(pHopObj) == AIG_AND) {
@@ -320,14 +321,27 @@ void Ckt_Obj_t::RenewSimValA(void)
                 else
                     DEBUG_ASSERT(0, module_a{}, "unknown hop type");
             }
+
             // record
             if (Hop_IsComplement(pRoot)) {
-                for (int j = 0; j < nSim; ++j)
-                    simValue[j] = ~hopSimValue[pRootR->Id][j];
+                if (pRootR->Type == AIG_CONST1) {
+                    for (int j = 0; j < nSim; ++j)
+                        simValue[j] = 0;
+                }
+                else {
+                    for (int j = 0; j < nSim; ++j)
+                        simValue[j] = ~hopSimValue[pRootR->Id][j];
+                }
             }
             else {
-                for (int j = 0; j < nSim; ++j)
-                    simValue[j] = hopSimValue[pRootR->Id][j];
+                if (pRootR->Type == AIG_CONST1) {
+                    for (int j = 0; j < nSim; ++j)
+                        simValue[j] = static_cast <uint64_t> (ULLONG_MAX);
+                }
+                else {
+                    for (int j = 0; j < nSim; ++j)
+                        simValue[j] = hopSimValue[pRootR->Id][j];
+                }
             }
             // free
             Vec_PtrFree(vNodes);
@@ -615,6 +629,11 @@ void Ckt_Ntk_t::Init(int frame_number)
         abcId2Ckt.insert(unordered_map < int, shared_ptr <Ckt_Obj_t> >::value_type(pAbcObj->Id, pCktObj));
     }
 
+    // Abc_NtkForEachObj(pAbcNtk, pAbcObj, i) {
+    //     cout << GetCktObj(pAbcObj->Id)->GetAbcObj() << "\t" << pAbcObj << endl;
+    //     DASSERT(GetCktObj(pAbcObj->Id)->GetAbcObj() == pAbcObj);
+    // }
+
     // pCktPis / pCktPos
     for (auto & pCktObj : pCktObjs) {
         if (Abc_ObjIsPi(pCktObj->GetAbcObj()))
@@ -763,8 +782,9 @@ void Ckt_Ntk_t::FeedForward(vector < shared_ptr <Ckt_Obj_t> > & pTopoObjs)
             pCktObj->RenewSimValM();
     }
     else if (IsAig()) {
-        for (auto & pCktObj : pTopoObjs)
+        for (auto & pCktObj : pTopoObjs) {
             pCktObj->RenewSimValA();
+        }
     }
     else
         DEBUG_ASSERT(0, module_a{}, "unknown function type");
@@ -847,13 +867,22 @@ float Ckt_Ntk_t::MeasureError(shared_ptr <Ckt_Ntk_t> pRefNtk, int seed)
 }
 
 
-std::shared_ptr <Ckt_Obj_t> Ckt_Ntk_t::GetCktObj(int id) const
+shared_ptr <Ckt_Obj_t> Ckt_Ntk_t::GetCktObj(int id) const
 {
     unordered_map < int, shared_ptr <Ckt_Obj_t> >::const_iterator ppCktObj = abcId2Ckt.find(id);
     DEBUG_ASSERT(ppCktObj != abcId2Ckt.end(), module_a{}, "object not found");
     return ppCktObj->second;
 }
 
+
+shared_ptr <Ckt_Obj_t> Ckt_Ntk_t::GetCktObj(const string & name) const
+{
+    for (auto & pCktObj: pCktObjs)
+        if (!pCktObj->IsPO() && pCktObj->GetName() == name)
+            return pCktObj;
+    DASSERT(0, "object not found");
+    return nullptr;
+}
 
 
 ostream & operator << (ostream & os, const shared_ptr <Ckt_Obj_t> pCktObj)

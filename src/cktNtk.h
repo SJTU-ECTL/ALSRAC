@@ -143,6 +143,7 @@ public:
     void                                                    CheckSim    (void);
     float                                                   MeasureError(std::shared_ptr <Ckt_Ntk_t> pRefNtk, int seed = 314);
     std::shared_ptr <Ckt_Obj_t>                             GetCktObj   (int id) const;
+    std::shared_ptr <Ckt_Obj_t>                             GetCktObj   (const std::string & name) const;
 
 
     inline std::string                                      GetName     (void) const                                                    {return std::string(pAbcNtk->pName);}

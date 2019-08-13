@@ -2,6 +2,7 @@
 #include "cmdline.h"
 #include "abcApi.h"
 #include "appMfs.h"
+#include "cktSynthesis.h"
 
 
 using namespace std;
@@ -27,10 +28,29 @@ int main(int argc, char * argv[])
 {
     parser option = Cmdline_Parser(argc, argv);
     string input = option.get <string> ("input");
+    string genlib = option.get <string> ("genlib");
+    int nFrame = option.get <int> ("nFrame");
 
     Abc_Start();
+    string Command = string("read " + genlib);
+    DASSERT( !Cmd_CommandExecute(Abc_FrameGetGlobalFrame(), Command.c_str()) );
     Abc_Ntk_t * pNtk = Io_Read(const_cast <char *>(input.c_str()), IO_FILE_BLIF, 1, 0);
-    App_CommandMfs(pNtk);
+    shared_ptr <Ckt_Ntk_t> pNtkRef = make_shared <Ckt_Ntk_t> (pNtk);
+    pNtkRef->Init(102400);
+    pNtkRef->LogicSim(false);
+    for (int i = 0; i < 100; ++i) {
+        cout << i << endl;
+        App_CommandMfs(pNtk, pNtkRef, nFrame);
+        stringstream ss;
+        string str;
+        ss << i;
+        ss >> str;
+        Ckt_Synthesis(pNtk, str + ".blif");
+
+        Abc_Ntk_t * pNtkTmp = pNtk;
+        pNtk = Abc_NtkDup(pNtk);
+        Abc_NtkDelete(pNtkTmp);
+    }
     Abc_NtkDelete(pNtk);
     Abc_Stop();
 

@@ -5,8 +5,9 @@ using namespace std;
 using namespace abc;
 
 
-int App_CommandMfs(Abc_Ntk_t * pNtk)
+int App_CommandMfs(Abc_Ntk_t * pNtk, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber)
 {
+    DASSERT(frameNumber >= 64);
     Mfs_Par_t Pars, * pPars = &Pars;
     // set defaults
     App_NtkMfsParsDefault(pPars);
@@ -22,7 +23,7 @@ int App_CommandMfs(Abc_Ntk_t * pNtk)
         return 1;
     }
     // modify the current network
-    if (!App_NtkMfs(pNtk, pPars))
+    if (!App_NtkMfs(pNtk, pPars, pNtkRef, frameNumber))
     {
         Abc_Print(-1, "Resynthesis has failed.\n");
         return 1;
@@ -51,12 +52,11 @@ void App_NtkMfsParsDefault(Mfs_Par_t * pPars)
 }
 
 
-int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars)
+int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber)
 {
     extern Aig_Man_t * Abc_NtkToDar( Abc_Ntk_t * pNtk, int fExors, int fRegisters );
 
     Bdc_Par_t Pars = {0}, * pDecPars = &Pars;
-    ProgressBar * pProgress;
     Mfs_Man_t * p;
     Abc_Obj_t * pObj;
     int i, nNodes, nFaninMax;
@@ -118,20 +118,52 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars)
     p->nTotalNodesBeg = nTotalNodesBeg;
     p->nTotalEdgesBeg = nTotalEdgesBeg;
     DASSERT(pPars->fResub);
-    pProgress = Extra_ProgressBarStart( stdout, Abc_NtkObjNumMax(pNtk) );
-    Abc_NtkForEachNode( pNtk, pObj, i )
-    {
-        if ( p->pPars->nDepthMax && (int)pObj->Level > p->pPars->nDepthMax )
-            continue;
-        if ( Abc_ObjFaninNum(pObj) < 2 || Abc_ObjFaninNum(pObj) > nFaninMax )
-            continue;
-        if ( !p->pPars->fVeryVerbose )
-            Extra_ProgressBarUpdate( pProgress, i, NULL );
-        App_NtkMfsResub( p, pObj );
-        break;
+    int nObjNum = Abc_NtkObjNum(pNtk);
+    int bestId = -1;
+    float bestError = 1.0;
+    boost::progress_display pd(nObjNum);
+    for (i = 0; i < nObjNum; ++i) {
+        ++pd;
+        Abc_Ntk_t * pNtkTest = Abc_NtkDup(pNtk);
+        DASSERT(Abc_NtkObjNum(pNtk) == Abc_NtkObjNum(pNtkTest));
+        p->pNtk = pNtkTest;
+        pObj = Abc_NtkObj(pNtkTest, i);
+        if (pObj != nullptr && Abc_ObjIsNode(pObj)) {
+            Abc_NtkLevel(pNtkTest);
+            Abc_NtkStartReverseLevels(pNtkTest, pPars->nGrowthLevel);
+            if (!(Abc_ObjFaninNum(pObj) < 2 || Abc_ObjFaninNum(pObj) > nFaninMax)) {
+                int isUpdated = 0;
+                string name = string(Abc_ObjName(pObj));
+                App_NtkMfsResub(p, pObj, isUpdated, frameNumber);
+                if (isUpdated) {
+                    shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pNtkTest);
+                    pCktNtk->Init(102400);
+                    pCktNtk->LogicSim(false);
+                    float error = pCktNtk->MeasureError(pNtkRef, 100);
+                    // cout << name << " " << error << endl;
+                    if (error < bestError) {
+                        bestError = error;
+                        bestId = i;
+                    }
+                }
+            }
+        }
+        Abc_NtkDelete(pNtkTest);
     }
-    Extra_ProgressBarStop( pProgress );
+    if (bestId == -1) {
+        frameNumber /= 2;
+        cout << "Network does not change, frame number changes to " << frameNumber << endl;
+    }
+    else {
+        cout << "best node " << Abc_ObjName(Abc_NtkObj(pNtk, bestId)) << " best error " << bestError << endl;
+        p->pNtk = pNtk;
+        int isUpdated = 0;
+        App_NtkMfsResub(p, Abc_NtkObj(pNtk, bestId), isUpdated, frameNumber);
+        DASSERT(isUpdated);
+    }
+
     Abc_NtkStopReverseLevels( pNtk );
+    Abc_NtkSweep( pNtk, 0 );
 
     // perform the sweeping
     if ( !pPars->fResub )
@@ -155,7 +187,7 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars)
 }
 
 
-int App_NtkMfsResub(Mfs_Man_t * p, Abc_Obj_t * pNode)
+int App_NtkMfsResub(Mfs_Man_t * p, Abc_Obj_t * pNode, int & isUpdated, int & frameNumber)
 {
     abctime clk;
     p->nNodesTried++;
@@ -181,7 +213,7 @@ p->timeDiv += Abc_Clock() - clk;
 
     // construct AIG for the window
 clk = Abc_Clock();
-    p->pAigWin = App_NtkConstructAig(p, pNode);
+    p->pAigWin = App_NtkConstructAig(p, pNode, frameNumber);
 p->timeAig += Abc_Clock() - clk;
 
     // translate it into CNF
@@ -203,7 +235,7 @@ clk = Abc_Clock();
         DASSERT(0);
     else
     {
-        App_NtkMfsResubNode( p, pNode );
+        isUpdated = App_NtkMfsResubNode(p, pNode);
         if ( p->pPars->fMoreEffort )
             DASSERT(0);
     }
@@ -221,12 +253,19 @@ int App_NtkMfsResubNode(Mfs_Man_t * p, Abc_Obj_t * pNode)
     Abc_ObjForEachFanin( pNode, pFanin, i )
         if ( !Abc_ObjIsCi(pFanin) && Abc_ObjFanoutNum(pFanin) == 1 )
         {
-            if ( App_NtkMfsSolveSatResub( p, pNode, i, 0, 0 ) )
+            if ( App_NtkMfsSolveSatResub( p, pNode, i, 0, 0 ) ) {
                 return 1;
+            }
         }
     // try removing redundant edges
-    if ( !p->pPars->fArea )
-        DASSERT(0);
+    if ( !p->pPars->fArea ) {
+        Abc_ObjForEachFanin( pNode, pFanin, i )
+            if ( Abc_ObjIsCi(pFanin) || Abc_ObjFanoutNum(pFanin) != 1 )
+            {
+                if ( App_NtkMfsSolveSatResub( p, pNode, i, 1, 0 ) )
+                    return 1;
+            }
+    }
     if ( Abc_ObjFaninNum(pNode) == p->nFaninMax )
         return 0;
     return 0;
@@ -235,7 +274,7 @@ int App_NtkMfsResubNode(Mfs_Man_t * p, Abc_Obj_t * pNode)
 
 int App_NtkMfsSolveSatResub(Mfs_Man_t * p, Abc_Obj_t * pNode, int iFanin, int fOnlyRemove, int fSkipUpdate)
 {
-    int fVeryVerbose = 1;
+    int fVeryVerbose = 0;
     unsigned * pData;
     int pCands[MFS_FANIN_MAX];
     int RetValue, iVar, i, nCands, nWords, w;
@@ -391,14 +430,14 @@ void Abc_NtkMfsUpdateNetwork(Mfs_Man_t * p, Abc_Obj_t * pObj, Vec_Ptr_t * vMfsFa
 
 int Abc_NtkMfsTryResubOnce(Mfs_Man_t * p, int * pCands, int nCands)
 {
-    int fVeryVerbose = 1;
+    int fVeryVerbose = 0;
     unsigned * pData;
     int RetValue, RetValue2 = -1, iVar, i;//, clk = Abc_Clock();
 
-    cout << "Abc_NtkMfsTryResubOnce, pCands ";
-    for (i = 0; i < nCands; ++i)
-        printf( "%s%d ", pCands[i]&1 ? "!":"", pCands[i]>>1 );
-    cout << endl;
+    // cout << "Abc_NtkMfsTryResubOnce, pCands ";
+    // for (i = 0; i < nCands; ++i)
+    //     printf( "%s%d ", pCands[i]&1 ? "!":"", pCands[i]>>1 );
+    // cout << endl;
 /*
     if ( p->pPars->fGiaSat )
     {
@@ -586,15 +625,14 @@ Vec_Ptr_t * App_FindLocalInput(Abc_Obj_t * pNode, int nMax)
 }
 
 
-Aig_Man_t * App_NtkConstructAig(Mfs_Man_t * p, Abc_Obj_t * pNode)
+Aig_Man_t * App_NtkConstructAig(Mfs_Man_t * p, Abc_Obj_t * pNode, int & frameNumber)
 {
     // perform logic simulation
-    int frameNumber = 102400;
     shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pNode->pNtk);
     pCktNtk->Init(frameNumber);
     pCktNtk->LogicSim(false);
     // find local pi
-    Vec_Ptr_t * vLocalPI = App_FindLocalInput(pNode, 20);
+    Vec_Ptr_t * vLocalPI = App_FindLocalInput(pNode, 30);
 
     Aig_Man_t * pMan;
     Abc_Obj_t * pFanin, * pObj;
@@ -614,16 +652,16 @@ Aig_Man_t * App_NtkConstructAig(Mfs_Man_t * p, Abc_Obj_t * pNode)
     pRoot = Aig_ManConst0(pMan);
     for (int i = 0; i < pCktNtk->GetSimNum(); ++i) {
         for (int j = 0; j < 64; ++j) {
-            pDC = Aig_ManConst0(pMan);
+            pDC = Aig_ManConst1(pMan);
             Vec_PtrForEachEntry(Abc_Obj_t *, vLocalPI, pObj, k) {
-                shared_ptr <Ckt_Obj_t> pCktObj = pCktNtk->GetCktObj(pObj->Id);
-                DEBUG_ASSERT(pCktObj->GetAbcObj() == pObj, module_a{}, "object does not match");
+                shared_ptr <Ckt_Obj_t> pCktObj = pCktNtk->GetCktObj(string(Abc_ObjName(pObj)));
+                DEBUG_ASSERT(pCktObj->GetName() == string(Abc_ObjName(pObj)), module_a{}, "object does not match");
                 if (pCktObj->GetSimVal(i, j))
-                    pDC = Aig_Or(pMan, pDC, Aig_Not((Aig_Obj_t *)pObj->pCopy));
+                    pDC = Aig_And(pMan, pDC, (Aig_Obj_t *)pObj->pCopy);
                 else
-                    pDC = Aig_Or(pMan, pDC, (Aig_Obj_t *)pObj->pCopy);
+                    pDC = Aig_And(pMan, pDC, Aig_Not((Aig_Obj_t *)pObj->pCopy));
             }
-            pRoot = Aig_And(pMan, pRoot, pDC);
+            pRoot = Aig_Or(pMan, pRoot, pDC);
         }
     }
     Aig_ObjCreateCo(pMan, pRoot);
