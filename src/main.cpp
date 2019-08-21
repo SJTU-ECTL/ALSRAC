@@ -14,11 +14,9 @@ parser Cmdline_Parser(int argc, char * argv[])
 {
     parser option;
     option.add <string>    ("input",   'i', "Original Circuit file",    true);
-    option.add <string>    ("output",  'o', "Approximate Circuit file", false);
     option.add <string>    ("genlib",  'g', "Map libarary file",        false, "data/genlib/mcnc.genlib");
-    option.add <int>       ("nFrame",  'f', "Simulation Frame number",  false, 10240, range(1, INT_MAX));
-    option.add <int>       ("level",   'l', "TFO level",                false, 3,     range(0, INT_MAX));
-    option.add <int>       ("nLocalPI",'m', "Local PI number",          false, 10,    range(1, INT_MAX));
+    option.add <int>       ("nFrame",  'n', "Simulation Frame number",  false, 8192, range(1, INT_MAX));
+    option.add <int>       ("nLocalPI",'m', "Local PI number",          false, 30,    range(1, INT_MAX));
     option.parse_check(argc, argv);
     return option;
 }
@@ -30,6 +28,7 @@ int main(int argc, char * argv[])
     string input = option.get <string> ("input");
     string genlib = option.get <string> ("genlib");
     int nFrame = option.get <int> ("nFrame");
+    int nLocalPI = option.get <int> ("nLocalPI");
 
     Abc_Start();
     string Command = string("read " + genlib);
@@ -41,7 +40,7 @@ int main(int argc, char * argv[])
     float error = 0.0f;
     for (int i = 0; i < 100; ++i) {
         cout << i << endl;
-        App_CommandMfs(pNtk, pNtkRef, nFrame, error);
+        App_CommandMfs(pNtk, pNtkRef, nFrame, error, nLocalPI);
         stringstream ss;
         string str;
         ss << pNtk->pName << "_" << i << "_" << error;

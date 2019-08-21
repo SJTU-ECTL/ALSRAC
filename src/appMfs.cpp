@@ -5,9 +5,9 @@ using namespace std;
 using namespace abc;
 
 
-int App_CommandMfs(Abc_Ntk_t * pNtk, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error)
+int App_CommandMfs(Abc_Ntk_t * pNtk, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error, int & nLocalPI)
 {
-    DASSERT(frameNumber >= 64);
+    DASSERT(frameNumber > 0);
     Mfs_Par_t Pars, * pPars = &Pars;
     // set defaults
     App_NtkMfsParsDefault(pPars);
@@ -23,7 +23,7 @@ int App_CommandMfs(Abc_Ntk_t * pNtk, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frame
         return 1;
     }
     // modify the current network
-    if (!App_NtkMfs(pNtk, pPars, pNtkRef, frameNumber, error))
+    if (!App_NtkMfs(pNtk, pPars, pNtkRef, frameNumber, error, nLocalPI))
     {
         Abc_Print(-1, "Resynthesis has failed.\n");
         return 1;
@@ -52,7 +52,7 @@ void App_NtkMfsParsDefault(Mfs_Par_t * pPars)
 }
 
 
-int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error)
+int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error, int & nLocalPI)
 {
     extern Aig_Man_t * Abc_NtkToDar( Abc_Ntk_t * pNtk, int fExors, int fRegisters );
 
@@ -134,7 +134,7 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
             if (!(Abc_ObjFaninNum(pObj) < 2 || Abc_ObjFaninNum(pObj) > nFaninMax)) {
                 int isUpdated = 0;
                 string name = string(Abc_ObjName(pObj));
-                App_NtkMfsResub(p, pObj, isUpdated, frameNumber);
+                App_NtkMfsResub(p, pObj, isUpdated, frameNumber, nLocalPI);
                 if (isUpdated) {
                     shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pNtkTest);
                     pCktNtk->Init(102400);
@@ -159,7 +159,7 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
         error = bestError;
         p->pNtk = pNtk;
         int isUpdated = 0;
-        App_NtkMfsResub(p, Abc_NtkObj(pNtk, bestId), isUpdated, frameNumber);
+        App_NtkMfsResub(p, Abc_NtkObj(pNtk, bestId), isUpdated, frameNumber, nLocalPI);
         DASSERT(isUpdated);
     }
 
@@ -188,7 +188,7 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
 }
 
 
-int App_NtkMfsResub(Mfs_Man_t * p, Abc_Obj_t * pNode, int & isUpdated, int & frameNumber)
+int App_NtkMfsResub(Mfs_Man_t * p, Abc_Obj_t * pNode, int & isUpdated, int & frameNumber, int & nLocalPI)
 {
     abctime clk;
     p->nNodesTried++;
@@ -204,6 +204,7 @@ p->timeWin += Abc_Clock() - clk;
     if ( p->pPars->nWinMax && Vec_PtrSize(p->vNodes) > p->pPars->nWinMax )
     {
         p->nMaxDivs++;
+        // cout << p->nMaxDivs << endl;
         isUpdated = 0;
         return 1;
     }
@@ -215,7 +216,7 @@ p->timeDiv += Abc_Clock() - clk;
 
     // construct AIG for the window
 clk = Abc_Clock();
-    p->pAigWin = App_NtkConstructAig(p, pNode, frameNumber);
+    p->pAigWin = App_NtkConstructAig(p, pNode, frameNumber, nLocalPI);
 p->timeAig += Abc_Clock() - clk;
 
     // translate it into CNF
@@ -628,14 +629,17 @@ Vec_Ptr_t * App_FindLocalInput(Abc_Obj_t * pNode, int nMax)
 }
 
 
-Aig_Man_t * App_NtkConstructAig(Mfs_Man_t * p, Abc_Obj_t * pNode, int & frameNumber)
+Aig_Man_t * App_NtkConstructAig(Mfs_Man_t * p, Abc_Obj_t * pNode, int & frameNumber, int & nLocalPI)
 {
     // perform logic simulation
     shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pNode->pNtk);
-    pCktNtk->Init(frameNumber);
+    if (frameNumber >= 64)
+        pCktNtk->Init(frameNumber);
+    else
+        pCktNtk->Init(64);
     pCktNtk->LogicSim(false);
     // find local pi
-    Vec_Ptr_t * vLocalPI = App_FindLocalInput(pNode, 30);
+    Vec_Ptr_t * vLocalPI = App_FindLocalInput(pNode, nLocalPI);
 
     Aig_Man_t * pMan;
     Abc_Obj_t * pFanin, * pObj;
@@ -653,18 +657,36 @@ Aig_Man_t * App_NtkConstructAig(Mfs_Man_t * p, Abc_Obj_t * pNode, int & frameNum
 
     // add approximate care set
     pRoot = Aig_ManConst0(pMan);
-    for (int i = 0; i < pCktNtk->GetSimNum(); ++i) {
-        for (int j = 0; j < 64; ++j) {
-            pDC = Aig_ManConst1(pMan);
-            Vec_PtrForEachEntry(Abc_Obj_t *, vLocalPI, pObj, k) {
-                shared_ptr <Ckt_Obj_t> pCktObj = pCktNtk->GetCktObj(string(Abc_ObjName(pObj)));
-                DEBUG_ASSERT(pCktObj->GetName() == string(Abc_ObjName(pObj)), module_a{}, "object does not match");
-                if (pCktObj->GetSimVal(i, j))
-                    pDC = Aig_And(pMan, pDC, (Aig_Obj_t *)pObj->pCopy);
-                else
-                    pDC = Aig_And(pMan, pDC, Aig_Not((Aig_Obj_t *)pObj->pCopy));
+    if (frameNumber >= 64) {
+        for (int i = 0; i < pCktNtk->GetSimNum(); ++i) {
+            for (int j = 0; j < 64; ++j) {
+                pDC = Aig_ManConst1(pMan);
+                Vec_PtrForEachEntry(Abc_Obj_t *, vLocalPI, pObj, k) {
+                    shared_ptr <Ckt_Obj_t> pCktObj = pCktNtk->GetCktObj(string(Abc_ObjName(pObj)));
+                    DEBUG_ASSERT(pCktObj->GetName() == string(Abc_ObjName(pObj)), module_a{}, "object does not match");
+                    if (pCktObj->GetSimVal(i, j))
+                        pDC = Aig_And(pMan, pDC, (Aig_Obj_t *)pObj->pCopy);
+                    else
+                        pDC = Aig_And(pMan, pDC, Aig_Not((Aig_Obj_t *)pObj->pCopy));
+                }
+                pRoot = Aig_Or(pMan, pRoot, pDC);
             }
-            pRoot = Aig_Or(pMan, pRoot, pDC);
+        }
+    }
+    else {
+        for (int i = 0; i < 1; ++i) {
+            for (int j = 0; j < frameNumber; ++j) {
+                pDC = Aig_ManConst1(pMan);
+                Vec_PtrForEachEntry(Abc_Obj_t *, vLocalPI, pObj, k) {
+                    shared_ptr <Ckt_Obj_t> pCktObj = pCktNtk->GetCktObj(string(Abc_ObjName(pObj)));
+                    DEBUG_ASSERT(pCktObj->GetName() == string(Abc_ObjName(pObj)), module_a{}, "object does not match");
+                    if (pCktObj->GetSimVal(i, j))
+                        pDC = Aig_And(pMan, pDC, (Aig_Obj_t *)pObj->pCopy);
+                    else
+                        pDC = Aig_And(pMan, pDC, Aig_Not((Aig_Obj_t *)pObj->pCopy));
+                }
+                pRoot = Aig_Or(pMan, pRoot, pDC);
+            }
         }
     }
     Aig_ObjCreateCo(pMan, pRoot);
