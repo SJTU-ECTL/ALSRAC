@@ -23,10 +23,19 @@ float Ckt_Synthesis(Abc_Ntk_t * pNtk, string fileName)
     area = Ckt_GetArea(Abc_FrameReadNtk(pAbc));
     delay = Abc_GetArrivalTime(Abc_FrameReadNtk(pAbc));
     cout << "area = " << area << endl << "delay = " << delay << endl;
-    assert(system("if [ ! -d mapped ]; then mkdir mapped; fi") != -1);
-    Command = string("write_blif mapped/");
-    Command += fileName;
-    assert( !Cmd_CommandExecute(pAbc, Command.c_str()) );
+    DASSERT(system("if [ ! -d appntk ]; then mkdir appntk; fi") != -1);
+    Command = string("write_blif ");
+    ostringstream ss;
+    ss << "appntk/" << fileName << "_" << area << "_" << delay << ".blif";
+    string str = ss.str();
+    Command += str;
+    cout << Command << endl;
+    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+
+    ss.str("");
+    ss << "sis -x -c \"read_library data/genlib/mcnc.genlib;read_blif " << str << ";print_map_stats\" | grep -e \"Most Negative Slack\" -e \"Total Area\"";
+    cout << ss.str() << endl;
+    DASSERT(system(const_cast <char*>(ss.str().c_str())) != -1);
 
     return area;
 }

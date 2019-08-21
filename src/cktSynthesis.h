@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 #include "abcApi.h"
 #include "cktTiming.h"
+#include "debug_assert.hpp"
 
 
 float Ckt_Synthesis(abc::Abc_Ntk_t * pNtk, std::string fileName);

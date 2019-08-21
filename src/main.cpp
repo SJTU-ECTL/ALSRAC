@@ -38,14 +38,16 @@ int main(int argc, char * argv[])
     shared_ptr <Ckt_Ntk_t> pNtkRef = make_shared <Ckt_Ntk_t> (pNtk);
     pNtkRef->Init(102400);
     pNtkRef->LogicSim(false);
+    float error = 0.0f;
     for (int i = 0; i < 100; ++i) {
         cout << i << endl;
-        App_CommandMfs(pNtk, pNtkRef, nFrame);
+        App_CommandMfs(pNtk, pNtkRef, nFrame, error);
         stringstream ss;
         string str;
-        ss << i;
+        ss << pNtk->pName << "_" << i << "_" << error;
         ss >> str;
-        Ckt_Synthesis(pNtk, str + ".blif");
+        cout << str << endl;
+        Ckt_Synthesis(pNtk, str);
 
         Abc_Ntk_t * pNtkTmp = pNtk;
         pNtk = Abc_NtkDup(pNtk);

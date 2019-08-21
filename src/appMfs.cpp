@@ -5,7 +5,7 @@ using namespace std;
 using namespace abc;
 
 
-int App_CommandMfs(Abc_Ntk_t * pNtk, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber)
+int App_CommandMfs(Abc_Ntk_t * pNtk, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error)
 {
     DASSERT(frameNumber >= 64);
     Mfs_Par_t Pars, * pPars = &Pars;
@@ -23,7 +23,7 @@ int App_CommandMfs(Abc_Ntk_t * pNtk, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frame
         return 1;
     }
     // modify the current network
-    if (!App_NtkMfs(pNtk, pPars, pNtkRef, frameNumber))
+    if (!App_NtkMfs(pNtk, pPars, pNtkRef, frameNumber, error))
     {
         Abc_Print(-1, "Resynthesis has failed.\n");
         return 1;
@@ -52,7 +52,7 @@ void App_NtkMfsParsDefault(Mfs_Par_t * pPars)
 }
 
 
-int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber)
+int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error)
 {
     extern Aig_Man_t * Abc_NtkToDar( Abc_Ntk_t * pNtk, int fExors, int fRegisters );
 
@@ -139,10 +139,10 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
                     shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pNtkTest);
                     pCktNtk->Init(102400);
                     pCktNtk->LogicSim(false);
-                    float error = pCktNtk->MeasureError(pNtkRef, 100);
+                    float tmpError = pCktNtk->MeasureError(pNtkRef, 100);
                     // cout << name << " " << error << endl;
-                    if (error < bestError) {
-                        bestError = error;
+                    if (tmpError < bestError) {
+                        bestError = tmpError;
                         bestId = i;
                     }
                 }
@@ -156,6 +156,7 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
     }
     else {
         cout << "best node " << Abc_ObjName(Abc_NtkObj(pNtk, bestId)) << " best error " << bestError << endl;
+        error = bestError;
         p->pNtk = pNtk;
         int isUpdated = 0;
         App_NtkMfsResub(p, Abc_NtkObj(pNtk, bestId), isUpdated, frameNumber);
@@ -203,6 +204,7 @@ p->timeWin += Abc_Clock() - clk;
     if ( p->pPars->nWinMax && Vec_PtrSize(p->vNodes) > p->pPars->nWinMax )
     {
         p->nMaxDivs++;
+        isUpdated = 0;
         return 1;
     }
     // compute the divisors of the window
@@ -226,6 +228,7 @@ clk = Abc_Clock();
     if ( p->pSat == NULL )
     {
         p->nNodesBad++;
+        isUpdated = 0;
         return 1;
     }
     // solve the SAT problem
