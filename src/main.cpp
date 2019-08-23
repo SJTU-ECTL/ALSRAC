@@ -31,28 +31,43 @@ int main(int argc, char * argv[])
     int nLocalPI = option.get <int> ("nLocalPI");
 
     Abc_Start();
+    Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
     string Command = string("read " + genlib);
-    DASSERT( !Cmd_CommandExecute(Abc_FrameGetGlobalFrame(), Command.c_str()) );
-    Abc_Ntk_t * pNtk = Io_Read(const_cast <char *>(input.c_str()), IO_FILE_BLIF, 1, 0);
+    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+    Command = string("read " + input);
+    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+    Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance");
+    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+    Command = string("logic; sweep; mfs -v");
+    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+
+    Abc_Ntk_t * pNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
     shared_ptr <Ckt_Ntk_t> pNtkRef = make_shared <Ckt_Ntk_t> (pNtk);
     pNtkRef->Init(102400);
     pNtkRef->LogicSim(false);
 
     float error = 0.0f;
     for (int i = 0; i < 1000; ++i) {
-            cout << i << endl;
-            App_CommandMfs(pNtk, pNtkRef, nFrame, error, nLocalPI);
-            stringstream ss;
-            string str;
-            ss << pNtk->pName << "_" << i << "_" << error;
-            ss >> str;
-            cout << str << endl;
-            Ckt_Synthesis(pNtk, str);
+        cout << i << endl;
+        App_CommandMfs(pNtk, pNtkRef, nFrame, error, nLocalPI);
+        stringstream ss;
+        string str;
+        ss << pNtk->pName << "_" << i << "_" << error;
+        ss >> str;
+        cout << str << endl;
+        Ckt_Synthesis(pNtk, str);
 
-            Abc_Ntk_t * pNtkTmp = pNtk;
-            pNtk = Abc_NtkDup(pNtk);
-            Abc_NtkDelete(pNtkTmp);
-        }
+        Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pNtk));
+        Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance");
+        DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+        Command = string("logic; sweep; mfs -v");
+        DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+        pNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
+
+        Abc_Ntk_t * pNtkTmp = pNtk;
+        pNtk = Abc_NtkDup(pNtk);
+        Abc_NtkDelete(pNtkTmp);
+    }
     Abc_NtkDelete(pNtk);
     Abc_Stop();
 
