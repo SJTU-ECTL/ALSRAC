@@ -1,0 +1,77 @@
+# Benchmark "c432" written by ABC on Thu Aug 22 22:00:48 2019
+.model c432
+.inputs G1gat G4gat G8gat G11gat G14gat G17gat G21gat G24gat G27gat G30gat \
+ G34gat G37gat G40gat G43gat G47gat G50gat G53gat G56gat G60gat G63gat \
+ G66gat G69gat G73gat G76gat G79gat G82gat G86gat G89gat G92gat G95gat \
+ G99gat G102gat G105gat G108gat G112gat G115gat
+.outputs G223gat G329gat G370gat G421gat G430gat G431gat G432gat
+
+.and_gate_delay 1.9
+.default_input_arrival 0 0
+.default_output_required 0 0
+
+
+
+.gate inv1   a=G95gat O=new_n44_
+.gate inv1   a=G24gat O=new_n45_
+.gate inv1   a=G69gat O=new_n46_
+.gate nor2   a=new_n46_ b=G63gat O=new_n47_
+.gate aoi21  a=G30gat b=new_n45_ c=new_n47_ O=new_n48_
+.gate oai21  a=new_n44_ b=G89gat c=new_n48_ O=new_n49_
+.gate inv1   a=G11gat O=new_n50_
+.gate inv1   a=G102gat O=new_n51_
+.gate aoi22  a=G108gat b=new_n51_ c=G17gat d=new_n50_ O=new_n52_
+.gate inv1   a=G50gat O=new_n53_
+.gate nand2  a=G56gat b=new_n53_ O=new_n54_
+.gate inv1   a=G1gat O=new_n55_
+.gate nand2  a=G4gat b=new_n55_ O=new_n56_
+.gate inv1   a=G37gat O=new_n57_
+.gate inv1   a=G76gat O=new_n58_
+.gate aoi22  a=G82gat b=new_n58_ c=G43gat d=new_n57_ O=new_n59_
+.gate nand4  a=new_n59_ b=new_n56_ c=new_n54_ d=new_n52_ O=new_n60_
+.gate nor2   a=new_n60_ b=new_n49_ O=new_n61_
+.gate inv1   a=new_n61_ O=G223gat
+.gate inv1   a=G73gat O=new_n63_
+.gate nand2  a=new_n47_ b=new_n63_ O=new_n64_
+.gate inv1   a=G21gat O=new_n65_
+.gate nand2  a=G17gat b=new_n50_ O=new_n66_
+.gate nand2  a=G223gat b=new_n66_ O=new_n67_
+.gate nand2  a=new_n67_ b=new_n65_ O=new_n68_
+.gate and2   a=new_n68_ b=new_n64_ O=new_n69_
+.gate nand2  a=G223gat b=G50gat O=new_n70_
+.gate inv1   a=G56gat O=new_n71_
+.gate nor2   a=G60gat b=new_n71_ O=new_n72_
+.gate inv1   a=G30gat O=new_n73_
+.gate oai22  a=G112gat b=new_n44_ c=G34gat d=new_n73_ O=new_n74_
+.gate aoi21  a=new_n72_ b=new_n70_ c=new_n74_ O=new_n75_
+.gate inv1   a=G8gat O=new_n76_
+.gate nand2  a=G223gat b=new_n56_ O=new_n77_
+.gate nand3  a=new_n77_ b=new_n76_ c=G4gat O=new_n78_
+.gate inv1   a=G47gat O=new_n79_
+.gate aoi21  a=G43gat b=new_n57_ c=new_n61_ O=new_n80_
+.gate inv1   a=new_n80_ O=new_n81_
+.gate nand2  a=new_n81_ b=new_n79_ O=new_n82_
+.gate nand4  a=new_n82_ b=new_n78_ c=new_n75_ d=new_n69_ O=G329gat
+.gate nand2  a=G329gat b=G34gat O=new_n84_
+.gate nand3  a=new_n84_ b=G30gat c=new_n45_ O=new_n85_
+.gate nor2   a=new_n80_ b=G50gat O=new_n86_
+.gate nor3   a=G79gat b=new_n46_ c=G63gat O=new_n87_
+.gate nand2  a=G89gat b=new_n57_ O=new_n88_
+.gate inv1   a=G115gat O=new_n89_
+.gate nand2  a=new_n89_ b=G108gat O=new_n90_
+.gate nand4  a=new_n90_ b=new_n88_ c=new_n56_ d=G27gat O=new_n91_
+.gate nor3   a=new_n91_ b=new_n87_ c=new_n86_ O=new_n92_
+.gate nand2  a=new_n92_ b=new_n85_ O=G370gat
+.gate inv1   a=new_n86_ O=new_n94_
+.gate nand2  a=G329gat b=G8gat O=new_n95_
+.gate nand3  a=new_n95_ b=new_n94_ c=new_n77_ O=G421gat
+.gate nand2  a=G329gat b=G21gat O=new_n97_
+.gate inv1   a=new_n92_ O=new_n98_
+.gate nand2  a=new_n98_ b=G27gat O=new_n99_
+.gate nand4  a=new_n99_ b=new_n97_ c=new_n67_ d=G17gat O=new_n100_
+.gate and2   a=new_n100_ b=new_n85_ O=new_n101_
+.gate nand2  a=new_n81_ b=new_n68_ O=new_n102_
+.gate nand3  a=new_n102_ b=new_n101_ c=new_n54_ O=G430gat
+.gate nand2  a=new_n101_ b=new_n64_ O=G431gat
+.gate nand2  a=new_n80_ b=new_n69_ O=G432gat
+.end

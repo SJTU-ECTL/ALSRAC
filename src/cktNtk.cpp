@@ -40,7 +40,7 @@ Ckt_ObjType_t Ckt_Obj_t::RenewObjType(void)
     // special case for aig
     if (Abc_NtkIsAigLogic(pAbcObj->pNtk)) {
         Hop_Obj_t * pHopObj = static_cast <Hop_Obj_t *> (pAbcObj->pData);
-        if (Hop_ObjFanin0(pHopObj) == nullptr && Hop_ObjFanin1(pHopObj) == nullptr) {
+        if (Hop_ObjFanin0(pHopObj) == nullptr && Hop_ObjFanin1(pHopObj) == nullptr && pHopObj->Type != AIG_PI) {
             if (Hop_ObjIsConst1(pHopObj))
                 return Ckt_ObjType_t::CONST1;
             else
@@ -156,6 +156,7 @@ void Ckt_Obj_t::RenewSimValS(void)
         default:
         DEBUG_ASSERT(0, module_a{}, "unknown object type");
     }
+    // cout << GetName() << "\t" << type << "\t" << simValue[0] << endl;
 }
 
 
@@ -350,6 +351,7 @@ void Ckt_Obj_t::RenewSimValA(void)
         default:
         DEBUG_ASSERT(0, module_a{}, "unknown object type");
     }
+    // cout << GetName() << "\t" << type << "\t" << simValue[0] << endl;
 }
 
 

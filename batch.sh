@@ -3,10 +3,15 @@
 make rebuild
 
 rm -rf log/
-
 if [ ! -d log ]
 then
     mkdir log
+fi
+
+rm -rf appntk/
+if [ ! -d appntk ]
+then
+    mkdir appntk
 fi
 
 for file in data/sop/*

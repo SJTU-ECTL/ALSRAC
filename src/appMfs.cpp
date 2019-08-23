@@ -59,7 +59,7 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
     Bdc_Par_t Pars = {0}, * pDecPars = &Pars;
     Mfs_Man_t * p;
     Abc_Obj_t * pObj;
-    int i, nNodes, nFaninMax;
+    int i, nFaninMax;
     abctime clk = Abc_Clock();
     int nTotalNodesBeg = Abc_NtkNodeNum(pNtk);
     int nTotalEdgesBeg = Abc_NtkGetTotalFanins(pNtk);
@@ -114,7 +114,6 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
     Abc_NtkStartReverseLevels( pNtk, pPars->nGrowthLevel );
 
     // compute don't-cares for each node
-    nNodes = 0;
     p->nTotalNodesBeg = nTotalNodesBeg;
     p->nTotalEdgesBeg = nTotalEdgesBeg;
     DASSERT(pPars->fResub);
@@ -133,15 +132,15 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
             Abc_NtkStartReverseLevels(pNtkTest, pPars->nGrowthLevel);
             if (!(Abc_ObjFaninNum(pObj) < 2 || Abc_ObjFaninNum(pObj) > nFaninMax)) {
                 int isUpdated = 0;
-                string name = string(Abc_ObjName(pObj));
                 App_NtkMfsResub(p, pObj, isUpdated, frameNumber, nLocalPI);
                 if (isUpdated) {
                     shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pNtkTest);
                     pCktNtk->Init(102400);
                     pCktNtk->LogicSim(false);
                     float tmpError = pCktNtk->MeasureError(pNtkRef, 100);
-                    // cout << name << " " << error << endl;
+                    // cout << tmpError << "\t" << bestError << endl;
                     if (tmpError < bestError) {
+                        // cout << "updated" << endl;
                         bestError = tmpError;
                         bestId = i;
                     }
@@ -169,7 +168,7 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
     // perform the sweeping
     if ( !pPars->fResub )
     {
-        extern void Abc_NtkBidecResyn( Abc_Ntk_t * pNtk, int fVerbose );
+//        extern void Abc_NtkBidecResyn( Abc_Ntk_t * pNtk, int fVerbose );
 //        Abc_NtkSweep( pNtk, 0 );
 //        Abc_NtkBidecResyn( pNtk, 0 );
     }

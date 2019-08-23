@@ -8,6 +8,7 @@
 
 
 float Ckt_Synthesis(abc::Abc_Ntk_t * pNtk, std::string fileName);
+abc::Abc_Ntk_t * Ckt_Synthesis2(abc::Abc_Ntk_t * pNtk, std::string fileName);
 float Ckt_GetArea(abc::Abc_Ntk_t * pNtk);
 
 

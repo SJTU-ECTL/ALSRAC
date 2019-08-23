@@ -37,21 +37,22 @@ int main(int argc, char * argv[])
     shared_ptr <Ckt_Ntk_t> pNtkRef = make_shared <Ckt_Ntk_t> (pNtk);
     pNtkRef->Init(102400);
     pNtkRef->LogicSim(false);
-    float error = 0.0f;
-    for (int i = 0; i < 100; ++i) {
-        cout << i << endl;
-        App_CommandMfs(pNtk, pNtkRef, nFrame, error, nLocalPI);
-        stringstream ss;
-        string str;
-        ss << pNtk->pName << "_" << i << "_" << error;
-        ss >> str;
-        cout << str << endl;
-        Ckt_Synthesis(pNtk, str);
 
-        Abc_Ntk_t * pNtkTmp = pNtk;
-        pNtk = Abc_NtkDup(pNtk);
-        Abc_NtkDelete(pNtkTmp);
-    }
+    float error = 0.0f;
+    for (int i = 0; i < 1000; ++i) {
+            cout << i << endl;
+            App_CommandMfs(pNtk, pNtkRef, nFrame, error, nLocalPI);
+            stringstream ss;
+            string str;
+            ss << pNtk->pName << "_" << i << "_" << error;
+            ss >> str;
+            cout << str << endl;
+            Ckt_Synthesis(pNtk, str);
+
+            Abc_Ntk_t * pNtkTmp = pNtk;
+            pNtk = Abc_NtkDup(pNtk);
+            Abc_NtkDelete(pNtkTmp);
+        }
     Abc_NtkDelete(pNtk);
     Abc_Stop();
 
