@@ -1,0 +1,35 @@
+# Benchmark "c432" written by ABC on Sat Aug 24 22:19:01 2019
+.model c432
+.inputs G1gat G4gat G8gat G11gat G14gat G17gat G21gat G24gat G27gat G30gat \
+ G34gat G37gat G40gat G43gat G47gat G50gat G53gat G56gat G60gat G63gat \
+ G66gat G69gat G73gat G76gat G79gat G82gat G86gat G89gat G92gat G95gat \
+ G99gat G102gat G105gat G108gat G112gat G115gat
+.outputs G223gat G329gat G370gat G421gat G430gat G431gat G432gat
+
+.and_gate_delay 1.9
+.default_input_arrival 0 0
+.default_output_required 0 0
+
+
+
+.gate inv1   a=G69gat O=new_n44_
+.gate inv1   a=G108gat O=new_n45_
+.gate nand2  a=new_n45_ b=new_n44_ O=G223gat
+.gate inv1   a=G82gat O=new_n47_
+.gate oai21  a=new_n47_ b=G76gat c=G63gat O=G329gat
+.gate or2    a=G73gat b=G63gat O=new_n49_
+.gate nand2  a=new_n49_ b=G37gat O=G370gat
+.gate inv1   a=G1gat O=new_n51_
+.gate inv1   a=G8gat O=new_n52_
+.gate nand3  a=new_n52_ b=G4gat c=new_n51_ O=G421gat
+.gate inv1   a=G30gat O=new_n54_
+.gate inv1   a=G11gat O=new_n55_
+.gate inv1   a=G37gat O=new_n56_
+.gate aoi22  a=G43gat b=new_n56_ c=G17gat d=new_n55_ O=new_n57_
+.gate oai21  a=new_n54_ b=G24gat c=new_n57_ O=G430gat
+.gate nand2  a=G17gat b=new_n55_ O=new_n59_
+.gate inv1   a=G76gat O=new_n60_
+.gate nand3  a=G82gat b=new_n60_ c=new_n44_ O=new_n61_
+.gate nand3  a=new_n61_ b=new_n59_ c=new_n49_ O=G431gat
+.gate nand2  a=new_n57_ b=new_n49_ O=G432gat
+.end

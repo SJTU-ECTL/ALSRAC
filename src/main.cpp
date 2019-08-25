@@ -44,11 +44,10 @@ int main(int argc, char * argv[])
     Abc_Ntk_t * pNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
     shared_ptr <Ckt_Ntk_t> pNtkRef = make_shared <Ckt_Ntk_t> (pNtk);
     pNtkRef->Init(102400);
-    pNtkRef->LogicSim(false);
 
     float error = 0.0f;
     for (int i = 0; i < 1000; ++i) {
-        cout << i << endl;
+        cout << "round " << i << endl;
         App_CommandMfs(pNtk, pNtkRef, nFrame, error, nLocalPI);
         stringstream ss;
         string str;

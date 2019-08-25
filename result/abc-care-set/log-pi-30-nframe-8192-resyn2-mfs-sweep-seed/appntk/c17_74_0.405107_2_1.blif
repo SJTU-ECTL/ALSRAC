@@ -1,0 +1,14 @@
+# Benchmark "c17" written by ABC on Sat Aug 24 22:06:23 2019
+.model c17
+.inputs G1gat G2gat G3gat G6gat G7gat
+.outputs G22gat G23gat
+
+.and_gate_delay 1.9
+.default_input_arrival 0 0
+.default_output_required 0 0
+
+
+
+.gate buf    a=G2gat O=G22gat
+.gate buf    a=G2gat O=G23gat
+.end

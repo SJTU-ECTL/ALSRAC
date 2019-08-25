@@ -139,9 +139,9 @@ public:
     void                                                    DFS         (std::shared_ptr <Ckt_Obj_t> pCktObj, std::vector < std::shared_ptr <Ckt_Obj_t> > & pTopoObjs);
     void                                                    FeedForward (void);
     void                                                    FeedForward (std::vector < std::shared_ptr <Ckt_Obj_t> > & pTopoObjs);
-    void                                                    LogicSim    (bool isVerbose = true);
+    void                                                    LogicSim    (bool isVerbose = true, unsigned seed = 314);
     void                                                    CheckSim    (void);
-    float                                                   MeasureError(std::shared_ptr <Ckt_Ntk_t> pRefNtk, int seed = 314);
+    float                                                   MeasureError(std::shared_ptr <Ckt_Ntk_t> pRefNtk, unsigned seed = 314);
     std::shared_ptr <Ckt_Obj_t>                             GetCktObj   (int id) const;
     std::shared_ptr <Ckt_Obj_t>                             GetCktObj   (const std::string & name) const;
 

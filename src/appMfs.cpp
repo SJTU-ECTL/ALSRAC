@@ -5,6 +5,9 @@ using namespace std;
 using namespace abc;
 
 
+static unsigned seed;
+
+
 int App_CommandMfs(Abc_Ntk_t * pNtk, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error, int & nLocalPI)
 {
     DASSERT(frameNumber > 0);
@@ -54,7 +57,7 @@ void App_NtkMfsParsDefault(Mfs_Par_t * pPars)
 
 int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error, int & nLocalPI)
 {
-    extern Aig_Man_t * Abc_NtkToDar( Abc_Ntk_t * pNtk, int fExors, int fRegisters );
+    static int patience;
 
     Bdc_Par_t Pars = {0}, * pDecPars = &Pars;
     Mfs_Man_t * p;
@@ -78,8 +81,6 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
     {
         DASSERT(0);
     }
-    // perform the network sweep
-//    Abc_NtkSweep( pNtk, 0 );
     // convert into the AIG
     if ( !Abc_NtkToAig(pNtk) )
     {
@@ -121,6 +122,8 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
     int bestId = -1;
     float bestError = 1.0;
     boost::progress_display pd(nObjNum);
+    seed = time(unsigned(NULL));
+    cout << "seed = " << seed << " patience = " << patience << endl;
     for (i = 0; i < nObjNum; ++i) {
         ++pd;
         Abc_Ntk_t * pNtkTest = Abc_NtkDup(pNtk);
@@ -136,7 +139,6 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
                 if (isUpdated) {
                     shared_ptr <Ckt_Ntk_t> pCktNtk = make_shared <Ckt_Ntk_t> (pNtkTest);
                     pCktNtk->Init(102400);
-                    pCktNtk->LogicSim(false);
                     float tmpError = pCktNtk->MeasureError(pNtkRef, 100);
                     // cout << tmpError << "\t" << bestError << endl;
                     if (tmpError < bestError) {
@@ -150,10 +152,15 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
         Abc_NtkDelete(pNtkTest);
     }
     if (bestId == -1) {
-        frameNumber /= 2;
-        cout << "Network does not change, frame number changes to " << frameNumber << endl;
+        ++patience;
+        if (patience >= 5) {
+            patience = 0;
+            frameNumber /= 2;
+            cout << "Network does not change, frame number changes to " << frameNumber << endl;
+        }
     }
     else {
+        patience = 0;
         cout << "best node " << Abc_ObjName(Abc_NtkObj(pNtk, bestId)) << " best error " << bestError << endl;
         error = bestError;
         p->pNtk = pNtk;
@@ -636,7 +643,7 @@ Aig_Man_t * App_NtkConstructAig(Mfs_Man_t * p, Abc_Obj_t * pNode, int & frameNum
         pCktNtk->Init(frameNumber);
     else
         pCktNtk->Init(64);
-    pCktNtk->LogicSim(false);
+    pCktNtk->LogicSim(false, seed);
     // find local pi
     Vec_Ptr_t * vLocalPI = App_FindLocalInput(pNode, nLocalPI);
 

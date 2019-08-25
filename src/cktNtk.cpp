@@ -793,9 +793,9 @@ void Ckt_Ntk_t::FeedForward(vector < shared_ptr <Ckt_Obj_t> > & pTopoObjs)
 }
 
 
-void Ckt_Ntk_t::LogicSim(bool isVerbose)
+void Ckt_Ntk_t::LogicSim(bool isVerbose, unsigned seed)
 {
-    GenInputDist();
+    GenInputDist(seed);
     vector < shared_ptr <Ckt_Obj_t> > pTopoObjs;
     SortObjects(pTopoObjs);
     clock_t st = clock();
@@ -844,7 +844,7 @@ void Ckt_Ntk_t::CheckSim(void)
 }
 
 
-float Ckt_Ntk_t::MeasureError(shared_ptr <Ckt_Ntk_t> pRefNtk, int seed)
+float Ckt_Ntk_t::MeasureError(shared_ptr <Ckt_Ntk_t> pRefNtk, unsigned seed)
 {
     // make sure POs are same
     DEBUG_ASSERT(pCktPos.size() == pRefNtk->pCktPos.size(), module_a{}, "# pos are not equal");
