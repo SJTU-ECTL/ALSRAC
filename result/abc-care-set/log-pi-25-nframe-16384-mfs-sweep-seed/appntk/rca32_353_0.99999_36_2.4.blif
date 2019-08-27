@@ -1,0 +1,52 @@
+# Benchmark "rca32" written by ABC on Sun Aug 25 20:41:59 2019
+.model rca32
+.inputs x[0] x[1] x[2] x[3] x[4] x[5] x[6] x[7] x[8] x[9] x[10] x[11] x[12] \
+ x[13] x[14] x[15] x[16] x[17] x[18] x[19] x[20] x[21] x[22] x[23] x[24] \
+ x[25] x[26] x[27] x[28] x[29] x[30] x[31] y[0] y[1] y[2] y[3] y[4] y[5] \
+ y[6] y[7] y[8] y[9] y[10] y[11] y[12] y[13] y[14] y[15] y[16] y[17] y[18] \
+ y[19] y[20] y[21] y[22] y[23] y[24] y[25] y[26] y[27] y[28] y[29] y[30] \
+ y[31]
+.outputs s[0] s[1] s[2] s[3] s[4] s[5] s[6] s[7] s[8] s[9] s[10] s[11] \
+ s[12] s[13] s[14] s[15] s[16] s[17] s[18] s[19] s[20] s[21] s[22] s[23] \
+ s[24] s[25] s[26] s[27] s[28] s[29] s[30] s[31] cout
+
+.and_gate_delay 1.9
+.default_input_arrival 0 0
+.default_output_required 0 0
+
+
+
+.gate inv1   a=x[0] O=s[0]
+.gate inv1   a=y[1] O=s[1]
+.gate inv1   a=y[3] O=s[3]
+.gate inv1   a=x[8] O=s[10]
+.gate inv1   a=y[14] O=s[14]
+.gate or2    a=y[16] b=x[16] O=s[16]
+.gate inv1   a=y[17] O=s[17]
+.gate inv1   a=y[21] O=s[21]
+.gate nand2  a=y[21] b=x[22] O=s[22]
+.gate inv1   a=x[23] O=s[23]
+.gate inv1   a=x[25] O=s[25]
+.gate inv1   a=x[28] O=s[28]
+.gate inv1   a=y[28] O=s[29]
+.gate inv1   a=y[30] O=s[30]
+.gate buf    a=y[2] O=s[2]
+.gate buf    a=x[4] O=s[4]
+.gate buf    a=x[5] O=s[5]
+.gate buf    a=y[6] O=s[6]
+.gate buf    a=x[7] O=s[7]
+.gate buf    a=y[8] O=s[8]
+.gate buf    a=x[9] O=s[9]
+.gate inv1   a=x[8] O=s[11]
+.gate buf    a=x[10] O=s[12]
+.gate buf    a=y[13] O=s[13]
+.gate buf    a=y[15] O=s[15]
+.gate buf    a=y[18] O=s[18]
+.gate buf    a=y[19] O=s[19]
+.gate buf    a=y[20] O=s[20]
+.gate buf    a=x[23] O=s[24]
+.gate buf    a=x[26] O=s[26]
+.gate buf    a=y[27] O=s[27]
+.gate buf    a=y[30] O=s[31]
+.gate buf    a=y[31] O=cout
+.end

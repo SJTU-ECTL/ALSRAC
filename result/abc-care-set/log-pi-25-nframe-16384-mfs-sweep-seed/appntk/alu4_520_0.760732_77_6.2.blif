@@ -1,0 +1,48 @@
+# Benchmark "alu4" written by ABC on Mon Aug 26 01:18:42 2019
+.model alu4
+.inputs i_0_ i_1_ i_2_ i_3_ i_4_ i_5_ i_6_ i_7_ i_8_ i_9_ i_10_ i_11_ i_12_ \
+ i_13_
+.outputs o_0_ o_1_ o_2_ o_3_ o_4_ o_5_ o_6_ o_7_
+
+.and_gate_delay 1.9
+.default_input_arrival 0 0
+.default_output_required 0 0
+
+
+
+.gate inv1   a=i_5_ O=new_n23_
+.gate inv1   a=i_0_ O=new_n24_
+.gate inv1   a=i_10_ O=new_n25_
+.gate aoi21  a=new_n25_ b=new_n23_ c=new_n24_ O=new_n26_
+.gate oai21  a=i_9_ b=new_n23_ c=new_n26_ O=new_n27_
+.gate nand2  a=i_10_ b=i_2_ O=new_n28_
+.gate inv1   a=i_6_ O=new_n29_
+.gate nand2  a=new_n25_ b=new_n29_ O=new_n30_
+.gate nand3  a=new_n30_ b=i_9_ c=i_1_ O=new_n31_
+.gate nand3  a=new_n31_ b=new_n28_ c=new_n27_ O=o_0_
+.gate inv1   a=i_8_ O=new_n33_
+.gate inv1   a=i_9_ O=new_n34_
+.gate inv1   a=i_3_ O=new_n35_
+.gate aoi21  a=i_10_ b=new_n33_ c=new_n35_ O=new_n36_
+.gate oai21  a=new_n34_ b=new_n33_ c=new_n36_ O=new_n37_
+.gate nand2  a=i_12_ b=new_n35_ O=new_n38_
+.gate nand2  a=new_n25_ b=i_4_ O=new_n39_
+.gate nand3  a=new_n39_ b=new_n38_ c=new_n37_ O=new_n40_
+.gate inv1   a=i_13_ O=new_n41_
+.gate nand4  a=new_n41_ b=new_n25_ c=new_n34_ d=i_4_ O=new_n42_
+.gate nand2  a=new_n42_ b=new_n40_ O=o_1_
+.gate nand2  a=i_11_ b=new_n29_ O=new_n44_
+.gate oai21  a=i_5_ b=i_0_ c=i_12_ O=new_n45_
+.gate nand3  a=new_n45_ b=new_n44_ c=new_n27_ O=o_2_
+.gate nand2  a=i_11_ b=new_n23_ O=new_n47_
+.gate nand3  a=new_n47_ b=new_n45_ c=new_n24_ O=new_n48_
+.gate nand2  a=new_n48_ b=new_n39_ O=o_3_
+.gate nand2  a=new_n48_ b=new_n27_ O=o_4_
+.gate inv1   a=i_11_ O=new_n51_
+.gate nand2  a=i_13_ b=new_n51_ O=new_n52_
+.gate oai21  a=new_n52_ b=i_1_ c=new_n31_ O=o_5_
+.gate or2    a=new_n52_ b=i_2_ O=new_n54_
+.gate nand3  a=new_n54_ b=new_n42_ c=new_n28_ O=o_6_
+.gate nand2  a=new_n51_ b=i_10_ O=new_n56_
+.gate oai21  a=new_n56_ b=i_12_ c=new_n42_ O=o_7_
+.end

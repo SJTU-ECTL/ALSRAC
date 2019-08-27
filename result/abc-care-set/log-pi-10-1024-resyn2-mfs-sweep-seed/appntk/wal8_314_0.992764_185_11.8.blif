@@ -1,0 +1,82 @@
+# Benchmark "wal8" written by ABC on Mon Aug 26 09:32:57 2019
+.model wal8
+.inputs multiplicand[0] multiplicand[1] multiplicand[2] multiplicand[3] \
+ multiplicand[4] multiplicand[5] multiplicand[6] multiplicand[7] \
+ multiplier[0] multiplier[1] multiplier[2] multiplier[3] multiplier[4] \
+ multiplier[5] multiplier[6] multiplier[7]
+.outputs product[0] product[1] product[2] product[3] product[4] product[5] \
+ product[6] product[7] product[8] product[9] product[10] product[11] \
+ product[12] product[13] product[14] product[15]
+
+.and_gate_delay 1.9
+.default_input_arrival 0 0
+.default_output_required 0 0
+
+
+
+.gate inv1   a=multiplicand[0] O=new_n33_
+.gate inv1   a=multiplier[0] O=new_n34_
+.gate nor2   a=new_n34_ b=new_n33_ O=product[0]
+.gate inv1   a=multiplier[1] O=new_n36_
+.gate nand2  a=multiplier[0] b=multiplicand[1] O=new_n37_
+.gate oai21  a=new_n36_ b=new_n33_ c=new_n37_ O=product[1]
+.gate nand2  a=multiplier[2] b=multiplicand[0] O=new_n39_
+.gate aoi22  a=multiplier[1] b=multiplicand[1] c=multiplier[0] d=multiplicand[2] O=new_n40_
+.gate xor2a  a=new_n40_ b=new_n39_ O=product[2]
+.gate nand2  a=multiplier[3] b=multiplicand[0] O=new_n42_
+.gate aoi21  a=multiplier[0] b=multiplicand[3] c=multiplicand[2] O=new_n43_
+.gate xor2a  a=new_n43_ b=new_n42_ O=product[3]
+.gate inv1   a=multiplier[3] O=new_n45_
+.gate inv1   a=multiplier[4] O=new_n46_
+.gate oai21  a=new_n46_ b=new_n33_ c=new_n45_ O=new_n47_
+.gate inv1   a=multiplicand[3] O=new_n48_
+.gate aoi22  a=multiplier[2] b=multiplicand[2] c=multiplier[0] d=multiplicand[4] O=new_n49_
+.gate oai21  a=new_n36_ b=new_n48_ c=new_n49_ O=new_n50_
+.gate xor2a  a=new_n50_ b=new_n47_ O=product[4]
+.gate inv1   a=multiplicand[5] O=new_n52_
+.gate nand2  a=multiplier[2] b=multiplicand[3] O=new_n53_
+.gate oai21  a=new_n34_ b=new_n52_ c=new_n53_ O=new_n54_
+.gate nand2  a=multiplier[4] b=multiplicand[1] O=new_n55_
+.gate nand2  a=multiplier[5] b=multiplicand[0] O=new_n56_
+.gate nand2  a=multiplier[3] b=multiplicand[2] O=new_n57_
+.gate nand3  a=new_n57_ b=new_n56_ c=new_n55_ O=new_n58_
+.gate xor2a  a=new_n58_ b=new_n54_ O=product[5]
+.gate nand2  a=new_n58_ b=new_n54_ O=new_n60_
+.gate nand2  a=new_n60_ b=new_n56_ O=new_n61_
+.gate oai21  a=multiplicand[6] b=multiplicand[4] c=multiplier[2] O=new_n62_
+.gate oai21  a=new_n36_ b=new_n52_ c=new_n62_ O=new_n63_
+.gate nand2  a=new_n46_ b=new_n48_ O=new_n64_
+.gate xor2a  a=new_n64_ b=new_n63_ O=new_n65_
+.gate xor2a  a=new_n65_ b=new_n61_ O=product[6]
+.gate nor2   a=new_n64_ b=new_n63_ O=new_n67_
+.gate and2   a=multiplier[7] b=multiplicand[0] O=new_n68_
+.gate nor2   a=new_n68_ b=new_n67_ O=product[7]
+.gate aoi22  a=multiplier[7] b=multiplicand[1] c=multiplier[0] d=multiplicand[7] O=new_n70_
+.gate inv1   a=new_n70_ O=new_n71_
+.gate aoi22  a=multiplier[5] b=multiplicand[3] c=multiplier[3] d=multiplicand[5] O=new_n72_
+.gate aoi22  a=multiplier[2] b=multiplicand[6] c=multiplier[1] d=multiplicand[7] O=new_n73_
+.gate xor2a  a=new_n73_ b=new_n72_ O=new_n74_
+.gate xor2a  a=new_n74_ b=new_n71_ O=new_n75_
+.gate xor2a  a=new_n75_ b=new_n68_ O=product[8]
+.gate nand2  a=new_n74_ b=new_n71_ O=new_n77_
+.gate nor2   a=new_n73_ b=new_n72_ O=new_n78_
+.gate aoi21  a=multiplier[7] b=multiplicand[2] c=new_n78_ O=new_n79_
+.gate aoi22  a=multiplier[5] b=multiplicand[4] c=multiplier[4] d=multiplicand[5] O=new_n80_
+.gate aoi22  a=multiplier[3] b=multiplicand[6] c=multiplier[2] d=multiplicand[7] O=new_n81_
+.gate xnor2a a=new_n81_ b=new_n80_ O=new_n82_
+.gate nand3  a=new_n82_ b=new_n79_ c=new_n77_ O=product[9]
+.gate oai21  a=new_n82_ b=new_n79_ c=new_n45_ O=product[10]
+.gate nor2   a=new_n82_ b=new_n79_ O=new_n85_
+.gate aoi21  a=multiplier[7] b=multiplicand[4] c=new_n85_ O=new_n86_
+.gate nand2  a=multiplier[7] b=multiplicand[6] O=new_n87_
+.gate nand2  a=multiplier[6] b=multiplicand[7] O=new_n88_
+.gate nand2  a=new_n88_ b=new_n87_ O=new_n89_
+.gate inv1   a=new_n89_ O=new_n90_
+.gate xor2a  a=new_n90_ b=new_n86_ O=product[11]
+.gate nor2   a=new_n90_ b=new_n86_ O=new_n92_
+.gate aoi22  a=multiplier[7] b=multiplicand[5] c=multiplier[5] d=multiplicand[7] O=new_n93_
+.gate nor2   a=new_n93_ b=new_n92_ O=product[12]
+.gate and2   a=new_n89_ b=new_n86_ O=product[13]
+.gate nor2   a=new_n88_ b=new_n87_ O=product[15]
+.gate or2    a=product[15] b=new_n92_ O=product[14]
+.end

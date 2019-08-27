@@ -1,0 +1,25 @@
+# Benchmark "c432" written by ABC on Sun Aug 25 19:54:25 2019
+.model c432
+.inputs G1gat G4gat G8gat G11gat G14gat G17gat G21gat G24gat G27gat G30gat \
+ G34gat G37gat G40gat G43gat G47gat G50gat G53gat G56gat G60gat G63gat \
+ G66gat G69gat G73gat G76gat G79gat G82gat G86gat G89gat G92gat G95gat \
+ G99gat G102gat G105gat G108gat G112gat G115gat
+.outputs G223gat G329gat G370gat G421gat G430gat G431gat G432gat
+
+.and_gate_delay 1.9
+.default_input_arrival 0 0
+.default_output_required 0 0
+
+
+
+.gate inv1   a=G89gat O=G223gat
+.gate inv1   a=G69gat O=new_n45_
+.gate nor2   a=new_n45_ b=G63gat O=G329gat
+.gate inv1   a=G4gat O=G421gat
+.gate inv1   a=G43gat O=new_n48_
+.gate nor2   a=new_n48_ b=G37gat O=G430gat
+.gate inv1   a=G82gat O=new_n50_
+.gate nor2   a=new_n50_ b=G76gat O=G431gat
+.gate nor2   a=new_n45_ b=G63gat O=G370gat
+.gate nor2   a=new_n45_ b=G63gat O=G432gat
+.end

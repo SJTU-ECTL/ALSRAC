@@ -1,0 +1,32 @@
+# Benchmark "alu4" written by ABC on Mon Aug 26 01:18:50 2019
+.model alu4
+.inputs i_0_ i_1_ i_2_ i_3_ i_4_ i_5_ i_6_ i_7_ i_8_ i_9_ i_10_ i_11_ i_12_ \
+ i_13_
+.outputs o_0_ o_1_ o_2_ o_3_ o_4_ o_5_ o_6_ o_7_
+
+.and_gate_delay 1.9
+.default_input_arrival 0 0
+.default_output_required 0 0
+
+
+
+.gate nand2  a=i_9_ b=i_1_ O=new_n23_
+.gate nand2  a=i_10_ b=i_2_ O=new_n24_
+.gate nand2  a=new_n24_ b=new_n23_ O=o_0_
+.gate inv1   a=i_10_ O=new_n26_
+.gate inv1   a=i_13_ O=new_n27_
+.gate nand3  a=new_n27_ b=new_n26_ c=i_4_ O=new_n28_
+.gate nand2  a=i_9_ b=i_3_ O=new_n29_
+.gate or2    a=i_12_ b=i_3_ O=new_n30_
+.gate nand3  a=new_n30_ b=new_n29_ c=new_n28_ O=o_1_
+.gate inv1   a=i_4_ O=new_n32_
+.gate oai21  a=i_10_ b=new_n32_ c=i_12_ O=o_3_
+.gate nand2  a=i_10_ b=i_9_ O=new_n34_
+.gate nand2  a=new_n34_ b=i_12_ O=o_4_
+.gate inv1   a=i_11_ O=new_n36_
+.gate nand2  a=i_13_ b=new_n36_ O=new_n37_
+.gate oai21  a=new_n37_ b=i_1_ c=new_n23_ O=o_5_
+.gate nand3  a=new_n37_ b=new_n28_ c=new_n24_ O=o_6_
+.gate oai21  a=i_12_ b=new_n26_ c=new_n28_ O=o_7_
+.gate buf    a=i_12_ O=o_2_
+.end

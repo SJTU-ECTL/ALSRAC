@@ -1,0 +1,55 @@
+# Benchmark "mtp8" written by ABC on Mon Aug 26 09:33:07 2019
+.model mtp8
+.inputs x[0] x[1] x[2] x[3] x[4] x[5] x[6] x[7] y[0] y[1] y[2] y[3] y[4] \
+ y[5] y[6] y[7]
+.outputs result[0] result[1] result[2] result[3] result[4] result[5] \
+ result[6] result[7] result[8] result[9] result[10] result[11] result[12] \
+ result[13] result[14] result[15]
+
+.and_gate_delay 1.9
+.default_input_arrival 0 0
+.default_output_required 0 0
+
+
+
+.gate inv1   a=x[0] O=new_n33_
+.gate inv1   a=y[0] O=new_n34_
+.gate nor2   a=new_n34_ b=new_n33_ O=result[0]
+.gate inv1   a=x[1] O=new_n36_
+.gate nand2  a=y[1] b=x[0] O=new_n37_
+.gate oai21  a=new_n34_ b=new_n36_ c=new_n37_ O=result[1]
+.gate inv1   a=x[2] O=new_n39_
+.gate nor2   a=new_n39_ b=new_n36_ O=result[2]
+.gate nor2   a=x[2] b=x[1] O=new_n41_
+.gate inv1   a=new_n41_ O=result[4]
+.gate nor3   a=y[2] b=x[3] c=new_n33_ O=result[5]
+.gate inv1   a=x[5] O=new_n44_
+.gate nand2  a=x[4] b=x[3] O=new_n45_
+.gate or2    a=x[4] b=x[3] O=new_n46_
+.gate and2   a=new_n46_ b=new_n45_ O=new_n47_
+.gate inv1   a=new_n47_ O=new_n48_
+.gate xor2a  a=x[5] b=x[4] O=new_n49_
+.gate nand2  a=new_n49_ b=new_n48_ O=new_n50_
+.gate xnor2a a=y[2] b=x[5] O=new_n51_
+.gate oai21  a=new_n51_ b=new_n48_ c=new_n50_ O=new_n52_
+.gate oai21  a=new_n52_ b=new_n41_ c=new_n44_ O=result[6]
+.gate inv1   a=x[7] O=new_n54_
+.gate and2   a=new_n52_ b=new_n54_ O=result[7]
+.gate inv1   a=y[7] O=new_n56_
+.gate nand2  a=new_n47_ b=x[5] O=new_n57_
+.gate oai22  a=new_n57_ b=y[4] c=new_n46_ d=new_n56_ O=result[9]
+.gate oai21  a=new_n39_ b=new_n36_ c=x[3] O=new_n59_
+.gate nand2  a=new_n59_ b=new_n57_ O=result[10]
+.gate nand2  a=new_n59_ b=y[5] O=new_n61_
+.gate aoi22  a=new_n57_ b=new_n50_ c=y[1] d=x[7] O=new_n62_
+.gate nand2  a=new_n61_ b=new_n62_ O=new_n63_
+.gate inv1   a=new_n62_ O=new_n64_
+.gate oai21  a=x[6] b=x[5] c=new_n64_ O=new_n65_
+.gate oai21  a=new_n65_ b=new_n61_ c=new_n63_ O=result[11]
+.gate nand2  a=new_n65_ b=new_n63_ O=result[12]
+.gate nor2   a=new_n56_ b=new_n54_ O=result[15]
+.gate zero   O=result[14]
+.gate buf    a=x[0] O=result[3]
+.gate buf    a=x[2] O=result[8]
+.gate buf    a=x[6] O=result[13]
+.end

@@ -1,0 +1,39 @@
+# Benchmark "wal8" written by ABC on Mon Aug 26 09:33:27 2019
+.model wal8
+.inputs multiplicand[0] multiplicand[1] multiplicand[2] multiplicand[3] \
+ multiplicand[4] multiplicand[5] multiplicand[6] multiplicand[7] \
+ multiplier[0] multiplier[1] multiplier[2] multiplier[3] multiplier[4] \
+ multiplier[5] multiplier[6] multiplier[7]
+.outputs product[0] product[1] product[2] product[3] product[4] product[5] \
+ product[6] product[7] product[8] product[9] product[10] product[11] \
+ product[12] product[13] product[14] product[15]
+
+.and_gate_delay 1.9
+.default_input_arrival 0 0
+.default_output_required 0 0
+
+
+
+.gate and2   a=multiplier[0] b=multiplicand[0] O=product[0]
+.gate and2   a=multiplier[1] b=multiplicand[0] O=product[1]
+.gate inv1   a=multiplicand[2] O=new_n35_
+.gate inv1   a=multiplier[1] O=new_n36_
+.gate nand2  a=new_n36_ b=new_n35_ O=product[2]
+.gate inv1   a=multiplier[3] O=new_n38_
+.gate nand2  a=new_n38_ b=new_n35_ O=product[3]
+.gate and2   a=multiplier[4] b=multiplicand[1] O=product[5]
+.gate inv1   a=multiplier[4] O=new_n41_
+.gate nor2   a=new_n41_ b=multiplier[2] O=product[6]
+.gate nor2   a=multiplier[5] b=new_n38_ O=product[9]
+.gate inv1   a=multiplier[7] O=new_n44_
+.gate nor2   a=new_n44_ b=multiplicand[6] O=product[11]
+.gate inv1   a=multiplier[5] O=new_n46_
+.gate and2   a=multiplier[7] b=multiplicand[6] O=product[14]
+.gate nor2   a=product[14] b=new_n46_ O=product[12]
+.gate and2   a=multiplier[6] b=multiplicand[7] O=product[13]
+.gate and2   a=product[13] b=product[14] O=product[15]
+.gate nand2  a=new_n38_ b=new_n35_ O=product[4]
+.gate buf    a=multiplier[4] O=product[7]
+.gate buf    a=multiplier[2] O=product[8]
+.gate buf    a=multiplier[3] O=product[10]
+.end
