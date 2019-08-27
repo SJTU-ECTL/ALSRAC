@@ -662,41 +662,33 @@ Aig_Man_t * App_NtkConstructAig(Mfs_Man_t * p, Abc_Obj_t * pNode, int & frameNum
         DASSERT(0);
 
     // add approximate care set
-    pRoot = Aig_ManConst0(pMan);
-    if (frameNumber >= 64) {
-        for (int i = 0; i < pCktNtk->GetSimNum(); ++i) {
-            for (int j = 0; j < 64; ++j) {
-                pDC = Aig_ManConst1(pMan);
-                Vec_PtrForEachEntry(Abc_Obj_t *, vLocalPI, pObj, k) {
-                    shared_ptr <Ckt_Obj_t> pCktObj = pCktNtk->GetCktObj(string(Abc_ObjName(pObj)));
-                    DEBUG_ASSERT(pCktObj->GetName() == string(Abc_ObjName(pObj)), module_a{}, "object does not match");
-                    if (pCktObj->GetSimVal(i, j))
-                        pDC = Aig_And(pMan, pDC, (Aig_Obj_t *)pObj->pCopy);
-                    else
-                        pDC = Aig_And(pMan, pDC, Aig_Not((Aig_Obj_t *)pObj->pCopy));
-                }
-                pRoot = Aig_Or(pMan, pRoot, pDC);
+    set <string> patterns;
+    int nCluster = min(frameNumber, 64);
+    for (int i = 0; i < pCktNtk->GetSimNum(); ++i) {
+        for (int j = 0; j < nCluster; ++j) {
+            string pattern = "";
+            Vec_PtrForEachEntry(Abc_Obj_t *, vLocalPI, pObj, k) {
+                shared_ptr <Ckt_Obj_t> pCktObj = pCktNtk->GetCktObj(string(Abc_ObjName(pObj)));
+                DEBUG_ASSERT(pCktObj->GetName() == string(Abc_ObjName(pObj)), module_a{}, "object does not match");
+                pattern +=  pCktObj->GetSimVal(i, j)? '1': '0';
             }
+            DASSERT(static_cast <int>(pattern.length()) == Vec_PtrSize(vLocalPI));
+            patterns.insert(pattern);
         }
     }
-    else {
-        for (int i = 0; i < 1; ++i) {
-            for (int j = 0; j < frameNumber; ++j) {
-                pDC = Aig_ManConst1(pMan);
-                Vec_PtrForEachEntry(Abc_Obj_t *, vLocalPI, pObj, k) {
-                    shared_ptr <Ckt_Obj_t> pCktObj = pCktNtk->GetCktObj(string(Abc_ObjName(pObj)));
-                    DEBUG_ASSERT(pCktObj->GetName() == string(Abc_ObjName(pObj)), module_a{}, "object does not match");
-                    if (pCktObj->GetSimVal(i, j))
-                        pDC = Aig_And(pMan, pDC, (Aig_Obj_t *)pObj->pCopy);
-                    else
-                        pDC = Aig_And(pMan, pDC, Aig_Not((Aig_Obj_t *)pObj->pCopy));
-                }
-                pRoot = Aig_Or(pMan, pRoot, pDC);
-            }
+    pRoot = Aig_ManConst0(pMan);
+    for (auto pattern: patterns) {
+        pDC = Aig_ManConst1(pMan);
+        Vec_PtrForEachEntry(Abc_Obj_t *, vLocalPI, pObj, k) {
+            if (pattern[k] == '1')
+                pDC = Aig_And(pMan, pDC, (Aig_Obj_t *)pObj->pCopy);
+            else
+                pDC = Aig_And(pMan, pDC, Aig_Not((Aig_Obj_t *)pObj->pCopy));
         }
+        pRoot = Aig_Or(pMan, pRoot, pDC);
     }
     Aig_ObjCreateCo(pMan, pRoot);
-
+    
     Vec_PtrFree(vLocalPI);
 
     if ( p->pPars->fResub )

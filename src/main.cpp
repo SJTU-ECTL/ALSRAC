@@ -24,6 +24,7 @@ parser Cmdline_Parser(int argc, char * argv[])
 
 int main(int argc, char * argv[])
 {
+    clock_t st = clock();
     parser option = Cmdline_Parser(argc, argv);
     string input = option.get <string> ("input");
     string genlib = option.get <string> ("genlib");
@@ -46,9 +47,12 @@ int main(int argc, char * argv[])
     pNtkRef->Init(102400);
 
     float error = 0.0f;
-    for (int i = 0; i < 1000; ++i) {
+    for (int i = 0; ; ++i) {
         cout << "round " << i << endl;
         App_CommandMfs(pNtk, pNtkRef, nFrame, error, nLocalPI);
+        cout  << "time = " << clock() - st << endl;
+        if (error > 0.05)
+            break;
         stringstream ss;
         string str;
         ss << pNtk->pName << "_" << i << "_" << error;
