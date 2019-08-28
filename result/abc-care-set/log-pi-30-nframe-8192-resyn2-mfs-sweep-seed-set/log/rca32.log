@@ -1,0 +1,1070 @@
+Entered genlib library with 23 gates from file "data/genlib/mcnc.genlib".
+Nodes = 314. Try = 314. Resub = 0. Div = 28543. SAT calls = 1181. Timeouts = 0. MaxDivs = 26.
+Attempts :   Remove      0 out of    628 (  0.00 %)   Resub       0 out of    143 (  0.00 %)   
+Reduction:   Nodes       0 out of    314 (  0.00 %)   Edges       0 out of    628 (  0.00 %)   
+Win =     0.00 sec (  1.07 %)
+Div =     0.01 sec (  3.78 %)
+Aig =     0.01 sec (  3.69 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.64 %)
+Sat =     0.08 sec ( 60.82 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.14 sec (100.00 %)
+round 0
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566910994 patience = 0
+***************************************************
+best node n379 best error 0.000117187
+time = 168275305
+rca32_0_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_0_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_0_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_0_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  0.94 %)
+Div =     0.00 sec (  3.92 %)
+Aig =     0.00 sec (  3.64 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.64 %)
+Sat =     0.07 sec ( 60.23 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.11 sec (100.00 %)
+round 1
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566911162 patience = 0
+***************************************************
+time = 321678724
+rca32_1_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_1_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_1_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_1_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  0.94 %)
+Div =     0.00 sec (  3.92 %)
+Aig =     0.00 sec (  3.64 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.64 %)
+Sat =     0.07 sec ( 60.30 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.11 sec (100.00 %)
+round 2
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566911316 patience = 1
+***************************************************
+time = 469140814
+rca32_2_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_2_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_2_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_2_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  0.93 %)
+Div =     0.00 sec (  3.96 %)
+Aig =     0.00 sec (  3.64 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.64 %)
+Sat =     0.07 sec ( 60.17 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.11 sec (100.00 %)
+round 3
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566911464 patience = 2
+***************************************************
+time = 624798290
+rca32_3_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_3_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_3_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_3_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  0.94 %)
+Div =     0.00 sec (  3.89 %)
+Aig =     0.00 sec (  3.63 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.63 %)
+Sat =     0.07 sec ( 60.22 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.11 sec (100.00 %)
+round 4
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566911620 patience = 3
+***************************************************
+time = 764129123
+rca32_4_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_4_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_4_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_4_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  0.99 %)
+Div =     0.00 sec (  4.01 %)
+Aig =     0.00 sec (  3.39 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.68 %)
+Sat =     0.05 sec ( 61.47 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 5
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566911759 patience = 4
+***************************************************
+Network does not change, frame number changes to 4096
+time = 905904800
+rca32_5_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_5_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_5_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_5_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  0.94 %)
+Div =     0.00 sec (  3.90 %)
+Aig =     0.00 sec (  3.59 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.65 %)
+Sat =     0.07 sec ( 60.41 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.11 sec (100.00 %)
+round 6
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566911901 patience = 0
+***************************************************
+time = 979253005
+rca32_6_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_6_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_6_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_6_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  0.97 %)
+Div =     0.00 sec (  4.13 %)
+Aig =     0.00 sec (  3.41 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.69 %)
+Sat =     0.05 sec ( 61.37 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 7
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566911975 patience = 1
+***************************************************
+time = 1050713269
+rca32_7_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_7_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_7_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_7_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  1.00 %)
+Div =     0.00 sec (  4.00 %)
+Aig =     0.00 sec (  3.35 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.70 %)
+Sat =     0.05 sec ( 61.30 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 8
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912046 patience = 2
+***************************************************
+time = 1122959863
+rca32_8_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_8_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_8_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_8_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  0.98 %)
+Div =     0.00 sec (  3.95 %)
+Aig =     0.00 sec (  3.63 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.63 %)
+Sat =     0.07 sec ( 60.04 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.11 sec (100.00 %)
+round 9
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912119 patience = 3
+***************************************************
+time = 1191639332
+rca32_9_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_9_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_9_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_9_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  1.00 %)
+Div =     0.00 sec (  3.98 %)
+Aig =     0.00 sec (  3.63 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.64 %)
+Sat =     0.07 sec ( 60.21 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.11 sec (100.00 %)
+round 10
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912188 patience = 4
+***************************************************
+Network does not change, frame number changes to 2048
+time = 1261982200
+rca32_10_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_10_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_10_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_10_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  1.00 %)
+Div =     0.00 sec (  4.07 %)
+Aig =     0.00 sec (  3.36 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.72 %)
+Sat =     0.05 sec ( 61.45 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 11
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912258 patience = 0
+***************************************************
+time = 1295558183
+rca32_11_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_11_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_11_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_11_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  0.96 %)
+Div =     0.00 sec (  3.95 %)
+Aig =     0.00 sec (  3.63 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.64 %)
+Sat =     0.07 sec ( 60.22 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.11 sec (100.00 %)
+round 12
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912292 patience = 1
+***************************************************
+time = 1334818255
+rca32_12_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_12_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_12_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_12_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  0.97 %)
+Div =     0.00 sec (  3.89 %)
+Aig =     0.00 sec (  3.60 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.64 %)
+Sat =     0.07 sec ( 60.10 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.11 sec (100.00 %)
+round 13
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912331 patience = 2
+***************************************************
+time = 1373542423
+rca32_13_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_13_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_13_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_13_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  1.03 %)
+Div =     0.00 sec (  4.02 %)
+Aig =     0.00 sec (  3.38 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.68 %)
+Sat =     0.05 sec ( 61.75 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 14
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912370 patience = 3
+***************************************************
+time = 1407597044
+rca32_14_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_14_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_14_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_14_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  0.96 %)
+Div =     0.00 sec (  3.89 %)
+Aig =     0.00 sec (  3.65 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.64 %)
+Sat =     0.07 sec ( 60.23 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.11 sec (100.00 %)
+round 15
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912404 patience = 4
+***************************************************
+Network does not change, frame number changes to 1024
+time = 1440338314
+rca32_15_0.000117187
+area = 599
+delay = 21.4
+write_blif appntk/rca32_15_0.000117187_599_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_15_0.000117187_599_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_15_0.000117187_599_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 599.00
+Most Negative Slack	= -34.20
+Nodes = 309. Try = 309. Resub = 0. Div = 23974. SAT calls = 1152. Timeouts = 0. MaxDivs = 8.
+Attempts :   Remove      0 out of    618 (  0.00 %)   Resub       0 out of    140 (  0.00 %)   
+Reduction:   Nodes       0 out of    309 (  0.00 %)   Edges       0 out of    618 (  0.00 %)   
+Win =     0.00 sec (  0.96 %)
+Div =     0.00 sec (  3.88 %)
+Aig =     0.00 sec (  3.61 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.67 %)
+Sat =     0.07 sec ( 60.26 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.11 sec (100.00 %)
+round 16
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912437 patience = 0
+***************************************************
+best node n336 best error 0.00203125
+time = 1460918130
+rca32_16_0.00203125
+area = 593
+delay = 21.4
+write_blif appntk/rca32_16_0.00203125_593_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_16_0.00203125_593_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_16_0.00203125_593_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 593.00
+Most Negative Slack	= -34.00
+Nodes = 303. Try = 303. Resub = 0. Div = 20002. SAT calls = 1121. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    606 (  0.00 %)   Resub       0 out of    135 (  0.00 %)   
+Reduction:   Nodes       0 out of    303 (  0.00 %)   Edges       0 out of    606 (  0.00 %)   
+Win =     0.00 sec (  0.93 %)
+Div =     0.00 sec (  3.62 %)
+Aig =     0.00 sec (  3.21 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.66 %)
+Sat =     0.05 sec ( 58.83 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 17
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912457 patience = 0
+***************************************************
+time = 1476965780
+rca32_17_0.00203125
+area = 593
+delay = 21.4
+write_blif appntk/rca32_17_0.00203125_593_21.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_17_0.00203125_593_21.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_17_0.00203125_593_21.4.blif", line 13: .and_gate_delay 1.9
+Total Area		= 593.00
+Most Negative Slack	= -34.00
+Nodes = 303. Try = 303. Resub = 0. Div = 20002. SAT calls = 1110. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    606 (  0.00 %)   Resub       0 out of    135 (  0.00 %)   
+Reduction:   Nodes       0 out of    303 (  0.00 %)   Edges       0 out of    606 (  0.00 %)   
+Win =     0.00 sec (  0.88 %)
+Div =     0.00 sec (  3.58 %)
+Aig =     0.00 sec (  3.38 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.63 %)
+Sat =     0.06 sec ( 58.41 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.10 sec (100.00 %)
+round 18
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912473 patience = 1
+***************************************************
+best node n253 best error 0.00401367
+time = 1493451940
+rca32_18_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_18_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_18_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_18_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.91 %)
+Div =     0.00 sec (  3.19 %)
+Aig =     0.00 sec (  3.20 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.63 %)
+Sat =     0.04 sec ( 54.28 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 19
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912490 patience = 0
+***************************************************
+time = 1510284193
+rca32_19_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_19_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_19_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_19_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.90 %)
+Div =     0.00 sec (  3.26 %)
+Aig =     0.00 sec (  3.19 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.62 %)
+Sat =     0.04 sec ( 54.47 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 20
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912507 patience = 1
+***************************************************
+time = 1525935990
+rca32_20_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_20_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_20_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_20_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.93 %)
+Div =     0.00 sec (  3.42 %)
+Aig =     0.00 sec (  2.97 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.66 %)
+Sat =     0.03 sec ( 56.18 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.06 sec (100.00 %)
+round 21
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912522 patience = 2
+***************************************************
+time = 1539641449
+rca32_21_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_21_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_21_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_21_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.87 %)
+Div =     0.00 sec (  3.24 %)
+Aig =     0.00 sec (  3.18 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.66 %)
+Sat =     0.05 sec ( 54.15 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 22
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912536 patience = 3
+***************************************************
+time = 1554455966
+rca32_22_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_22_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_22_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_22_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.93 %)
+Div =     0.00 sec (  3.47 %)
+Aig =     0.00 sec (  3.06 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.66 %)
+Sat =     0.03 sec ( 55.95 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.06 sec (100.00 %)
+round 23
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912551 patience = 4
+***************************************************
+Network does not change, frame number changes to 512
+time = 1570718113
+rca32_23_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_23_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_23_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_23_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.86 %)
+Div =     0.00 sec (  3.17 %)
+Aig =     0.00 sec (  3.17 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.66 %)
+Sat =     0.05 sec ( 54.04 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 24
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912567 patience = 0
+***************************************************
+time = 1578857884
+rca32_24_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_24_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_24_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_24_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.93 %)
+Div =     0.00 sec (  3.37 %)
+Aig =     0.00 sec (  3.05 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.68 %)
+Sat =     0.04 sec ( 56.12 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.06 sec (100.00 %)
+round 25
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912575 patience = 1
+***************************************************
+time = 1585102499
+rca32_25_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_25_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_25_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_25_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.93 %)
+Div =     0.00 sec (  3.35 %)
+Aig =     0.00 sec (  3.00 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.65 %)
+Sat =     0.04 sec ( 55.91 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.06 sec (100.00 %)
+round 26
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912582 patience = 2
+***************************************************
+time = 1594075852
+rca32_26_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_26_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_26_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_26_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.89 %)
+Div =     0.00 sec (  3.15 %)
+Aig =     0.00 sec (  3.19 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.65 %)
+Sat =     0.05 sec ( 53.51 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 27
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912591 patience = 3
+***************************************************
+time = 1602712790
+rca32_27_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_27_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_27_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_27_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.91 %)
+Div =     0.00 sec (  3.22 %)
+Aig =     0.00 sec (  3.25 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.63 %)
+Sat =     0.04 sec ( 54.21 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 28
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912599 patience = 4
+***************************************************
+Network does not change, frame number changes to 256
+time = 1611626864
+rca32_28_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_28_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_28_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_28_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.90 %)
+Div =     0.00 sec (  3.15 %)
+Aig =     0.00 sec (  3.21 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.66 %)
+Sat =     0.04 sec ( 53.87 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 29
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912608 patience = 0
+***************************************************
+time = 1616681378
+rca32_29_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_29_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_29_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_29_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.90 %)
+Div =     0.00 sec (  3.24 %)
+Aig =     0.00 sec (  3.21 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.62 %)
+Sat =     0.04 sec ( 54.31 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 30
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912613 patience = 1
+***************************************************
+time = 1621715173
+rca32_30_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_30_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_30_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_30_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.88 %)
+Div =     0.00 sec (  3.14 %)
+Aig =     0.00 sec (  3.17 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.65 %)
+Sat =     0.05 sec ( 54.16 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 31
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912618 patience = 2
+***************************************************
+time = 1626723771
+rca32_31_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_31_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_31_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_31_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.92 %)
+Div =     0.00 sec (  3.23 %)
+Aig =     0.00 sec (  3.23 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.64 %)
+Sat =     0.04 sec ( 54.27 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 32
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912624 patience = 3
+***************************************************
+time = 1631744691
+rca32_32_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_32_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_32_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_32_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.89 %)
+Div =     0.00 sec (  3.19 %)
+Aig =     0.00 sec (  3.19 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.62 %)
+Sat =     0.05 sec ( 53.88 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 33
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912629 patience = 4
+***************************************************
+Network does not change, frame number changes to 128
+time = 1636285311
+rca32_33_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_33_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_33_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_33_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.91 %)
+Div =     0.00 sec (  3.18 %)
+Aig =     0.00 sec (  3.20 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.62 %)
+Sat =     0.04 sec ( 53.97 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 34
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912633 patience = 0
+***************************************************
+time = 1638927284
+rca32_34_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_34_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_34_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_34_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.91 %)
+Div =     0.00 sec (  3.36 %)
+Aig =     0.00 sec (  2.94 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.65 %)
+Sat =     0.03 sec ( 55.97 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.06 sec (100.00 %)
+round 35
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912636 patience = 1
+***************************************************
+time = 1641268823
+rca32_35_0.00401367
+area = 584
+delay = 21.9
+write_blif appntk/rca32_35_0.00401367_584_21.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_35_0.00401367_584_21.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_35_0.00401367_584_21.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 584.00
+Most Negative Slack	= -33.10
+Nodes = 297. Try = 297. Resub = 0. Div = 14863. SAT calls = 1046. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    594 (  0.00 %)   Resub       0 out of    128 (  0.00 %)   
+Reduction:   Nodes       0 out of    297 (  0.00 %)   Edges       0 out of    594 (  0.00 %)   
+Win =     0.00 sec (  0.90 %)
+Div =     0.00 sec (  3.21 %)
+Aig =     0.00 sec (  3.21 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.65 %)
+Sat =     0.04 sec ( 54.26 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 36
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912638 patience = 2
+***************************************************
+best node n246 best error 0.0336328
+time = 1644697745
+rca32_36_0.0336328
+area = 583
+delay = 20.9
+write_blif appntk/rca32_36_0.0336328_583_20.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_36_0.0336328_583_20.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_36_0.0336328_583_20.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 583.00
+Most Negative Slack	= -33.00
+Nodes = 293. Try = 293. Resub = 0. Div = 13539. SAT calls = 1052. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    586 (  0.00 %)   Resub       0 out of    126 (  0.00 %)   
+Reduction:   Nodes       0 out of    293 (  0.00 %)   Edges       0 out of    586 (  0.00 %)   
+Win =     0.00 sec (  0.85 %)
+Div =     0.00 sec (  3.06 %)
+Aig =     0.00 sec (  3.11 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.59 %)
+Sat =     0.04 sec ( 54.22 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 37
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912642 patience = 0
+***************************************************
+time = 1647229507
+rca32_37_0.0336328
+area = 581
+delay = 20.9
+write_blif appntk/rca32_37_0.0336328_581_20.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_37_0.0336328_581_20.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_37_0.0336328_581_20.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 581.00
+Most Negative Slack	= -33.00
+Nodes = 293. Try = 293. Resub = 0. Div = 13539. SAT calls = 1031. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    586 (  0.00 %)   Resub       0 out of    126 (  0.00 %)   
+Reduction:   Nodes       0 out of    293 (  0.00 %)   Edges       0 out of    586 (  0.00 %)   
+Win =     0.00 sec (  0.87 %)
+Div =     0.00 sec (  3.14 %)
+Aig =     0.00 sec (  3.12 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.60 %)
+Sat =     0.04 sec ( 53.25 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 38
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912644 patience = 1
+***************************************************
+time = 1649937584
+rca32_38_0.0336328
+area = 583
+delay = 20.9
+write_blif appntk/rca32_38_0.0336328_583_20.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_38_0.0336328_583_20.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_38_0.0336328_583_20.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 583.00
+Most Negative Slack	= -33.00
+Nodes = 293. Try = 293. Resub = 0. Div = 13539. SAT calls = 1052. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    586 (  0.00 %)   Resub       0 out of    126 (  0.00 %)   
+Reduction:   Nodes       0 out of    293 (  0.00 %)   Edges       0 out of    586 (  0.00 %)   
+Win =     0.00 sec (  0.87 %)
+Div =     0.00 sec (  3.05 %)
+Aig =     0.00 sec (  3.07 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.64 %)
+Sat =     0.04 sec ( 53.68 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 39
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912647 patience = 2
+***************************************************
+time = 1652681656
+rca32_39_0.0336328
+area = 581
+delay = 20.9
+write_blif appntk/rca32_39_0.0336328_581_20.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/rca32_39_0.0336328_581_20.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/rca32_39_0.0336328_581_20.9.blif", line 13: .and_gate_delay 1.9
+Total Area		= 581.00
+Most Negative Slack	= -33.00
+Nodes = 293. Try = 293. Resub = 0. Div = 13539. SAT calls = 1031. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    586 (  0.00 %)   Resub       0 out of    126 (  0.00 %)   
+Reduction:   Nodes       0 out of    293 (  0.00 %)   Edges       0 out of    586 (  0.00 %)   
+Win =     0.00 sec (  0.85 %)
+Div =     0.00 sec (  3.09 %)
+Aig =     0.00 sec (  3.11 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.66 %)
+Sat =     0.04 sec ( 53.15 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 40
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1566912650 patience = 3
+***************************************************
+best node n202 best error 0.0645313
+time = 1655643099
