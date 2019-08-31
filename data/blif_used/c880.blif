@@ -1,0 +1,241 @@
+.model c880
+.inputs G1gat G8gat G13gat G17gat G26gat G29gat G36gat G42gat G51gat G55gat \
+G59gat G68gat G72gat G73gat G74gat G75gat G80gat G85gat G86gat G87gat G88gat \
+G89gat G90gat G91gat G96gat G101gat G106gat G111gat G116gat G121gat G126gat \
+G130gat G135gat G138gat G143gat G146gat G149gat G152gat G153gat G156gat \
+G159gat G165gat G171gat G177gat G183gat G189gat G195gat G201gat G207gat \
+G210gat G219gat G228gat G237gat G246gat G255gat G259gat G260gat G261gat \
+G267gat G268gat
+.outputs G388gat G389gat G390gat G391gat G418gat G419gat G420gat G421gat \
+G422gat G423gat G446gat G447gat G448gat G449gat G450gat G767gat G768gat \
+G850gat G863gat G864gat G865gat G866gat G874gat G878gat G879gat G880gat
+.default_input_arrival 0.00 0.00 
+.default_output_required 0.00 0.00 
+.default_input_drive 0.10 0.10 
+.default_output_load 2.00 
+.default_max_input_load 999.00 
+.gate inv1 a=G42gat O=[37677]
+.gate inv1 a=G29gat O=[37678]
+.gate inv1 a=G75gat O=[37679]
+.gate nor3 a=[37677] b=[37678] c=[37679] O=G388gat
+.gate inv1 a=G80gat O=[37681]
+.gate inv1 a=G36gat O=[37682]
+.gate nor3 a=[37681] b=[37678] c=[37682] O=G389gat
+.gate nand3 a=G42gat b=G29gat c=G36gat O=[37685]
+.gate inv1 a=[37685] O=G390gat
+.gate and2 a=G85gat b=G86gat O=G391gat
+.gate inv1 a=G1gat O=[37688]
+.gate inv1 a=G8gat O=[37689]
+.gate inv1 a=G13gat O=[37691]
+.gate inv1 a=G17gat O=[37692]
+.gate nor4 a=[37688] b=[37689] c=[37691] d=[37692] O=G418gat
+.gate nand4 a=G1gat b=G26gat c=G13gat d=G17gat O=[37697]
+.gate inv1 a=[37697] O=[38330]
+.gate nand2 a=[37685] b=[38330] O=G419gat
+.gate nand3 a=G80gat b=G75gat c=G59gat O=G420gat
+.gate nand3 a=G80gat b=G36gat c=G59gat O=G421gat
+.gate nand3 a=G42gat b=G36gat c=G59gat O=G422gat
+.gate or2 a=G87gat b=G88gat O=[38334]
+.gate and2 a=[38334] b=G90gat O=G423gat
+.gate or2 a=[37685] b=[37697] O=G446gat
+.gate nand3 a=G51gat b=G1gat c=G26gat O=[37705]
+.gate inv1 a=[37705] O=G447gat
+.gate nand4 a=G1gat b=G8gat c=G13gat d=G55gat O=[37709]
+.gate inv1 a=G68gat O=[37710]
+.gate nor3 a=[37709] b=[37678] c=[37710] O=G448gat
+.gate nand3 a=G74gat b=G59gat c=G68gat O=[37714]
+.gate nor2 a=[37709] b=[37714] O=G449gat
+.gate and2 a=[38334] b=G89gat O=G450gat
+.gate inv1 a=G91gat O=[37717]
+.gate inv1 a=G96gat O=[37718]
+.gate aoi22 a=G91gat b=G96gat c=[37717] d=[37718] O=G357gat
+.gate inv1 a=G101gat O=[37720]
+.gate inv1 a=G106gat O=[37721]
+.gate aoi22 a=G101gat b=G106gat c=[37720] d=[37721] O=G360gat
+.gate xor2b a=G357gat b=G360gat O=G460gat
+.gate xor2b a=G130gat b=G460gat O=G530gat
+.gate inv1 a=G111gat O=[37726]
+.gate inv1 a=G116gat O=[37727]
+.gate aoi22 a=G111gat b=G116gat c=[37726] d=[37727] O=G363gat
+.gate inv1 a=G121gat O=[37729]
+.gate inv1 a=G126gat O=[37730]
+.gate aoi22 a=G121gat b=G126gat c=[37729] d=[37730] O=G366gat
+.gate xor2b a=G363gat b=G366gat O=G463gat
+.gate xor2b a=G135gat b=G463gat O=G533gat
+.gate xor2b a=G530gat b=G533gat O=G767gat
+.gate inv1 a=G159gat O=[37734]
+.gate inv1 a=G165gat O=[37735]
+.gate aoi22 a=G159gat b=G165gat c=[37734] d=[37735] O=G376gat
+.gate inv1 a=G171gat O=[37737]
+.gate inv1 a=G177gat O=[37738]
+.gate aoi22 a=G171gat b=G177gat c=[37737] d=[37738] O=G379gat
+.gate xor2b a=G376gat b=G379gat O=G492gat
+.gate xor2b a=G130gat b=G492gat O=G544gat
+.gate inv1 a=G183gat O=[37743]
+.gate inv1 a=G189gat O=[37744]
+.gate aoi22 a=G183gat b=G189gat c=[37743] d=[37744] O=G382gat
+.gate inv1 a=G195gat O=[37746]
+.gate inv1 a=G201gat O=[37747]
+.gate aoi22 a=G195gat b=G201gat c=[37746] d=[37747] O=G385gat
+.gate xor2b a=G382gat b=G385gat O=G495gat
+.gate xor2b a=G207gat b=G495gat O=G547gat
+.gate xor2b a=G544gat b=G547gat O=G768gat
+.gate nand4 a=G42gat b=G59gat c=G68gat d=G72gat O=[37787]
+.gate nor2 a=[37709] b=[37787] O=G348gat
+.gate nand2 a=G73gat b=G348gat O=[37789]
+.gate nand3 a=G80gat b=G29gat c=G75gat O=[37756]
+.gate inv1 a=G55gat O=[37707]
+.gate nor4 a=G268gat b=[37756] c=[37705] d=[37707] O=G491gat
+.gate inv1 a=G491gat O=[38719]
+.gate nand2 a=G59gat b=G156gat O=[39009]
+.gate nand3 a=[39009] b=G17gat c=G447gat O=[39003]
+.gate nand2 a=[39003] b=G1gat O=[38927]
+.gate inv1 a=G59gat O=[37698]
+.gate nor3 a=[37677] b=[37679] c=[37698] O=G294gat
+.gate nand4 a=G1gat b=G8gat c=G17gat d=G51gat O=[37767]
+.gate aoi22 a=[37692] b=[37677] c=G42gat d=G17gat O=G375gat
+.gate nand4 a=G59gat b=G156gat c=G447gat d=G375gat O=[39005]
+.gate oai21 a=G294gat b=[37767] c=[39005] O=[38932]
+.gate aoi22 a=[38927] b=G153gat c=[38932] d=G126gat O=G543gat
+.gate nand2 a=[38719] b=G543gat O=[37770]
+.gate aoi22 a=G255gat b=G267gat c=[37770] d=G246gat O=G731gat
+.gate oai21 a=[37747] b=[37789] c=G731gat O=[37790]
+.gate inv1 a=G210gat O=[37751]
+.gate inv1 a=G219gat O=[37752]
+.gate nand2 a=[37770] b=G201gat O=[37771]
+.gate or2 a=G201gat b=[37770] O=[38714]
+.gate nand2 a=[37771] b=[38714] O=[37772]
+.gate inv1 a=[37772] O=[38563]
+.gate inv1 a=G261gat O=[37753]
+.gate oai22 a=G261gat b=[38563] c=[37753] d=[37772] O=[37773]
+.gate oai22 a=[37729] b=[37751] c=[37752] d=[37773] O=[37774]
+.gate inv1 a=G228gat O=[37775]
+.gate inv1 a=G237gat O=[37776]
+.gate oai22 a=[37772] b=[37775] c=[37771] d=[37776] O=[37777]
+.gate nor3 a=[37790] b=[37774] c=[37777] O=[36964]
+.gate inv1 a=[36964] O=G850gat
+.gate aoi22 a=[38927] b=G143gat c=[38932] d=G111gat O=G540gat
+.gate nand2 a=[38719] b=G540gat O=[37793]
+.gate inv1 a=[37789] O=[38447]
+.gate aoi22 a=[37793] b=G246gat c=G183gat d=[38447] O=G704gat
+.gate nand2 a=[37793] b=G183gat O=[37795]
+.gate or2 a=G183gat b=[37793] O=[38732]
+.gate nand2 a=[37795] b=[38732] O=[37796]
+.gate aoi22 a=[38927] b=G146gat c=[38932] d=G116gat O=G541gat
+.gate nand2 a=[38719] b=G541gat O=[37799]
+.gate nand2 a=[37799] b=G189gat O=[37800]
+.gate or2 a=G189gat b=[37799] O=[38741]
+.gate aoi22 a=[38927] b=G149gat c=[38932] d=G121gat O=G542gat
+.gate nand2 a=[38719] b=G542gat O=[37803]
+.gate or2 a=G195gat b=[37803] O=[38752]
+.gate nand4 a=[38741] b=[38752] c=[38714] d=G261gat O=[38941]
+.gate nand2 a=[37803] b=G195gat O=[37807]
+.gate inv1 a=[37807] O=[38621]
+.gate nand2 a=[38741] b=[38621] O=[38943]
+.gate inv1 a=[37771] O=[38574]
+.gate nand3 a=[38574] b=[38741] c=[38752] O=[38945]
+.gate nand4 a=[37800] b=[38941] c=[38943] d=[38945] O=[37810]
+.gate inv1 a=[37810] O=[38838]
+.gate inv1 a=[37796] O=[38585]
+.gate aoi22 a=[37796] b=[38838] c=[37810] d=[38585] O=G802gat
+.gate aoi22 a=G106gat b=G210gat c=G219gat d=G802gat O=G826gat
+.gate oai22 a=[37775] b=[37796] c=[37776] d=[37795] O=[37813]
+.gate inv1 a=[37813] O=[38361]
+.gate nand3 a=G704gat b=G826gat c=[38361] O=G863gat
+.gate aoi22 a=G255gat b=G259gat c=[37799] d=G246gat O=G712gat
+.gate oai21 a=[37744] b=[37789] c=G712gat O=[37825]
+.gate nand2 a=[37800] b=[38741] O=[37815]
+.gate inv1 a=[37815] O=[38599]
+.gate nand2 a=[38752] b=[38574] O=[38949]
+.gate nand3 a=G261gat b=[38714] c=[38752] O=[38947]
+.gate nand3 a=[38949] b=[37807] c=[38947] O=[37818]
+.gate inv1 a=[37818] O=[38844]
+.gate oai22 a=[38599] b=[37818] c=[38844] d=[37815] O=[37819]
+.gate oai22 a=[37726] b=[37751] c=[37752] d=[37819] O=[37820]
+.gate oai22 a=[37775] b=[37815] c=[37776] d=[37800] O=[37821]
+.gate nor3 a=[37825] b=[37820] c=[37821] O=[36966]
+.gate inv1 a=[36966] O=G864gat
+.gate nand2 a=[37807] b=[38752] O=[37826]
+.gate aoi21 a=[38714] b=G261gat c=[38574] O=G782gat
+.gate nor2 a=G782gat b=[37826] O=G793gat
+.gate aoi21 a=[37826] b=G782gat c=G793gat O=G804gat
+.gate aoi22 a=G116gat b=G210gat c=G219gat d=G804gat O=G828gat
+.gate inv1 a=[37826] O=[38617]
+.gate aoi22 a=G228gat b=[38617] c=G237gat d=[38621] O=G785gat
+.gate nand2 a=G195gat b=[38447] O=[38379]
+.gate aoi22 a=G255gat b=G260gat c=[37803] d=G246gat O=G721gat
+.gate nand4 a=G828gat b=G785gat c=[38379] d=G721gat O=G865gat
+.gate aoi22 a=G8gat b=G138gat c=[38932] d=G91gat O=G536gat
+.gate nand3 a=[39009] b=G447gat c=G55gat O=[37838]
+.gate inv1 a=[37838] O=[38955]
+.gate nand2 a=G143gat b=[38955] O=[38862]
+.gate inv1 a=G268gat O=[37754]
+.gate inv1 a=[37756] O=[38925]
+.gate nand4 a=[37754] b=[38925] c=G17gat d=G447gat O=[38864]
+.gate nand3 a=G536gat b=[38862] c=[38864] O=[37842]
+.gate nand2 a=[37842] b=G159gat O=[37843]
+.gate aoi22 a=G51gat b=G138gat c=[38932] d=G96gat O=G537gat
+.gate nand2 a=G146gat b=[38955] O=[38888]
+.gate nand3 a=G537gat b=[38864] c=[38888] O=[37846]
+.gate nand2 a=[37846] b=G165gat O=[37847]
+.gate or2 a=G165gat b=[37846] O=[38791]
+.gate aoi22 a=G17gat b=G138gat c=[38932] d=G101gat O=G538gat
+.gate nand2 a=G149gat b=[38955] O=[38897]
+.gate nand3 a=G538gat b=[38864] c=[38897] O=[37850]
+.gate nand2 a=[37850] b=G171gat O=[37851]
+.gate inv1 a=[37851] O=[38690]
+.gate nand2 a=[38791] b=[38690] O=[38764]
+.gate aoi22 a=G138gat b=G152gat c=[38932] d=G106gat O=G539gat
+.gate nand2 a=G153gat b=[38955] O=[38879]
+.gate nand3 a=G539gat b=[38864] c=[38879] O=[37856]
+.gate nand2 a=[37856] b=G177gat O=[37857]
+.gate inv1 a=[37857] O=[38653]
+.gate or2 a=G171gat b=[37850] O=[38804]
+.gate nand3 a=[38653] b=[38791] c=[38804] O=[38766]
+.gate or2 a=G177gat b=[37856] O=[38774]
+.gate nand2 a=[38732] b=[37810] O=[38963]
+.gate nand2 a=[37795] b=[38963] O=[37860]
+.gate nand4 a=[38791] b=[38804] c=[38774] d=[37860] O=[38768]
+.gate nand4 a=[37847] b=[38764] c=[38766] d=[38768] O=[37863]
+.gate or2 a=G159gat b=[37842] O=[38637]
+.gate nand2 a=[37863] b=[38637] O=[38495]
+.gate nand2 a=[37843] b=[38495] O=G866gat
+.gate aoi22 a=[37856] b=G246gat c=G177gat d=[38447] O=G696gat
+.gate nand2 a=[37857] b=[38774] O=[37865]
+.gate inv1 a=[37860] O=[38873]
+.gate inv1 a=[37865] O=[38643]
+.gate aoi22 a=[37865] b=[38873] c=[37860] d=[38643] O=G825gat
+.gate aoi22 a=G101gat b=G210gat c=G219gat d=G825gat O=G845gat
+.gate aoi22 a=G228gat b=[38643] c=G237gat d=[38653] O=G772gat
+.gate nand3 a=G696gat b=G845gat c=G772gat O=G874gat
+.gate aoi22 a=[37842] b=G246gat c=G159gat d=[38447] O=G669gat
+.gate nand2 a=[37843] b=[38637] O=[37871]
+.gate inv1 a=[37863] O=[38635]
+.gate inv1 a=[37871] O=[38662]
+.gate aoi22 a=[37871] b=[38635] c=[37863] d=[38662] O=G842gat
+.gate aoi22 a=G210gat b=G268gat c=G219gat d=G842gat O=G859gat
+.gate oai22 a=[37775] b=[37871] c=[37776] d=[37843] O=[37874]
+.gate inv1 a=[37874] O=[38389]
+.gate nand3 a=G669gat b=G859gat c=[38389] O=G878gat
+.gate aoi22 a=[37846] b=G246gat c=G165gat d=[38447] O=G677gat
+.gate nand2 a=[37847] b=[38791] O=[37877]
+.gate nand3 a=[37860] b=[38774] c=[38804] O=[38967]
+.gate aoi21 a=[38804] b=[38653] c=[38690] O=[37064]
+.gate nand2 a=[38967] b=[37064] O=[37880]
+.gate inv1 a=[37880] O=[38882]
+.gate inv1 a=[37877] O=[38669]
+.gate aoi22 a=[37877] b=[38882] c=[37880] d=[38669] O=G843gat
+.gate aoi22 a=G91gat b=G210gat c=G219gat d=G843gat O=G860gat
+.gate oai22 a=[37775] b=[37877] c=[37776] d=[37847] O=[37883]
+.gate inv1 a=[37883] O=[38395]
+.gate nand3 a=G677gat b=G860gat c=[38395] O=G879gat
+.gate aoi22 a=[37850] b=G246gat c=G171gat d=[38447] O=G686gat
+.gate nand2 a=[37851] b=[38804] O=[37886]
+.gate aoi21 a=[38774] b=[37860] c=[38653] O=G822gat
+.gate nor2 a=G822gat b=[37886] O=G835gat
+.gate aoi21 a=[37886] b=G822gat c=G835gat O=G844gat
+.gate aoi22 a=G96gat b=G210gat c=G219gat d=G844gat O=G861gat
+.gate inv1 a=[37886] O=[38686]
+.gate aoi22 a=G228gat b=[38686] c=G237gat d=[38690] O=G771gat
+.gate nand3 a=G686gat b=G861gat c=G771gat O=G880gat
+.end

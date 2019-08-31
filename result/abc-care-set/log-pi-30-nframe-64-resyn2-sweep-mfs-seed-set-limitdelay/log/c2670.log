@@ -1,0 +1,1052 @@
+Entered genlib library with 23 gates from file "data/genlib/mcnc.genlib".
+Warning: The network was strashed and balanced before mapping.
+Original area = 1274, original delay = 21.6
+round 0
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169587 patience = 0
+***************************************************
+best node G153 best error 0
+time = 37443725
+c2670_0_0
+area = 1126
+delay = 20.9
+write_blif appntk/c2670_0_0_1126_20.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_0_0_1126_20.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_0_0_1126_20.9.blif", line 33: .and_gate_delay 1.9
+Total Area		= 1126.00
+Most Negative Slack	= -38.40
+Nodes = 668. Try = 565. Resub = 2. Div = 17800. SAT calls = 2422. Timeouts = 0. MaxDivs = 5.
+Attempts :   Remove      1 out of   1128 (  0.09 %)   Resub       1 out of    426 (  0.23 %)   
+Reduction:   Nodes       1 out of    668 (  0.15 %)   Edges       2 out of   1231 (  0.16 %)   
+Win =     0.00 sec (  1.15 %)
+Div =     0.00 sec (  2.22 %)
+Aig =     0.00 sec (  2.49 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.55 %)
+Sat =     0.07 sec ( 52.54 %)
+Int =     0.00 sec (  0.75 %)
+ALL =     0.13 sec (100.00 %)
+round 1
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169629 patience = 0
+***************************************************
+best node n727 best error 0
+time = 55259501
+c2670_1_0
+area = 1121
+delay = 20.7
+write_blif appntk/c2670_1_0_1121_20.7.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_1_0_1121_20.7.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_1_0_1121_20.7.blif", line 33: .and_gate_delay 1.9
+Total Area		= 1121.00
+Most Negative Slack	= -37.00
+Nodes = 659. Try = 556. Resub = 1. Div = 17130. SAT calls = 2479. Timeouts = 0. MaxDivs = 5.
+Attempts :   Remove      0 out of   1112 (  0.00 %)   Resub       1 out of    424 (  0.24 %)   
+Reduction:   Nodes       1 out of    659 (  0.15 %)   Edges       2 out of   1213 (  0.16 %)   
+Win =     0.00 sec (  1.12 %)
+Div =     0.00 sec (  1.95 %)
+Aig =     0.00 sec (  2.48 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.52 %)
+Sat =     0.09 sec ( 49.73 %)
+Int =     0.00 sec (  0.46 %)
+ALL =     0.19 sec (100.00 %)
+round 2
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169647 patience = 0
+***************************************************
+best node n740 best error 0
+time = 67998570
+c2670_2_0
+area = 915
+delay = 20.3
+write_blif appntk/c2670_2_0_915_20.3.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_2_0_915_20.3.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_2_0_915_20.3.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 915.00
+Most Negative Slack	= -38.80
+Nodes = 540. Try = 435. Resub = 0. Div = 12568. SAT calls = 1851. Timeouts = 0. MaxDivs = 3.
+Attempts :   Remove      0 out of    870 (  0.00 %)   Resub       0 out of    320 (  0.00 %)   
+Reduction:   Nodes       0 out of    540 (  0.00 %)   Edges       0 out of    972 (  0.00 %)   
+Win =     0.00 sec (  1.07 %)
+Div =     0.00 sec (  1.97 %)
+Aig =     0.00 sec (  2.29 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.56 %)
+Sat =     0.06 sec ( 45.58 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.14 sec (100.00 %)
+round 3
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169660 patience = 0
+***************************************************
+best node n751 best error 0.000546875
+time = 80792666
+c2670_3_0.000546875
+area = 905
+delay = 21.2
+write_blif appntk/c2670_3_0.000546875_905_21.2.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_3_0.000546875_905_21.2.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_3_0.000546875_905_21.2.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 905.00
+Most Negative Slack	= -42.20
+Nodes = 539. Try = 434. Resub = 0. Div = 12537. SAT calls = 1852. Timeouts = 0. MaxDivs = 3.
+Attempts :   Remove      0 out of    868 (  0.00 %)   Resub       0 out of    319 (  0.00 %)   
+Reduction:   Nodes       0 out of    539 (  0.00 %)   Edges       0 out of    970 (  0.00 %)   
+Win =     0.00 sec (  1.02 %)
+Div =     0.00 sec (  1.93 %)
+Aig =     0.00 sec (  2.33 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.52 %)
+Sat =     0.06 sec ( 46.40 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.14 sec (100.00 %)
+round 4
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169672 patience = 0
+***************************************************
+best node n744 best error 0.00107422
+time = 94741108
+c2670_4_0.00107422
+area = 912
+delay = 20.7
+write_blif appntk/c2670_4_0.00107422_912_20.7.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_4_0.00107422_912_20.7.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_4_0.00107422_912_20.7.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 912.00
+Most Negative Slack	= -36.80
+Nodes = 537. Try = 432. Resub = 0. Div = 12336. SAT calls = 1844. Timeouts = 0. MaxDivs = 3.
+Attempts :   Remove      0 out of    864 (  0.00 %)   Resub       0 out of    317 (  0.00 %)   
+Reduction:   Nodes       0 out of    537 (  0.00 %)   Edges       0 out of    966 (  0.00 %)   
+Win =     0.00 sec (  0.87 %)
+Div =     0.00 sec (  1.57 %)
+Aig =     0.00 sec (  1.83 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.53 %)
+Sat =     0.10 sec ( 40.80 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.25 sec (100.00 %)
+round 5
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169687 patience = 0
+***************************************************
+best node n793 best error 0.00107422
+time = 107616561
+c2670_5_0.00107422
+area = 893
+delay = 21.5
+write_blif appntk/c2670_5_0.00107422_893_21.5.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_5_0.00107422_893_21.5.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_5_0.00107422_893_21.5.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 893.00
+Most Negative Slack	= -39.90
+Nodes = 535. Try = 430. Resub = 0. Div = 12214. SAT calls = 1857. Timeouts = 0. MaxDivs = 3.
+Attempts :   Remove      0 out of    860 (  0.00 %)   Resub       0 out of    317 (  0.00 %)   
+Reduction:   Nodes       0 out of    535 (  0.00 %)   Edges       0 out of    962 (  0.00 %)   
+Win =     0.00 sec (  1.09 %)
+Div =     0.00 sec (  2.17 %)
+Aig =     0.00 sec (  2.33 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.62 %)
+Sat =     0.05 sec ( 51.16 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.09 sec (100.00 %)
+round 6
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169699 patience = 0
+***************************************************
+best node n746 best error 0.00206055
+time = 120649462
+c2670_6_0.00206055
+area = 901
+delay = 20.9
+write_blif appntk/c2670_6_0.00206055_901_20.9.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_6_0.00206055_901_20.9.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_6_0.00206055_901_20.9.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 901.00
+Most Negative Slack	= -36.70
+Nodes = 533. Try = 428. Resub = 0. Div = 12020. SAT calls = 1809. Timeouts = 0. MaxDivs = 3.
+Attempts :   Remove      0 out of    856 (  0.00 %)   Resub       0 out of    315 (  0.00 %)   
+Reduction:   Nodes       0 out of    533 (  0.00 %)   Edges       0 out of    958 (  0.00 %)   
+Win =     0.00 sec (  1.04 %)
+Div =     0.00 sec (  1.97 %)
+Aig =     0.00 sec (  2.34 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.58 %)
+Sat =     0.06 sec ( 45.84 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.13 sec (100.00 %)
+round 7
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169712 patience = 0
+***************************************************
+best node n747 best error 0.00351562
+time = 132249018
+c2670_7_0.00351562
+area = 896
+delay = 21.2
+write_blif appntk/c2670_7_0.00351562_896_21.2.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_7_0.00351562_896_21.2.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_7_0.00351562_896_21.2.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 896.00
+Most Negative Slack	= -36.90
+Nodes = 532. Try = 427. Resub = 0. Div = 12015. SAT calls = 1825. Timeouts = 0. MaxDivs = 3.
+Attempts :   Remove      0 out of    854 (  0.00 %)   Resub       0 out of    314 (  0.00 %)   
+Reduction:   Nodes       0 out of    532 (  0.00 %)   Edges       0 out of    956 (  0.00 %)   
+Win =     0.00 sec (  0.83 %)
+Div =     0.00 sec (  1.58 %)
+Aig =     0.00 sec (  1.79 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.55 %)
+Sat =     0.10 sec ( 41.34 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.24 sec (100.00 %)
+round 8
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169724 patience = 0
+***************************************************
+best node n731 best error 0.00423828
+time = 145069000
+c2670_8_0.00423828
+area = 901
+delay = 21.2
+write_blif appntk/c2670_8_0.00423828_901_21.2.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_8_0.00423828_901_21.2.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_8_0.00423828_901_21.2.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 901.00
+Most Negative Slack	= -35.90
+Nodes = 530. Try = 425. Resub = 0. Div = 11691. SAT calls = 1780. Timeouts = 0. MaxDivs = 3.
+Attempts :   Remove      0 out of    850 (  0.00 %)   Resub       0 out of    313 (  0.00 %)   
+Reduction:   Nodes       0 out of    530 (  0.00 %)   Edges       0 out of    952 (  0.00 %)   
+Win =     0.00 sec (  0.96 %)
+Div =     0.00 sec (  1.95 %)
+Aig =     0.00 sec (  2.31 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.52 %)
+Sat =     0.06 sec ( 46.14 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.13 sec (100.00 %)
+round 9
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169737 patience = 0
+***************************************************
+best node n791 best error 0.00727539
+time = 155681672
+c2670_9_0.00727539
+area = 886
+delay = 21.2
+write_blif appntk/c2670_9_0.00727539_886_21.2.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_9_0.00727539_886_21.2.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_9_0.00727539_886_21.2.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 886.00
+Most Negative Slack	= -36.20
+Nodes = 527. Try = 422. Resub = 0. Div = 11504. SAT calls = 1793. Timeouts = 0. MaxDivs = 3.
+Attempts :   Remove      0 out of    844 (  0.00 %)   Resub       0 out of    311 (  0.00 %)   
+Reduction:   Nodes       0 out of    527 (  0.00 %)   Edges       0 out of    946 (  0.00 %)   
+Win =     0.00 sec (  1.01 %)
+Div =     0.00 sec (  1.96 %)
+Aig =     0.00 sec (  2.34 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.55 %)
+Sat =     0.06 sec ( 46.45 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.12 sec (100.00 %)
+round 10
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169748 patience = 0
+***************************************************
+best node n718 best error 0.0111133
+time = 163724574
+c2670_10_0.0111133
+area = 885
+delay = 20.6
+write_blif appntk/c2670_10_0.0111133_885_20.6.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_10_0.0111133_885_20.6.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_10_0.0111133_885_20.6.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 885.00
+Most Negative Slack	= -34.70
+Nodes = 526. Try = 421. Resub = 0. Div = 11367. SAT calls = 1772. Timeouts = 0. MaxDivs = 3.
+Attempts :   Remove      0 out of    842 (  0.00 %)   Resub       0 out of    310 (  0.00 %)   
+Reduction:   Nodes       0 out of    526 (  0.00 %)   Edges       0 out of    944 (  0.00 %)   
+Win =     0.00 sec (  1.03 %)
+Div =     0.00 sec (  2.11 %)
+Aig =     0.00 sec (  2.34 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.61 %)
+Sat =     0.04 sec ( 49.63 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.09 sec (100.00 %)
+round 11
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169755 patience = 0
+***************************************************
+best node n733 best error 0.0128027
+time = 173101980
+c2670_11_0.0128027
+area = 890
+delay = 21.2
+write_blif appntk/c2670_11_0.0128027_890_21.2.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_11_0.0128027_890_21.2.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_11_0.0128027_890_21.2.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 890.00
+Most Negative Slack	= -39.00
+Nodes = 525. Try = 420. Resub = 0. Div = 11354. SAT calls = 1789. Timeouts = 0. MaxDivs = 3.
+Attempts :   Remove      0 out of    840 (  0.00 %)   Resub       0 out of    309 (  0.00 %)   
+Reduction:   Nodes       0 out of    525 (  0.00 %)   Edges       0 out of    942 (  0.00 %)   
+Win =     0.00 sec (  1.09 %)
+Div =     0.00 sec (  2.16 %)
+Aig =     0.00 sec (  2.40 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.57 %)
+Sat =     0.05 sec ( 50.27 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.09 sec (100.00 %)
+round 12
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169765 patience = 0
+***************************************************
+best node n723 best error 0.013584
+time = 182025155
+c2670_12_0.013584
+area = 881
+delay = 21.2
+write_blif appntk/c2670_12_0.013584_881_21.2.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_12_0.013584_881_21.2.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_12_0.013584_881_21.2.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 881.00
+Most Negative Slack	= -33.60
+Nodes = 523. Try = 418. Resub = 0. Div = 11048. SAT calls = 1777. Timeouts = 0. MaxDivs = 3.
+Attempts :   Remove      0 out of    836 (  0.00 %)   Resub       0 out of    308 (  0.00 %)   
+Reduction:   Nodes       0 out of    523 (  0.00 %)   Edges       0 out of    938 (  0.00 %)   
+Win =     0.00 sec (  1.03 %)
+Div =     0.00 sec (  2.13 %)
+Aig =     0.00 sec (  2.30 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.61 %)
+Sat =     0.04 sec ( 49.63 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.09 sec (100.00 %)
+round 13
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169774 patience = 0
+***************************************************
+best node n730 best error 0.0151563
+time = 190183067
+c2670_13_0.0151563
+area = 853
+delay = 20.6
+write_blif appntk/c2670_13_0.0151563_853_20.6.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_13_0.0151563_853_20.6.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_13_0.0151563_853_20.6.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 853.00
+Most Negative Slack	= -34.70
+Nodes = 521. Try = 416. Resub = 0. Div = 10825. SAT calls = 1742. Timeouts = 0. MaxDivs = 1.
+Attempts :   Remove      0 out of    832 (  0.00 %)   Resub       0 out of    307 (  0.00 %)   
+Reduction:   Nodes       0 out of    521 (  0.00 %)   Edges       0 out of    934 (  0.00 %)   
+Win =     0.00 sec (  0.95 %)
+Div =     0.00 sec (  1.79 %)
+Aig =     0.00 sec (  2.22 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.52 %)
+Sat =     0.06 sec ( 43.89 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.13 sec (100.00 %)
+round 14
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169782 patience = 0
+***************************************************
+best node n741 best error 0.0182715
+time = 198642207
+c2670_14_0.0182715
+area = 849
+delay = 20.6
+write_blif appntk/c2670_14_0.0182715_849_20.6.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_14_0.0182715_849_20.6.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_14_0.0182715_849_20.6.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 849.00
+Most Negative Slack	= -34.70
+Nodes = 520. Try = 415. Resub = 0. Div = 10792. SAT calls = 1731. Timeouts = 0. MaxDivs = 1.
+Attempts :   Remove      0 out of    830 (  0.00 %)   Resub       0 out of    305 (  0.00 %)   
+Reduction:   Nodes       0 out of    520 (  0.00 %)   Edges       0 out of    932 (  0.00 %)   
+Win =     0.00 sec (  0.96 %)
+Div =     0.00 sec (  1.93 %)
+Aig =     0.00 sec (  2.15 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.51 %)
+Sat =     0.04 sec ( 44.98 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.10 sec (100.00 %)
+round 15
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169791 patience = 0
+***************************************************
+best node n789 best error 0.0250195
+time = 207203373
+c2670_15_0.0250195
+area = 860
+delay = 21
+write_blif appntk/c2670_15_0.0250195_860_21.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_15_0.0250195_860_21.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_15_0.0250195_860_21.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 860.00
+Most Negative Slack	= -35.80
+Nodes = 519. Try = 415. Resub = 1. Div = 10792. SAT calls = 1737. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    829 (  0.00 %)   Resub       1 out of    305 (  0.33 %)   
+Reduction:   Nodes       1 out of    519 (  0.19 %)   Edges       2 out of    930 (  0.22 %)   
+Win =     0.00 sec (  0.99 %)
+Div =     0.00 sec (  1.94 %)
+Aig =     0.00 sec (  2.30 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.53 %)
+Sat =     0.06 sec ( 45.23 %)
+Int =     0.00 sec (  0.55 %)
+ALL =     0.12 sec (100.00 %)
+round 16
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169799 patience = 0
+***************************************************
+best node n721 best error 0.0250195
+time = 217409129
+c2670_16_0.0250195
+area = 854
+delay = 18.5
+write_blif appntk/c2670_16_0.0250195_854_18.5.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_16_0.0250195_854_18.5.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_16_0.0250195_854_18.5.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 854.00
+Most Negative Slack	= -35.50
+Nodes = 516. Try = 411. Resub = 0. Div = 10187. SAT calls = 1733. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    822 (  0.00 %)   Resub       0 out of    303 (  0.00 %)   
+Reduction:   Nodes       0 out of    516 (  0.00 %)   Edges       0 out of    924 (  0.00 %)   
+Win =     0.00 sec (  0.90 %)
+Div =     0.00 sec (  1.76 %)
+Aig =     0.00 sec (  2.06 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.49 %)
+Sat =     0.06 sec ( 43.43 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.13 sec (100.00 %)
+round 17
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169809 patience = 0
+***************************************************
+best node n751 best error 0.0299316
+time = 225330357
+c2670_17_0.0299316
+area = 837
+delay = 19.4
+write_blif appntk/c2670_17_0.0299316_837_19.4.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_17_0.0299316_837_19.4.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_17_0.0299316_837_19.4.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 837.00
+Most Negative Slack	= -36.80
+Nodes = 515. Try = 410. Resub = 0. Div = 10008. SAT calls = 1751. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    820 (  0.00 %)   Resub       0 out of    304 (  0.00 %)   
+Reduction:   Nodes       0 out of    515 (  0.00 %)   Edges       0 out of    922 (  0.00 %)   
+Win =     0.00 sec (  0.93 %)
+Div =     0.00 sec (  1.90 %)
+Aig =     0.00 sec (  2.23 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.53 %)
+Sat =     0.05 sec ( 46.02 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.12 sec (100.00 %)
+round 18
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169817 patience = 0
+***************************************************
+best node n732 best error 0.0325684
+time = 234745489
+c2670_18_0.0325684
+area = 843
+delay = 19.2
+write_blif appntk/c2670_18_0.0325684_843_19.2.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_18_0.0325684_843_19.2.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_18_0.0325684_843_19.2.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 843.00
+Most Negative Slack	= -34.60
+Nodes = 512. Try = 407. Resub = 0. Div = 9721. SAT calls = 1709. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    814 (  0.00 %)   Resub       0 out of    302 (  0.00 %)   
+Reduction:   Nodes       0 out of    512 (  0.00 %)   Edges       0 out of    916 (  0.00 %)   
+Win =     0.00 sec (  0.88 %)
+Div =     0.00 sec (  1.85 %)
+Aig =     0.00 sec (  2.17 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.52 %)
+Sat =     0.05 sec ( 45.35 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.12 sec (100.00 %)
+round 19
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169827 patience = 0
+***************************************************
+best node n723 best error 0.0352539
+time = 241894393
+c2670_19_0.0352539
+area = 850
+delay = 19.3
+write_blif appntk/c2670_19_0.0352539_850_19.3.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_19_0.0352539_850_19.3.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_19_0.0352539_850_19.3.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 850.00
+Most Negative Slack	= -35.30
+Nodes = 511. Try = 406. Resub = 0. Div = 9646. SAT calls = 1748. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    812 (  0.00 %)   Resub       0 out of    301 (  0.00 %)   
+Reduction:   Nodes       0 out of    511 (  0.00 %)   Edges       0 out of    914 (  0.00 %)   
+Win =     0.00 sec (  0.85 %)
+Div =     0.00 sec (  1.69 %)
+Aig =     0.00 sec (  2.01 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.47 %)
+Sat =     0.05 sec ( 42.95 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.12 sec (100.00 %)
+round 20
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169834 patience = 0
+***************************************************
+best node n724 best error 0.0353418
+time = 249982971
+c2670_20_0.0353418
+area = 847
+delay = 18.5
+write_blif appntk/c2670_20_0.0353418_847_18.5.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_20_0.0353418_847_18.5.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_20_0.0353418_847_18.5.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 847.00
+Most Negative Slack	= -35.00
+Nodes = 509. Try = 404. Resub = 0. Div = 9339. SAT calls = 1647. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    808 (  0.00 %)   Resub       0 out of    301 (  0.00 %)   
+Reduction:   Nodes       0 out of    509 (  0.00 %)   Edges       0 out of    910 (  0.00 %)   
+Win =     0.00 sec (  0.97 %)
+Div =     0.00 sec (  2.07 %)
+Aig =     0.00 sec (  2.22 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.57 %)
+Sat =     0.04 sec ( 46.94 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 21
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169842 patience = 0
+***************************************************
+best node n755 best error 0.0369727
+time = 254781863
+c2670_21_0.0369727
+area = 848
+delay = 18.5
+write_blif appntk/c2670_21_0.0369727_848_18.5.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_21_0.0369727_848_18.5.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_21_0.0369727_848_18.5.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 848.00
+Most Negative Slack	= -35.00
+Nodes = 508. Try = 403. Resub = 0. Div = 9331. SAT calls = 1700. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    806 (  0.00 %)   Resub       0 out of    300 (  0.00 %)   
+Reduction:   Nodes       0 out of    508 (  0.00 %)   Edges       0 out of    908 (  0.00 %)   
+Win =     0.00 sec (  0.93 %)
+Div =     0.00 sec (  2.01 %)
+Aig =     0.00 sec (  2.16 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.51 %)
+Sat =     0.04 sec ( 48.54 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.08 sec (100.00 %)
+round 22
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169847 patience = 0
+***************************************************
+best node n772 best error 0.0455664
+time = 259584722
+c2670_22_0.0455664
+area = 835
+delay = 18.5
+write_blif appntk/c2670_22_0.0455664_835_18.5.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/c2670_22_0.0455664_835_18.5.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/c2670_22_0.0455664_835_18.5.blif", line 33: .and_gate_delay 1.9
+Warning: network `c2670', node "G4" does not fanout
+Warning: network `c2670', node "G5" does not fanout
+Warning: network `c2670', node "G6" does not fanout
+Warning: network `c2670', node "G11" does not fanout
+Warning: network `c2670', node "G16" does not fanout
+Warning: network `c2670', node "G19" does not fanout
+Warning: network `c2670', node "G20" does not fanout
+Warning: network `c2670', node "G21" does not fanout
+Warning: network `c2670', node "G22" does not fanout
+Warning: network `c2670', node "G23" does not fanout
+Warning: network `c2670', node "G24" does not fanout
+Warning: network `c2670', node "G25" does not fanout
+Warning: network `c2670', node "G26" does not fanout
+Warning: network `c2670', node "G27" does not fanout
+Warning: network `c2670', node "G28" does not fanout
+Warning: network `c2670', node "G29" does not fanout
+Warning: network `c2670', node "G32" does not fanout
+Warning: network `c2670', node "G33" does not fanout
+Warning: network `c2670', node "G34" does not fanout
+Warning: network `c2670', node "G35" does not fanout
+Total Area		= 835.00
+Most Negative Slack	= -35.30
+Nodes = 503. Try = 398. Resub = 0. Div = 9061. SAT calls = 1627. Timeouts = 0. MaxDivs = 0.
+Attempts :   Remove      0 out of    796 (  0.00 %)   Resub       0 out of    295 (  0.00 %)   
+Reduction:   Nodes       0 out of    503 (  0.00 %)   Edges       0 out of    898 (  0.00 %)   
+Win =     0.00 sec (  0.93 %)
+Div =     0.00 sec (  2.06 %)
+Aig =     0.00 sec (  2.21 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.53 %)
+Sat =     0.04 sec ( 47.28 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.07 sec (100.00 %)
+round 23
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567169852 patience = 0
+***************************************************
+best node n764 best error 0.0511719
+time = 264708972

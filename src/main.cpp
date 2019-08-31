@@ -13,10 +13,11 @@ using namespace cmdline;
 parser Cmdline_Parser(int argc, char * argv[])
 {
     parser option;
-    option.add <string>    ("input",   'i', "Original Circuit file",    true);
-    option.add <string>    ("genlib",  'g', "Map libarary file",        false, "data/genlib/mcnc.genlib");
-    option.add <int>       ("nFrame",  'n', "Simulation Frame number",  false, 8192, range(1, INT_MAX));
-    option.add <int>       ("nLocalPI",'m', "Local PI number",          false, 30,    range(1, INT_MAX));
+    option.add <string> ("input",   'i', "Original Circuit file",    true);
+    option.add <string> ("genlib",  'g', "Map libarary file",        false, "data/genlib/mcnc.genlib");
+    option.add <int>    ("nFrame",  'n', "Simulation Frame number",  false, 8192, range(1, INT_MAX));
+    option.add <int>    ("nLocalPI",'m', "Local PI number",          false, 30,   range(1, INT_MAX));
+    option.add <float>  ("delay",   'd', "Required delay",           false, FLT_MAX, range(0.0f, FLT_MAX));
     option.parse_check(argc, argv);
     return option;
 }
@@ -30,6 +31,7 @@ int main(int argc, char * argv[])
     string genlib = option.get <string> ("genlib");
     int nFrame = option.get <int> ("nFrame");
     int nLocalPI = option.get <int> ("nLocalPI");
+    float reqDelay = option.get <float> ("delay");
 
     Abc_Start();
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
@@ -37,39 +39,34 @@ int main(int argc, char * argv[])
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
     Command = string("read " + input);
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
-    Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance");
-    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
-    Command = string("logic; sweep; mfs -v");
-    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
-
     Abc_Ntk_t * pNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
-    shared_ptr <Ckt_Ntk_t> pNtkRef = make_shared <Ckt_Ntk_t> (pNtk);
+
+    DASSERT(Abc_NtkHasMapping(Abc_FrameReadNtk(pAbc)));
+    shared_ptr <Ckt_Ntk_t> pNtkRef = make_shared <Ckt_Ntk_t> (Abc_FrameReadNtk(pAbc));
     pNtkRef->Init(102400);
+    reqDelay = Ckt_GetDelay(pNtkRef->GetAbcNtk());
+    cout << "Original area = " << Ckt_GetArea(pNtkRef->GetAbcNtk()) << ", " <<
+    "original delay = " << Ckt_GetDelay(pNtkRef->GetAbcNtk()) << endl;
 
     float error = 0.0f;
+    ostringstream ss;
     for (int i = 0; ; ++i) {
         cout << "round " << i << endl;
         App_CommandMfs(pNtk, pNtkRef, nFrame, error, nLocalPI);
         cout  << "time = " << clock() - st << endl;
         if (error > 0.05)
             break;
-        stringstream ss;
-        string str;
+        ss.str("");
         ss << pNtk->pName << "_" << i << "_" << error;
-        ss >> str;
-        cout << str << endl;
-        Ckt_Synthesis(pNtk, str);
+        cout << ss.str() << endl;
+        Ckt_Synthesis3(pNtk, ss.str(), reqDelay);
 
         Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pNtk));
         Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance");
         DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
-        Command = string("logic; sweep; mfs -v");
+        Command = string("logic; sweep; mfs");
         DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
         pNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
-
-        Abc_Ntk_t * pNtkTmp = pNtk;
-        pNtk = Abc_NtkDup(pNtk);
-        Abc_NtkDelete(pNtkTmp);
     }
     Abc_NtkDelete(pNtk);
     Abc_Stop();

@@ -380,7 +380,7 @@ p->timeInt += Abc_Clock() - clk;
                 DASSERT(0);
             pData  = (unsigned *)Vec_PtrEntry( p->vDivCexes, iVar );
             for ( w = 0; w < nWords; w++ )
-                if ( pData[w] != ~0 )
+                if ( pData[w] != static_cast <unsigned> (~0) )
                     break;
             if ( w == nWords )
                 break;
@@ -688,7 +688,7 @@ Aig_Man_t * App_NtkConstructAig(Mfs_Man_t * p, Abc_Obj_t * pNode, int & frameNum
         pRoot = Aig_Or(pMan, pRoot, pDC);
     }
     Aig_ObjCreateCo(pMan, pRoot);
-    
+
     Vec_PtrFree(vLocalPI);
 
     if ( p->pPars->fResub )

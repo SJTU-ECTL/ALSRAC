@@ -1,0 +1,570 @@
+.model c2670
+.inputs G1 G2 G3 G4 G5 G6 G7 G8 G11 G14 G15 G16 G19 G20 G21 G22 G23 G24 G25 \
+G26 G27 G28 G29 G32 G33 G34 G35 G36 G37 G40 G43 G44 G47 G48 G49 G50 G51 G52 \
+G53 G54 G55 G56 G57 G60 G61 G62 G63 G64 G65 G66 G67 G68 G69 G72 G73 G74 G75 \
+G76 G77 G78 G79 G80 G81 G82 G85 G86 G87 G88 G89 G90 G91 G92 G93 G94 G95 G96 \
+G99 G100 G101 G102 G103 G104 G105 G106 G107 G108 G111 G112 G113 G114 G115 G116 \
+G117 G118 G119 G120 G123 G124 G125 G126 G127 G128 G129 G130 G131 G132 G135 \
+G136 G137 G138 G139 G140 G141 G142 IN-G169 IN-G174 IN-G177 IN-G178 IN-G179 \
+IN-G180 IN-G181 IN-G182 IN-G183 IN-G184 IN-G185 IN-G186 IN-G189 IN-G190 \
+IN-G191 IN-G192 IN-G193 IN-G194 IN-G195 IN-G196 IN-G197 IN-G198 IN-G199 \
+IN-G200 IN-G201 IN-G202 IN-G203 IN-G204 IN-G205 IN-G206 IN-G207 IN-G208 \
+IN-G209 IN-G210 IN-G211 IN-G212 IN-G213 IN-G214 IN-G215 IN-G239 IN-G240 \
+IN-G241 IN-G242 IN-G243 IN-G244 IN-G245 IN-G246 IN-G247 IN-G248 IN-G249 \
+IN-G250 IN-G251 IN-G252 IN-G253 IN-G254 IN-G255 IN-G256 IN-G257 IN-G262 \
+IN-G263 IN-G264 IN-G265 IN-G266 IN-G267 IN-G268 IN-G269 IN-G270 IN-G271 \
+IN-G272 IN-G273 IN-G274 IN-G275 IN-G276 IN-G277 IN-G278 IN-G279 G452 G483 G543 \
+G559 G567 G651 G661 G860 G868 G1083 G1341 G1348 G1384 G1956 G1961 G1966 G1971 \
+G1976 G1981 G1986 G1991 G1996 G2066 G2067 G2072 G2078 G2084 G2090 G2096 G2100 \
+G2104 G2105 G2106 G2427 G2430 G2435 G2438 G2443 G2446 G2451 G2454 G2474 G2678
+.outputs G169 G174 G177 G178 G179 G180 G181 G182 G183 G184 G185 G186 G189 G190 \
+G191 G192 G193 G194 G195 G196 G197 G198 G199 G200 G201 G202 G203 G204 G205 \
+G206 G207 G208 G209 G210 G211 G212 G213 G214 G215 G239 G240 G241 G242 G243 \
+G244 G245 G246 G247 G248 G249 G250 G251 G252 G253 G254 G255 G256 G257 G262 \
+G263 G264 G265 G266 G267 G268 G269 G270 G271 G272 G273 G274 G275 G276 G277 \
+G278 G279 G350 G335 G409 G369 G367 G411 G337 G384 G218 G219 G220 G221 G235 \
+G236 G237 G238 G158 G259 G391 G173 G223 G234 G217 G325 G261 G319 G160 G162 \
+G164 G166 G168 G171 G153 G176 G188 G299 G301 G286 G303 G288 G305 G290 G284 \
+G321 G297 G280 G148 G282 G323 G156 G401 G227 G229 G311 G150 G145 G395 G295 \
+G331 G397 G329 G231 G308 G225
+.default_input_arrival 0.00 0.00 
+.default_output_required 0.00 0.00 
+.default_input_drive 0.10 0.10 
+.default_output_load 2.00 
+.default_max_input_load 999.00 
+.gate buf a=IN-G169 O=G169
+.gate buf a=IN-G174 O=G174
+.gate buf a=IN-G177 O=G177
+.gate buf a=IN-G178 O=G178
+.gate buf a=IN-G179 O=G179
+.gate buf a=IN-G180 O=G180
+.gate buf a=IN-G181 O=G181
+.gate buf a=IN-G182 O=G182
+.gate buf a=IN-G183 O=G183
+.gate buf a=IN-G184 O=G184
+.gate buf a=IN-G185 O=G185
+.gate buf a=IN-G186 O=G186
+.gate buf a=IN-G189 O=G189
+.gate buf a=IN-G190 O=G190
+.gate buf a=IN-G191 O=G191
+.gate buf a=IN-G192 O=G192
+.gate buf a=IN-G193 O=G193
+.gate buf a=IN-G194 O=G194
+.gate buf a=IN-G195 O=G195
+.gate buf a=IN-G196 O=G196
+.gate buf a=IN-G197 O=G197
+.gate buf a=IN-G198 O=G198
+.gate buf a=IN-G199 O=G199
+.gate buf a=IN-G200 O=G200
+.gate buf a=IN-G201 O=G201
+.gate buf a=IN-G202 O=G202
+.gate buf a=IN-G203 O=G203
+.gate buf a=IN-G204 O=G204
+.gate buf a=IN-G205 O=G205
+.gate buf a=IN-G206 O=G206
+.gate buf a=IN-G207 O=G207
+.gate buf a=IN-G208 O=G208
+.gate buf a=IN-G209 O=G209
+.gate buf a=IN-G210 O=G210
+.gate buf a=IN-G211 O=G211
+.gate buf a=IN-G212 O=G212
+.gate buf a=IN-G213 O=G213
+.gate buf a=IN-G214 O=G214
+.gate buf a=IN-G215 O=G215
+.gate buf a=IN-G239 O=G239
+.gate buf a=IN-G240 O=G240
+.gate buf a=IN-G241 O=G241
+.gate buf a=IN-G242 O=G242
+.gate buf a=IN-G243 O=G243
+.gate buf a=IN-G244 O=G244
+.gate buf a=IN-G245 O=G245
+.gate buf a=IN-G246 O=G246
+.gate buf a=IN-G247 O=G247
+.gate buf a=IN-G248 O=G248
+.gate buf a=IN-G249 O=G249
+.gate buf a=IN-G250 O=G250
+.gate buf a=IN-G251 O=G251
+.gate buf a=IN-G252 O=G252
+.gate buf a=IN-G253 O=G253
+.gate buf a=IN-G254 O=G254
+.gate buf a=IN-G255 O=G255
+.gate buf a=IN-G256 O=G256
+.gate buf a=IN-G257 O=G257
+.gate buf a=IN-G262 O=G262
+.gate buf a=IN-G263 O=G263
+.gate buf a=IN-G264 O=G264
+.gate buf a=IN-G265 O=G265
+.gate buf a=IN-G266 O=G266
+.gate buf a=IN-G267 O=G267
+.gate buf a=IN-G268 O=G268
+.gate buf a=IN-G269 O=G269
+.gate buf a=IN-G270 O=G270
+.gate buf a=IN-G271 O=G271
+.gate buf a=IN-G272 O=G272
+.gate buf a=IN-G273 O=G273
+.gate buf a=IN-G274 O=G274
+.gate buf a=IN-G275 O=G275
+.gate buf a=IN-G276 O=G276
+.gate buf a=IN-G277 O=G277
+.gate buf a=IN-G278 O=G278
+.gate buf a=IN-G279 O=G279
+.gate buf a=G452 O=G350
+.gate buf a=G452 O=G335
+.gate buf a=G452 O=G409
+.gate buf a=G1083 O=G369
+.gate buf a=G1083 O=G367
+.gate buf a=G2066 O=G411
+.gate buf a=G2066 O=G337
+.gate buf a=G2066 O=G384
+.gate inv1 a=G44 O=G218
+.gate inv1 a=G132 O=G219
+.gate inv1 a=G82 O=G220
+.gate inv1 a=G96 O=G221
+.gate inv1 a=G69 O=G235
+.gate inv1 a=G120 O=G236
+.gate inv1 a=G57 O=G237
+.gate inv1 a=G108 O=G238
+.gate nand4 a=G2084 b=G2090 c=G2072 d=G2078 O=G158
+.gate nand3 a=G661 b=G2 c=G15 O=G259
+.gate buf a=G452 O=G391
+.gate and2 a=G452 b=G94 O=G173
+.gate nand2 a=G661 b=G7 O=G223
+.gate inv1 a=G223 O=[100692]
+.gate nand2 a=[100692] b=G567 O=G234
+.gate nand2 a=[100692] b=G2106 O=G217
+.gate nand4 a=G120 b=G57 c=G69 d=G108 O=[99244]
+.gate nand4 a=G132 b=G82 c=G44 d=G96 O=[99247]
+.gate or2 a=[99244] b=[99247] O=G261
+.gate inv1 a=G261 O=G325
+.gate aoi22 a=[99247] b=G2106 c=[99244] d=G567 O=G319
+.gate inv1 a=G2105 O=[99249]
+.gate inv1 a=G2104 O=[99251]
+.gate nand3 a=[99249] b=[99251] c=G137 O=[100822]
+.gate nand3 a=[99249] b=G2104 c=G101 O=[100824]
+.gate nand3 a=G2105 b=[99251] c=G125 O=[100826]
+.gate nand3 a=G2105 b=G2104 c=G113 O=[100828]
+.gate nand4 a=[100822] b=[100824] c=[100826] d=[100828] O=[99261]
+.gate inv1 a=[99261] O=G160
+.gate nand3 a=[99249] b=[99251] c=G136 O=[100830]
+.gate nand3 a=[99249] b=G2104 c=G100 O=[100832]
+.gate nand3 a=G2105 b=[99251] c=G124 O=[100834]
+.gate nand3 a=G2105 b=G2104 c=G112 O=[100836]
+.gate nand4 a=[100830] b=[100832] c=[100834] d=[100836] O=[99272]
+.gate inv1 a=[99272] O=G162
+.gate nand3 a=[99249] b=[99251] c=G138 O=[100838]
+.gate nand3 a=[99249] b=G2104 c=G102 O=[100840]
+.gate nand3 a=G2105 b=[99251] c=G126 O=[100842]
+.gate nand3 a=G2105 b=G2104 c=G114 O=[100844]
+.gate nand4 a=[100838] b=[100840] c=[100842] d=[100844] O=[99283]
+.gate inv1 a=[99283] O=G164
+.gate inv1 a=G651 O=[99284]
+.gate inv1 a=G543 O=[99286]
+.gate nand3 a=[99284] b=[99286] c=G88 O=[100752]
+.gate nand3 a=[99284] b=G543 c=G50 O=[100754]
+.gate nand3 a=G651 b=[99286] c=G62 O=[100756]
+.gate nand3 a=G651 b=G543 c=G75 O=[100758]
+.gate nand4 a=[100752] b=[100754] c=[100756] d=[100758] O=G303
+.gate inv1 a=G303 O=G166
+.gate nand3 a=[99284] b=[99286] c=G89 O=[100744]
+.gate nand3 a=[99284] b=G543 c=G51 O=[100746]
+.gate nand3 a=G651 b=[99286] c=G63 O=[100748]
+.gate nand3 a=G651 b=G543 c=G76 O=[100750]
+.gate nand4 a=[100744] b=[100746] c=[100748] d=[100750] O=G286
+.gate inv1 a=G286 O=G168
+.gate nand3 a=[99284] b=[99286] c=G90 O=[100736]
+.gate nand3 a=[99284] b=G543 c=G52 O=[100738]
+.gate nand3 a=G651 b=[99286] c=G64 O=[100740]
+.gate nand3 a=G651 b=G543 c=G77 O=[100742]
+.gate nand4 a=[100736] b=[100738] c=[100740] d=[100742] O=G301
+.gate inv1 a=G301 O=G171
+.gate nand3 a=[99284] b=[99286] c=G81 O=[100942]
+.gate nand3 a=[99284] b=G543 c=G43 O=[100944]
+.gate nand3 a=G651 b=[99286] c=G56 O=[100946]
+.gate nand3 a=G651 b=G543 c=G68 O=[100948]
+.gate nand4 a=[100942] b=[100944] c=[100946] d=[100948] O=[99327]
+.gate nand2 a=[99327] b=G860 O=[100726]
+.gate nand2 a=[100726] b=G860 O=G153
+.gate nand4 a=G36 b=G483 c=G661 d=G319 O=G176
+.gate nand2 a=G1 b=G3 O=[100857]
+.gate nand4 a=G661 b=G483 c=[100857] d=G319 O=G188
+.gate nand3 a=[99284] b=[99286] c=G91 O=[100728]
+.gate nand3 a=[99284] b=G543 c=G53 O=[100730]
+.gate nand3 a=G651 b=[99286] c=G65 O=[100732]
+.gate nand3 a=G651 b=G543 c=G78 O=[100734]
+.gate nand4 a=[100728] b=[100730] c=[100732] d=[100734] O=G299
+.gate nand3 a=[99284] b=[99286] c=G87 O=[100760]
+.gate nand3 a=[99284] b=G543 c=G49 O=[100762]
+.gate nand2 a=[99286] b=G651 O=[100764]
+.gate nand3 a=G651 b=G543 c=G74 O=[100766]
+.gate nand4 a=[100760] b=[100762] c=[100764] d=[100766] O=G288
+.gate nand3 a=[99284] b=[99286] c=G86 O=[100768]
+.gate nand3 a=[99284] b=G543 c=G48 O=[100770]
+.gate nand3 a=G651 b=[99286] c=G61 O=[100772]
+.gate nand3 a=G651 b=G543 c=G73 O=[100774]
+.gate nand4 a=[100768] b=[100770] c=[100772] d=[100774] O=G305
+.gate nand3 a=[99284] b=[99286] c=G85 O=[100776]
+.gate nand3 a=[99284] b=G543 c=G47 O=[100778]
+.gate nand3 a=G651 b=[99286] c=G60 O=[100780]
+.gate nand3 a=G651 b=G543 c=G72 O=[100782]
+.gate nand4 a=[100776] b=[100778] c=[100780] d=[100782] O=G290
+.gate inv1 a=G868 O=[99374]
+.gate nand3 a=[99284] b=[99286] c=G92 O=[100950]
+.gate nand3 a=[99284] b=G543 c=G54 O=[100952]
+.gate nand3 a=G651 b=[99286] c=G66 O=[100954]
+.gate nand3 a=G651 b=G543 c=G79 O=[100956]
+.gate nand4 a=[100950] b=[100952] c=[100954] d=[100956] O=[99385]
+.gate aoi22 a=[99374] b=[99385] c=G301 d=G868 O=G897
+.gate inv1 a=G897 O=[97793]
+.gate buf a=[97793] O=G284
+.gate buf a=[97793] O=G321
+.gate aoi22 a=G286 b=G868 c=[99374] d=G299 O=G898
+.gate inv1 a=G898 O=[97792]
+.gate buf a=[97792] O=G297
+.gate buf a=[97792] O=G280
+.gate inv1 a=G860 O=[99316]
+.gate or2 a=G559 b=[99385] O=[99386]
+.gate aoi22 a=[99316] b=[99386] c=[99385] d=G860 O=[97750]
+.gate inv1 a=[97750] O=G148
+.gate aoi22 a=[99374] b=[99327] c=[99386] d=G868 O=G896
+.gate inv1 a=G896 O=[97790]
+.gate buf a=[97790] O=G282
+.gate buf a=[97790] O=G323
+.gate nor2 a=G2104 b=G2105 O=G1457
+.gate aoi21 a=[99249] b=G2104 c=G1457 O=[98844]
+.gate aoi22 a=[99251] b=G2105 c=G2105 d=G2104 O=[98841]
+.gate aoi21 a=[98844] b=[98841] c=G2100 O=G1218
+.gate inv1 a=G2096 O=[99387]
+.gate nand3 a=[99249] b=[99251] c=G135 O=[101060]
+.gate nand3 a=[99249] b=G2104 c=G99 O=[101062]
+.gate nand3 a=G2105 b=[99251] c=G123 O=[101064]
+.gate nand3 a=G2105 b=G2104 c=G111 O=[101066]
+.gate nand4 a=[101060] b=[101062] c=[101064] d=[101066] O=[99398]
+.gate nand2 a=[99387] b=[99398] O=[100958]
+.gate nand2 a=[99387] b=[100958] O=[100886]
+.gate nand2 a=[100958] b=[99398] O=[100888]
+.gate nand3 a=G1218 b=[100886] c=[100888] O=G156
+.gate xnor2b a=G2451 b=G2454 O=G2518
+.gate inv1 a=G1348 O=[99409]
+.gate inv1 a=G1341 O=[99408]
+.gate aoi22 a=[99409] b=G1341 c=[99408] d=G1348 O=G2515
+.gate xnor2b a=G2518 b=G2515 O=G2538
+.gate xor2a a=G2446 b=G2443 O=[99414]
+.gate xor2a a=G2438 b=G2435 O=[99420]
+.gate xor2a a=G2430 b=G2427 O=[99417]
+.gate inv1 a=[99417] O=[101459]
+.gate nand2 a=[99420] b=[101459] O=[99424]
+.gate nand3 a=[99414] b=[99417] c=[99420] O=[101234]
+.gate oai21 a=[99414] b=[99424] c=[101234] O=[99426]
+.gate nor3 a=[99414] b=[101459] c=[99420] O=G1540
+.gate inv1 a=[99414] O=[101469]
+.gate nor3 a=[101469] b=[99417] c=[99420] O=G1541
+.gate nor3 a=[99426] b=G1540 c=G1541 O=G2535
+.gate xnor2b a=G2538 b=G2535 O=G1091
+.gate nand2 a=G14 b=G1091 O=[100681]
+.gate inv1 a=[100681] O=G401
+.gate inv1 a=G2084 O=[99228]
+.gate inv1 a=G2090 O=[99229]
+.gate oai22 a=G2090 b=[99228] c=G2084 d=[99229] O=[99430]
+.gate inv1 a=G2072 O=[99231]
+.gate inv1 a=G2078 O=[99232]
+.gate oai22 a=G2078 b=[99231] c=G2072 d=[99232] O=[99434]
+.gate inv1 a=G2678 O=[99432]
+.gate inv1 a=G2067 O=[99431]
+.gate oai22 a=G2067 b=[99432] c=G2678 d=[99431] O=[99433]
+.gate inv1 a=[99433] O=[101477]
+.gate nand2 a=[99434] b=[101477] O=[99438]
+.gate nand3 a=[99430] b=[99433] c=[99434] O=[101242]
+.gate oai21 a=[99430] b=[99438] c=[101242] O=[99440]
+.gate nor3 a=[99430] b=[101477] c=[99434] O=G1823
+.gate inv1 a=[99430] O=[101487]
+.gate nor3 a=[101487] b=[99433] c=[99434] O=G1824
+.gate nor3 a=[99440] b=G1823 c=G1824 O=G2727
+.gate inv1 a=G2100 O=[99400]
+.gate aoi22 a=[99400] b=G2096 c=[99387] d=G2100 O=G2730
+.gate xor2a a=G2727 b=G2730 O=[100794]
+.gate inv1 a=[100794] O=G227
+.gate inv1 a=G1971 O=[99449]
+.gate inv1 a=G1976 O=[99450]
+.gate oai22 a=G1976 b=[99449] c=G1971 d=[99450] O=[99451]
+.gate inv1 a=G1961 O=[99455]
+.gate inv1 a=G1966 O=[99456]
+.gate oai22 a=G1966 b=[99455] c=G1961 d=[99456] O=[99457]
+.gate inv1 a=G2474 O=[99453]
+.gate inv1 a=G1956 O=[99452]
+.gate oai22 a=G1956 b=[99453] c=G2474 d=[99452] O=[99454]
+.gate inv1 a=[99454] O=[101503]
+.gate nand2 a=[99457] b=[101503] O=[99461]
+.gate nand3 a=[99451] b=[99454] c=[99457] O=[101256]
+.gate oai21 a=[99451] b=[99461] c=[101256] O=[99463]
+.gate nor3 a=[99451] b=[101503] c=[99457] O=G1546
+.gate inv1 a=[99451] O=[101513]
+.gate nor3 a=[101513] b=[99454] c=[99457] O=G1547
+.gate nor3 a=[99463] b=G1546 c=G1547 O=G2543
+.gate inv1 a=G1986 O=[99446]
+.gate inv1 a=G1981 O=[99445]
+.gate aoi22 a=[99446] b=G1981 c=[99445] d=G1986 O=G2528
+.gate inv1 a=G1996 O=[99443]
+.gate inv1 a=G1991 O=[99442]
+.gate aoi22 a=[99443] b=G1991 c=[99442] d=G1996 O=G2525
+.gate xnor2b a=G2528 b=G2525 O=G2546
+.gate xor2a a=G2543 b=G2546 O=[100797]
+.gate inv1 a=[100797] O=G229
+.gate inv1 a=G11 O=[99465]
+.gate oai22 a=G868 b=[99465] c=[99374] d=[99465] O=[100804]
+.gate inv1 a=G29 O=[99482]
+.gate nand3 a=[99249] b=[99251] c=G139 O=[101916]
+.gate nand3 a=[99249] b=G2104 c=G103 O=[101918]
+.gate nand3 a=G2105 b=G2104 c=G115 O=[101896]
+.gate nand3 a=G2105 b=[99251] c=G127 O=[101920]
+.gate nand4 a=[101916] b=[101918] c=[101896] d=[101920] O=[99534]
+.gate aoi22 a=[99482] b=G33 c=[99534] d=G29 O=G2754
+.gate inv1 a=G2754 O=[99535]
+.gate oai22 a=G2754 b=[99231] c=G2072 d=[99535] O=[99536]
+.gate nand3 a=[99249] b=[99251] c=G141 O=[101910]
+.gate nand3 a=[99249] b=G2104 c=G105 O=[101912]
+.gate nand3 a=G2105 b=G2104 c=G117 O=[101894]
+.gate nand3 a=G2105 b=[99251] c=G129 O=[101914]
+.gate nand4 a=[101910] b=[101912] c=[101894] d=[101914] O=[99548]
+.gate aoi22 a=[99482] b=G32 c=[99548] d=G29 O=G2738
+.gate inv1 a=G2738 O=[99549]
+.gate oai22 a=G2738 b=[99443] c=G1996 d=[99549] O=[99550]
+.gate nand3 a=[99249] b=[99251] c=G140 O=[101848]
+.gate nand3 a=[99249] b=G2104 c=G104 O=[101850]
+.gate nand3 a=G2105 b=[99251] c=G128 O=[101852]
+.gate nand3 a=G2105 b=G2104 c=G116 O=[101854]
+.gate nand4 a=[101848] b=[101850] c=[101852] d=[101854] O=[99562]
+.gate aoi22 a=[99482] b=G26 c=[99562] d=G29 O=G2746
+.gate inv1 a=G2746 O=[99563]
+.gate oai22 a=G2746 b=[99431] c=G2067 d=[99563] O=[99564]
+.gate nor3 a=[99536] b=[99550] c=[99564] O=[98346]
+.gate aoi22 a=[99482] b=G27 c=[99283] d=G29 O=G2762
+.gate nor2 a=G2762 b=[99232] O=G2051
+.gate aoi21 a=[99232] b=G2762 c=G2051 O=G2053
+.gate aoi22 a=[99482] b=G34 c=[99261] d=G29 O=G2770
+.gate nor2 a=G2770 b=[99228] O=G2055
+.gate aoi21 a=[99228] b=G2770 c=G2055 O=G2057
+.gate nand3 a=[98346] b=G2053 c=G2057 O=[99574]
+.gate aoi22 a=[99482] b=G28 c=[99398] d=G29 O=G2065
+.gate aoi22 a=[99482] b=G35 c=[99272] d=G29 O=G2778
+.gate inv1 a=G2778 O=[99520]
+.gate oai22 a=G2778 b=[99229] c=G2090 d=[99520] O=[99521]
+.gate nor3 a=[99574] b=G2065 c=[99521] O=G1559
+.gate inv1 a=G16 O=[99467]
+.gate aoi22 a=[99467] b=G24 c=G290 d=G16 O=G2618
+.gate nor2 a=G2618 b=[99446] O=G1593
+.gate aoi21 a=[99446] b=G2618 c=G1593 O=G1595
+.gate nand3 a=[99249] b=[99251] c=G131 O=[101904]
+.gate nand3 a=[99249] b=G2104 c=G95 O=[101906]
+.gate nand3 a=G2105 b=G2104 c=G107 O=[101892]
+.gate nand3 a=G2105 b=[99251] c=G119 O=[101908]
+.gate nand4 a=[101904] b=[101906] c=[101892] d=[101908] O=[99493]
+.gate aoi22 a=[99482] b=G25 c=[99493] d=G29 O=G2626
+.gate nor2 a=G2626 b=[99442] O=G1597
+.gate aoi21 a=[99442] b=G2626 c=G1597 O=G1599
+.gate nand2 a=G1595 b=G1599 O=[99496]
+.gate aoi22 a=[99467] b=G6 c=G305 d=G16 O=G2610
+.gate inv1 a=G2610 O=[99468]
+.gate oai22 a=G2610 b=[99445] c=G1981 d=[99468] O=[99469]
+.gate aoi22 a=[99467] b=G22 c=G303 d=G16 O=G2594
+.gate inv1 a=G2594 O=[99471]
+.gate oai22 a=G2594 b=[99449] c=G1971 d=[99471] O=[99472]
+.gate aoi22 a=[99467] b=G23 c=G288 d=G16 O=G2602
+.gate inv1 a=G2602 O=[99474]
+.gate oai22 a=G2602 b=[99450] c=G1976 d=[99474] O=[99475]
+.gate nor4 a=[99496] b=[99469] c=[99472] d=[99475] O=G1554
+.gate aoi22 a=[99467] b=G5 c=G301 d=G16 O=G2578
+.gate nor2 a=G2578 b=[99455] O=G1573
+.gate aoi21 a=[99455] b=G2578 c=G1573 O=G1575
+.gate aoi22 a=[99467] b=G21 c=G286 d=G16 O=G2586
+.gate nor2 a=G2586 b=[99456] O=G1577
+.gate aoi21 a=[99456] b=G2586 c=G1577 O=G1579
+.gate nand2 a=G1575 b=G1579 O=[99515]
+.gate aoi22 a=[99467] b=G20 c=G299 d=G16 O=G2570
+.gate inv1 a=G2570 O=[99499]
+.gate oai22 a=G2570 b=[99452] c=G1956 d=[99499] O=[99500]
+.gate aoi22 a=[99467] b=G19 c=[99327] d=G16 O=G2554
+.gate inv1 a=G2554 O=[99502]
+.gate oai22 a=G2554 b=[99408] c=G1341 d=[99502] O=[99503]
+.gate aoi22 a=[99467] b=G4 c=[99385] d=G16 O=G2562
+.gate inv1 a=G2562 O=[99505]
+.gate oai22 a=G2562 b=[99409] c=G1348 d=[99505] O=[99506]
+.gate nor4 a=[99515] b=[99500] c=[99503] d=[99506] O=G1555
+.gate nand4 a=[100804] b=G1559 c=G1554 d=G1555 O=G150
+.gate inv1 a=G150 O=G311
+.gate inv1 a=[99327] O=[100848]
+.gate inv1 a=[99385] O=[100873]
+.gate oai22 a=[100848] b=[99385] c=[100873] d=[99327] O=[99588]
+.gate nand2 a=[99386] b=[99588] O=[101306]
+.gate oai21 a=[99386] b=[99588] c=[101306] O=[99589]
+.gate nand3 a=[99284] b=[99286] c=G93 O=[101023]
+.gate nand3 a=[99284] b=G543 c=G55 O=[101025]
+.gate nand3 a=G651 b=[99286] c=G67 O=[101027]
+.gate nand3 a=G651 b=G543 c=G80 O=[101029]
+.gate nand4 a=[101023] b=[101025] c=[101027] d=[101029] O=[99587]
+.gate inv1 a=[99587] O=[100922]
+.gate inv1 a=[99589] O=[101161]
+.gate aoi22 a=[99589] b=[100922] c=[99587] d=[101161] O=G647
+.gate nand2 a=[99587] b=G860 O=[100808]
+.gate oai21 a=G860 b=G647 c=[100808] O=G145
+.gate inv1 a=G37 O=[99830]
+.gate oai22 a=G160 b=[99272] c=G162 d=[99261] O=[99590]
+.gate nor2 a=[99398] b=[99590] O=G2718
+.gate aoi21 a=[99398] b=[99590] c=G2718 O=G2722
+.gate inv1 a=[99534] O=[101816]
+.gate oai22 a=[101816] b=[99283] c=G164 d=[99534] O=[99592]
+.gate nand3 a=[99249] b=[99251] c=G142 O=[101898]
+.gate nand3 a=[99249] b=G2104 c=G106 O=[101900]
+.gate nand3 a=G2105 b=G2104 c=G118 O=[101890]
+.gate nand3 a=G2105 b=[99251] c=G130 O=[101902]
+.gate nand4 a=[101898] b=[101900] c=[101890] d=[101902] O=[99603]
+.gate inv1 a=[99603] O=[101922]
+.gate inv1 a=[99493] O=[101808]
+.gate oai22 a=[101922] b=[99493] c=[101808] d=[99603] O=[99604]
+.gate inv1 a=[99604] O=[101591]
+.gate inv1 a=[99548] O=[101813]
+.gate inv1 a=[99562] O=[101651]
+.gate oai22 a=[101813] b=[99562] c=[101651] d=[99548] O=[99605]
+.gate nor3 a=[99592] b=[101591] c=[99605] O=G1817
+.gate inv1 a=[99592] O=[101602]
+.gate nor3 a=[101602] b=[99604] c=[99605] O=G1818
+.gate inv1 a=[99605] O=[101597]
+.gate nor3 a=[99592] b=[101597] c=[99604] O=G1814
+.gate nand3 a=[99592] b=[99604] c=[99605] O=[101319]
+.gate inv1 a=[101319] O=[101320]
+.gate nor4 a=G1817 b=G1818 c=G1814 d=[101320] O=G2719
+.gate xnor2b a=G2722 b=G2719 O=G686
+.gate nand2 a=[99830] b=G686 O=[100685]
+.gate inv1 a=[100685] O=G395
+.gate nand2 a=G299 b=[100873] O=[101840]
+.gate oai21 a=[100873] b=G299 c=[101840] O=[99617]
+.gate nand2 a=[99587] b=[100848] O=[101838]
+.gate oai21 a=[100848] b=[99587] c=[101838] O=[99618]
+.gate nor2 a=[99386] b=[99618] O=[98162]
+.gate inv1 a=[99386] O=[100863]
+.gate nor3 a=[99617] b=[100863] c=[99618] O=G638
+.gate aoi21 a=[99617] b=[98162] c=G638 O=G640
+.gate nand3 a=[99617] b=[99386] c=[99618] O=[101955]
+.gate inv1 a=[99617] O=[101636]
+.gate nand3 a=[101636] b=[99618] c=[100863] O=[101967]
+.gate nand3 a=G640 b=[101955] c=[101967] O=[99625]
+.gate inv1 a=G305 O=[100674]
+.gate inv1 a=G290 O=[100679]
+.gate aoi22 a=G290 b=[100674] c=G305 d=[100679] O=G2197
+.gate inv1 a=G288 O=[100669]
+.gate aoi22 a=G288 b=G166 c=G303 d=[100669] O=G2200
+.gate xor2a a=G2197 b=G2200 O=[99616]
+.gate inv1 a=[99616] O=[101039]
+.gate inv1 a=[99625] O=[101976]
+.gate aoi22 a=[99625] b=[101039] c=[99616] d=[101976] O=G650
+.gate oai22 a=G868 b=[100922] c=G650 d=[99374] O=[97787]
+.gate buf a=[97787] O=G295
+.gate buf a=[97787] O=G331
+.gate oai22 a=G168 b=G301 c=G171 d=G286 O=[99626]
+.gate inv1 a=[99618] O=[101617]
+.gate nor2 a=[101617] b=[101636] O=[98114]
+.gate nor3 a=[99626] b=[101636] c=[99618] O=G629
+.gate aoi21 a=[99626] b=[98114] c=G629 O=G631
+.gate inv1 a=[99626] O=[101642]
+.gate nand3 a=[101642] b=[99618] c=[101636] O=[101327]
+.gate nand3 a=[99626] b=[101636] c=[101617] O=[101329]
+.gate nand3 a=G631 b=[101327] c=[101329] O=[99633]
+.gate nor2 a=[101039] b=[99633] O=G641
+.gate aoi21 a=[99633] b=[101039] c=G641 O=G643
+.gate nand2 a=[99830] b=G643 O=[100688]
+.gate inv1 a=[100688] O=G397
+.gate or2 a=G1384 b=G164 O=[99635]
+.gate nand3 a=[99635] b=G160 c=G40 O=[99638]
+.gate nor2 a=G1384 b=G164 O=G1387
+.gate nand3 a=G1387 b=G160 c=G40 O=[99640]
+.gate inv1 a=[99640] O=[101654]
+.gate nor3 a=[99638] b=[101651] c=[101654] O=G737
+.gate inv1 a=G737 O=[99642]
+.gate nor3 a=[99638] b=G2067 c=[101654] O=G1953
+.gate nand2 a=G737 b=G1953 O=[101357]
+.gate oai21 a=G737 b=G1953 c=[101357] O=[101188]
+.gate nor3 a=[99638] b=[101654] c=[101813] O=G731
+.gate nor3 a=[99638] b=G1996 c=[101654] O=G1951
+.gate inv1 a=G1951 O=[99648]
+.gate nor2 a=G731 b=[99648] O=G1133
+.gate aoi22 a=[99642] b=G1953 c=[101188] d=G1133 O=[98018]
+.gate nor3 a=[99638] b=[101654] c=[101808] O=G725
+.gate inv1 a=G725 O=[99652]
+.gate nor3 a=[99638] b=G1991 c=[101654] O=G1949
+.gate nand2 a=G731 b=G1951 O=[101370]
+.gate oai21 a=G731 b=G1951 c=[101370] O=[101195]
+.gate nand4 a=[99652] b=G1949 c=[101188] d=[101195] O=[101050]
+.gate nand2 a=G725 b=G1949 O=[101383]
+.gate oai21 a=G725 b=G1949 c=[101383] O=[101201]
+.gate nor3 a=[99638] b=[100679] c=[101654] O=G719
+.gate nor3 a=[99638] b=G1986 c=[101654] O=G1947
+.gate inv1 a=G1947 O=[99661]
+.gate nor2 a=G719 b=[99661] O=G1142
+.gate nand4 a=[101188] b=[101201] c=[101195] d=G1142 O=[101052]
+.gate nand3 a=[98018] b=[101050] c=[101052] O=[99665]
+.gate inv1 a=[99665] O=[100934]
+.gate oai22 a=G1341 b=[101654] c=G1996 d=[99640] O=[101888]
+.gate oai22 a=G2072 b=[99640] c=G1956 d=[101654] O=[99699]
+.gate nand2 a=G299 b=[99699] O=[101878]
+.gate oai21 a=G299 b=[99699] c=[101878] O=[101761]
+.gate oai22 a=G1348 b=[101654] c=G2067 d=[99640] O=[99700]
+.gate inv1 a=[99700] O=[101880]
+.gate oai22 a=[99385] b=[99700] c=[100873] d=[101880] O=[101766]
+.gate nand4 a=[101888] b=[100848] c=[101761] d=[101766] O=[101435]
+.gate inv1 a=G299 O=[100636]
+.gate nand2 a=[99699] b=[100636] O=[101431]
+.gate nand3 a=[101761] b=[99700] c=[100873] O=[101433]
+.gate nand3 a=[101435] b=[101431] c=[101433] O=[101218]
+.gate oai22 a=G166 b=[99640] c=G166 d=[101654] O=[101860]
+.gate nand2 a=[101860] b=G8 O=[99667]
+.gate oai22 a=G1971 b=[101654] c=G2090 d=[99640] O=[101862]
+.gate nand2 a=[101862] b=G8 O=[99668]
+.gate nand2 a=[99667] b=[99668] O=[101732]
+.gate oai21 a=[99667] b=[99668] c=[101732] O=[101418]
+.gate nor2 a=[100669] b=[101654] O=G705
+.gate nand2 a=G8 b=G705 O=[99675]
+.gate nand3 a=G8 b=[99450] c=[99640] O=[99677]
+.gate nand2 a=[99675] b=[99677] O=[101719]
+.gate oai21 a=[99675] b=[99677] c=[101719] O=[101411]
+.gate oai22 a=G2078 b=[99640] c=G1961 d=[101654] O=[99689]
+.gate inv1 a=[99689] O=[101749]
+.gate oai22 a=G301 b=[99689] c=G171 d=[101749] O=[101429]
+.gate nand3 a=[101418] b=[101411] c=[101429] O=[99695]
+.gate inv1 a=[99695] O=[102002]
+.gate nor2 a=[100674] b=[101654] O=G711
+.gate nand2 a=G8 b=G711 O=[99671]
+.gate nand3 a=G8 b=[99445] c=[99640] O=[99673]
+.gate nand2 a=[99671] b=[99673] O=[101706]
+.gate oai21 a=[99671] b=[99673] c=[101706] O=[101403]
+.gate oai22 a=G168 b=[99640] c=G168 d=[101654] O=[101864]
+.gate nand2 a=[101864] b=G8 O=[99683]
+.gate oai22 a=G1966 b=[101654] c=G2084 d=[99640] O=[101866]
+.gate nand2 a=[101866] b=G8 O=[99684]
+.gate nand2 a=[99683] b=[99684] O=[101745]
+.gate oai21 a=[99683] b=[99684] c=[101745] O=[101424]
+.gate nand4 a=[101218] b=[102002] c=[101403] d=[101424] O=[101056]
+.gate nand2 a=[101403] b=[101418] O=[99682]
+.gate inv1 a=[99684] O=[101741]
+.gate nand3 a=[101411] b=[99683] c=[101741] O=[99686]
+.gate nand3 a=[101403] b=[101418] c=[101424] O=[99688]
+.gate nand3 a=[101411] b=[99689] c=G171 O=[99691]
+.gate oai22 a=[99682] b=[99686] c=[99688] d=[99691] O=[99692]
+.gate inv1 a=[99692] O=[102004]
+.gate inv1 a=[99668] O=[101728]
+.gate nand4 a=[99667] b=[101728] c=[101403] d=[101411] O=[101210]
+.gate inv1 a=[99673] O=[101399]
+.gate inv1 a=[99675] O=[101711]
+.gate nor2 a=[101711] b=[99677] O=G1164
+.gate aoi22 a=[99671] b=[101399] c=[101403] d=G1164 O=[97903]
+.gate nand4 a=[101056] b=[102004] c=[101210] d=[97903] O=[99704]
+.gate nand2 a=G719 b=G1947 O=[101439]
+.gate oai21 a=G719 b=G1947 c=[101439] O=[101220]
+.gate nand4 a=[101195] b=[101220] c=[101188] d=[101201] O=[101058]
+.gate inv1 a=[101058] O=[101059]
+.gate oai21 a=[101059] b=[99665] c=[99704] O=[100816]
+.gate oai21 a=[100934] b=[99704] c=[100816] O=G329
+.gate zero O=G231
+.gate nand3 a=[100794] b=[100685] c=[100688] O=[99708]
+.gate inv1 a=[99708] O=[100818]
+.gate nand4 a=G319 b=[100818] c=[100681] d=[100797] O=G225
+.gate inv1 a=G225 O=G308
+.end

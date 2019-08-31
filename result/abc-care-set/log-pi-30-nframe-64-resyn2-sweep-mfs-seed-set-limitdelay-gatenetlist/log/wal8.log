@@ -1,0 +1,258 @@
+Entered genlib library with 23 gates from file "data/genlib/mcnc.genlib".
+Line 9: Skipping line ".default_input_arrival 0.00 0.00 ".
+Line 10: Skipping line ".default_output_required 0.00 0.00 ".
+Line 11: Skipping line ".default_input_drive 0.10 0.10 ".
+Line 12: Skipping line ".default_output_load 2.00 ".
+Line 13: Skipping line ".default_max_input_load 999.00 ".
+Original area = 1081, original delay = 45.3
+round 0
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567227551 patience = 0
+***************************************************
+best node product[0] best error 0
+time = 7532121
+wal8_0_0
+area = 970
+delay = 36
+write_blif appntk/wal8_0_0_970_36.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/wal8_0_0_970_36.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/wal8_0_0_970_36.blif", line 11: .and_gate_delay 1.9
+Total Area		= 970.00
+Most Negative Slack	= -55.10
+Nodes = 462. Try = 434. Resub = 5. Div = 39879. SAT calls = 1369. Timeouts = 0. MaxDivs = 47.
+Attempts :   Remove      3 out of    863 (  0.35 %)   Resub       2 out of    119 (  1.68 %)   
+Reduction:   Nodes       4 out of    462 (  0.87 %)   Edges       9 out of    924 (  0.97 %)   
+Win =     0.00 sec (  0.59 %)
+Div =     0.01 sec (  2.62 %)
+Aig =     0.01 sec (  2.26 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.40 %)
+Sat =     0.22 sec ( 69.60 %)
+Int =     0.00 sec (  0.97 %)
+ALL =     0.32 sec (100.00 %)
+round 1
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567227560 patience = 0
+***************************************************
+best node n244 best error 0.00266602
+time = 12525165
+wal8_1_0.00266602
+area = 964
+delay = 36
+write_blif appntk/wal8_1_0.00266602_964_36.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/wal8_1_0.00266602_964_36.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/wal8_1_0.00266602_964_36.blif", line 11: .and_gate_delay 1.9
+Total Area		= 964.00
+Most Negative Slack	= -55.10
+Nodes = 455. Try = 425. Resub = 0. Div = 38218. SAT calls = 1329. Timeouts = 0. MaxDivs = 46.
+Attempts :   Remove      0 out of    850 (  0.00 %)   Resub       0 out of    116 (  0.00 %)   
+Reduction:   Nodes       0 out of    455 (  0.00 %)   Edges       0 out of    910 (  0.00 %)   
+Win =     0.00 sec (  0.62 %)
+Div =     0.01 sec (  2.62 %)
+Aig =     0.01 sec (  2.39 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.41 %)
+Sat =     0.22 sec ( 71.28 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.31 sec (100.00 %)
+round 2
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567227565 patience = 0
+***************************************************
+best node n96 best error 0.0105078
+time = 16650161
+wal8_2_0.0105078
+area = 953
+delay = 39.1
+write_blif appntk/wal8_2_0.0105078_953_39.1.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/wal8_2_0.0105078_953_39.1.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/wal8_2_0.0105078_953_39.1.blif", line 11: .and_gate_delay 1.9
+Total Area		= 953.00
+Most Negative Slack	= -58.80
+Nodes = 452. Try = 422. Resub = 1. Div = 37913. SAT calls = 1352. Timeouts = 0. MaxDivs = 46.
+Attempts :   Remove      0 out of    843 (  0.00 %)   Resub       1 out of    115 (  0.87 %)   
+Reduction:   Nodes       1 out of    452 (  0.22 %)   Edges       2 out of    904 (  0.22 %)   
+Win =     0.00 sec (  0.60 %)
+Div =     0.01 sec (  2.58 %)
+Aig =     0.01 sec (  2.21 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.42 %)
+Sat =     0.17 sec ( 75.25 %)
+Int =     0.00 sec (  0.52 %)
+ALL =     0.23 sec (100.00 %)
+round 3
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567227569 patience = 0
+***************************************************
+best node n287 best error 0.0105078
+time = 19931182
+wal8_3_0.0105078
+area = 947
+delay = 37.8
+write_blif appntk/wal8_3_0.0105078_947_37.8.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/wal8_3_0.0105078_947_37.8.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/wal8_3_0.0105078_947_37.8.blif", line 11: .and_gate_delay 1.9
+Total Area		= 947.00
+Most Negative Slack	= -57.80
+Nodes = 450. Try = 419. Resub = 0. Div = 37013. SAT calls = 1320. Timeouts = 0. MaxDivs = 43.
+Attempts :   Remove      0 out of    838 (  0.00 %)   Resub       0 out of    115 (  0.00 %)   
+Reduction:   Nodes       0 out of    450 (  0.00 %)   Edges       0 out of    900 (  0.00 %)   
+Win =     0.00 sec (  0.56 %)
+Div =     0.01 sec (  2.62 %)
+Aig =     0.01 sec (  2.29 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.39 %)
+Sat =     0.21 sec ( 69.84 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.29 sec (100.00 %)
+round 4
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567227572 patience = 0
+***************************************************
+best node n233 best error 0.020791
+time = 24419830
+wal8_4_0.020791
+area = 955
+delay = 39
+write_blif appntk/wal8_4_0.020791_955_39.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/wal8_4_0.020791_955_39.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/wal8_4_0.020791_955_39.blif", line 11: .and_gate_delay 1.9
+Total Area		= 955.00
+Most Negative Slack	= -58.50
+Nodes = 449. Try = 422. Resub = 0. Div = 37414. SAT calls = 1349. Timeouts = 0. MaxDivs = 43.
+Attempts :   Remove      0 out of    842 (  0.00 %)   Resub       0 out of    116 (  0.00 %)   
+Reduction:   Nodes       0 out of    449 (  0.00 %)   Edges       0 out of    898 (  0.00 %)   
+Win =     0.00 sec (  0.56 %)
+Div =     0.01 sec (  2.52 %)
+Aig =     0.01 sec (  2.25 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.38 %)
+Sat =     0.21 sec ( 70.81 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.30 sec (100.00 %)
+round 5
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567227577 patience = 0
+***************************************************
+best node n281 best error 0.0304688
+time = 28810806
+wal8_5_0.0304688
+area = 949
+delay = 38.5
+write_blif appntk/wal8_5_0.0304688_949_38.5.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/wal8_5_0.0304688_949_38.5.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/wal8_5_0.0304688_949_38.5.blif", line 11: .and_gate_delay 1.9
+Total Area		= 949.00
+Most Negative Slack	= -57.20
+Nodes = 447. Try = 420. Resub = 0. Div = 36748. SAT calls = 1342. Timeouts = 0. MaxDivs = 41.
+Attempts :   Remove      0 out of    838 (  0.00 %)   Resub       0 out of    116 (  0.00 %)   
+Reduction:   Nodes       0 out of    447 (  0.00 %)   Edges       0 out of    894 (  0.00 %)   
+Win =     0.00 sec (  0.57 %)
+Div =     0.01 sec (  2.52 %)
+Aig =     0.01 sec (  2.23 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.38 %)
+Sat =     0.21 sec ( 70.62 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.30 sec (100.00 %)
+round 6
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567227581 patience = 0
+***************************************************
+best node n178 best error 0.0328613
+time = 33153903
+wal8_6_0.0328613
+area = 933
+delay = 36.7
+write_blif appntk/wal8_6_0.0328613_933_36.7.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/wal8_6_0.0328613_933_36.7.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/wal8_6_0.0328613_933_36.7.blif", line 11: .and_gate_delay 1.9
+Total Area		= 933.00
+Most Negative Slack	= -58.10
+Nodes = 444. Try = 418. Resub = 1. Div = 36244. SAT calls = 1323. Timeouts = 0. MaxDivs = 40.
+Attempts :   Remove      0 out of    833 (  0.00 %)   Resub       1 out of    115 (  0.87 %)   
+Reduction:   Nodes       1 out of    444 (  0.23 %)   Edges       2 out of    888 (  0.23 %)   
+Win =     0.00 sec (  0.59 %)
+Div =     0.01 sec (  2.53 %)
+Aig =     0.00 sec (  2.17 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.41 %)
+Sat =     0.17 sec ( 75.46 %)
+Int =     0.00 sec (  0.24 %)
+ALL =     0.22 sec (100.00 %)
+round 7
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567227586 patience = 0
+***************************************************
+best node n68 best error 0.0395605
+time = 36686026
+wal8_7_0.0395605
+area = 930
+delay = 37.3
+write_blif appntk/wal8_7_0.0395605_930_37.3.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/wal8_7_0.0395605_930_37.3.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/wal8_7_0.0395605_930_37.3.blif", line 11: .and_gate_delay 1.9
+Total Area		= 930.00
+Most Negative Slack	= -56.90
+Nodes = 440. Try = 413. Resub = 0. Div = 35576. SAT calls = 1301. Timeouts = 0. MaxDivs = 40.
+Attempts :   Remove      0 out of    824 (  0.00 %)   Resub       0 out of    113 (  0.00 %)   
+Reduction:   Nodes       0 out of    440 (  0.00 %)   Edges       0 out of    880 (  0.00 %)   
+Win =     0.00 sec (  0.62 %)
+Div =     0.01 sec (  2.53 %)
+Aig =     0.00 sec (  2.19 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.40 %)
+Sat =     0.16 sec ( 73.11 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.22 sec (100.00 %)
+round 8
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567227589 patience = 0
+***************************************************
+best node n226 best error 0.0412207
+time = 39870565
+wal8_8_0.0412207
+area = 917
+delay = 33
+write_blif appntk/wal8_8_0.0412207_917_33.blif
+sis -x -c "read_library data/genlib/mcnc.genlib;read_blif appntk/wal8_8_0.0412207_917_33.blif;print_map_stats" | grep -e "Most Negative Slack" -e "Total Area"
+"appntk/wal8_8_0.0412207_917_33.blif", line 11: .and_gate_delay 1.9
+Total Area		= 917.00
+Most Negative Slack	= -52.40
+Nodes = 436. Try = 414. Resub = 0. Div = 35700. SAT calls = 1306. Timeouts = 0. MaxDivs = 38.
+Attempts :   Remove      0 out of    826 (  0.00 %)   Resub       0 out of    113 (  0.00 %)   
+Reduction:   Nodes       0 out of    436 (  0.00 %)   Edges       0 out of    872 (  0.00 %)   
+Win =     0.00 sec (  0.63 %)
+Div =     0.01 sec (  2.46 %)
+Aig =     0.00 sec (  2.13 %)
+Gia =     0.00 sec (  0.00 %)
+Cnf =     0.00 sec (  0.40 %)
+Sat =     0.17 sec ( 76.06 %)
+Int =     0.00 sec (  0.00 %)
+ALL =     0.22 sec (100.00 %)
+round 9
+
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+seed = 1567227592 patience = 0
+***************************************************
+best node n123 best error 0.0678516
+time = 42778321
