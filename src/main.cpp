@@ -15,9 +15,10 @@ parser Cmdline_Parser(int argc, char * argv[])
     parser option;
     option.add <string> ("input",   'i', "Original Circuit file",    true);
     option.add <string> ("genlib",  'g', "Map libarary file",        false, "data/genlib/mcnc.genlib");
-    option.add <int>    ("nFrame",  'n', "Simulation Frame number",  false, 8192, range(1, INT_MAX));
-    option.add <int>    ("nLocalPI",'m', "Local PI number",          false, 30,   range(1, INT_MAX));
+    option.add <int>    ("nFrame",  'n', "Simulation Frame number",  false, 64,      range(1, INT_MAX));
+    option.add <int>    ("nLocalPI",'m', "Local PI number",          false, 30,      range(1, INT_MAX));
     option.add <float>  ("delay",   'd', "Required delay",           false, FLT_MAX, range(0.0f, FLT_MAX));
+    option.add <float>  ("error",   'e', "Error rate threshold",     false, 0.05,    range(0.0f, 1.0f));
     option.parse_check(argc, argv);
     return option;
 }
@@ -32,6 +33,7 @@ int main(int argc, char * argv[])
     int nFrame = option.get <int> ("nFrame");
     int nLocalPI = option.get <int> ("nLocalPI");
     float reqDelay = option.get <float> ("delay");
+    float errorThreshold = option.get <float> ("error");
 
     Abc_Start();
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
@@ -48,17 +50,17 @@ int main(int argc, char * argv[])
     cout << "Original area = " << Ckt_GetArea(pNtkRef->GetAbcNtk()) << ", " <<
     "original delay = " << Ckt_GetDelay(pNtkRef->GetAbcNtk()) << endl;
 
+    nLocalPI = min(nLocalPI, Abc_NtkPiNum(pNtk));
     float error = 0.0f;
     ostringstream ss;
     for (int i = 0; ; ++i) {
-        cout << "round " << i << endl;
-        App_CommandMfs(pNtk, pNtkRef, nFrame, error, nLocalPI);
+        cout << endl << "round " << i << endl;
+        App_CommandMfs(pNtk, pNtkRef, nFrame, error, nLocalPI, errorThreshold);
         cout  << "time = " << clock() - st << endl;
-        if (error > 0.05)
+        if (error > errorThreshold)
             break;
         ss.str("");
         ss << pNtk->pName << "_" << i << "_" << error;
-        cout << ss.str() << endl;
         Ckt_Synthesis3(pNtk, ss.str(), reqDelay);
 
         Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pNtk));

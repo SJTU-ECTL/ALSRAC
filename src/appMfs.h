@@ -9,9 +9,9 @@
 #include "cktNtk.h"
 
 
-int App_CommandMfs(abc::Abc_Ntk_t * pNtk, std::shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error, int & nLocalPI);
+int App_CommandMfs(abc::Abc_Ntk_t * pNtk, std::shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error, int & nLocalPI, float errorThreshold);
 void App_NtkMfsParsDefault(abc::Mfs_Par_t * pPars);
-int App_NtkMfs(abc::Abc_Ntk_t * pNtk, abc::Mfs_Par_t * pPars, std::shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error, int & nLocalPI);
+int App_NtkMfs(abc::Abc_Ntk_t * pNtk, abc::Mfs_Par_t * pPars, std::shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error, int & nLocalPI, float errorThreshold);
 int App_NtkMfsResub(abc::Mfs_Man_t * p, abc::Abc_Obj_t * pNode, int & isUpdated, int & frameNumber, int & nLocalPI);
 abc::Aig_Man_t * Abc_NtkToDar(abc::Abc_Ntk_t * pNtk, int fExors, int fRegisters);
 int App_NtkMfsResubNode(abc::Mfs_Man_t * p, abc::Abc_Obj_t * pNode);

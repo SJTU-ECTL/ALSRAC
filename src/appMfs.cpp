@@ -8,7 +8,7 @@ using namespace abc;
 static unsigned seed;
 
 
-int App_CommandMfs(Abc_Ntk_t * pNtk, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error, int & nLocalPI)
+int App_CommandMfs(Abc_Ntk_t * pNtk, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error, int & nLocalPI, float errorThreshold)
 {
     DASSERT(frameNumber > 0);
     Mfs_Par_t Pars, * pPars = &Pars;
@@ -26,7 +26,7 @@ int App_CommandMfs(Abc_Ntk_t * pNtk, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frame
         return 1;
     }
     // modify the current network
-    if (!App_NtkMfs(pNtk, pPars, pNtkRef, frameNumber, error, nLocalPI))
+    if (!App_NtkMfs(pNtk, pPars, pNtkRef, frameNumber, error, nLocalPI, errorThreshold))
     {
         Abc_Print(-1, "Resynthesis has failed.\n");
         return 1;
@@ -55,9 +55,10 @@ void App_NtkMfsParsDefault(Mfs_Par_t * pPars)
 }
 
 
-int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error, int & nLocalPI)
+int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkRef, int & frameNumber, float & error, int & nLocalPI, float errorThreshold)
 {
-    static int patience;
+    static int patienceN;
+    static int patienceM;
 
     Bdc_Par_t Pars = {0}, * pDecPars = &Pars;
     Mfs_Man_t * p;
@@ -121,9 +122,10 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
     int nObjNum = Abc_NtkObjNum(pNtk);
     int bestId = -1;
     float bestError = 1.0;
+    cout << "seed = " << seed << " patienceN = " << patienceN << " patienceM = " << patienceM
+        << " frameNumber = " << frameNumber << " nLocalPI = " << nLocalPI << endl;
     boost::progress_display pd(nObjNum);
     seed = time(unsigned(NULL));
-    cout << "seed = " << seed << " patience = " << patience << endl;
     for (i = 0; i < nObjNum; ++i) {
         ++pd;
         Abc_Ntk_t * pNtkTest = Abc_NtkDup(pNtk);
@@ -152,21 +154,31 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
         Abc_NtkDelete(pNtkTest);
     }
     if (bestId == -1) {
-        ++patience;
-        if (patience >= 5) {
-            patience = 0;
+        ++patienceN;
+        if (patienceN >= 3) {
+            patienceM = patienceN = 0;
             frameNumber /= 2;
-            cout << "Network does not change, frame number changes to " << frameNumber << endl;
         }
+        cout << "change patienceN" << endl;
     }
     else {
-        patience = 0;
-        cout << "best node " << Abc_ObjName(Abc_NtkObj(pNtk, bestId)) << " best error " << bestError << endl;
-        error = bestError;
-        p->pNtk = pNtk;
-        int isUpdated = 0;
-        App_NtkMfsResub(p, Abc_NtkObj(pNtk, bestId), isUpdated, frameNumber, nLocalPI);
-        DASSERT(isUpdated);
+        if (bestError > errorThreshold && nLocalPI > 5) {
+            ++patienceM;
+            if (patienceM >= 3) {
+                patienceM = patienceN = 0;
+                --nLocalPI;
+            }
+            cout << "change patienceM" << endl;
+        }
+        else {
+            patienceN = patienceM = 0;
+            cout << "best node " << Abc_ObjName(Abc_NtkObj(pNtk, bestId)) << " best error " << bestError << endl;
+            error = bestError;
+            p->pNtk = pNtk;
+            int isUpdated = 0;
+            App_NtkMfsResub(p, Abc_NtkObj(pNtk, bestId), isUpdated, frameNumber, nLocalPI);
+            DASSERT(isUpdated);
+        }
     }
 
     Abc_NtkStopReverseLevels( pNtk );
@@ -174,11 +186,7 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
 
     // perform the sweeping
     if ( !pPars->fResub )
-    {
-//        extern void Abc_NtkBidecResyn( Abc_Ntk_t * pNtk, int fVerbose );
-//        Abc_NtkSweep( pNtk, 0 );
-//        Abc_NtkBidecResyn( pNtk, 0 );
-    }
+        DASSERT(0);
 
     p->nTotalNodesEnd = Abc_NtkNodeNum(pNtk);
     p->nTotalEdgesEnd = Abc_NtkGetTotalFanins(pNtk);
