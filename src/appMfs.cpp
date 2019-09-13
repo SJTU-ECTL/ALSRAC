@@ -155,20 +155,24 @@ int App_NtkMfs(Abc_Ntk_t * pNtk, Mfs_Par_t * pPars, shared_ptr <Ckt_Ntk_t> pNtkR
     }
     if (bestId == -1) {
         ++patienceN;
-        if (patienceN >= 3) {
+        if (patienceN > 5) {
             patienceM = patienceN = 0;
             frameNumber /= 2;
         }
         cout << "change patienceN" << endl;
     }
     else {
-        if (bestError > errorThreshold && nLocalPI > 5) {
+        if (bestError > errorThreshold) {
             ++patienceM;
-            if (patienceM >= 3) {
-                patienceM = patienceN = 0;
-                --nLocalPI;
-            }
             cout << "change patienceM" << endl;
+            if (patienceM > 5 ) {
+                cout << "best node " << Abc_ObjName(Abc_NtkObj(pNtk, bestId)) << " best error " << bestError << endl;
+                error = bestError;
+                p->pNtk = pNtk;
+                int isUpdated = 0;
+                App_NtkMfsResub(p, Abc_NtkObj(pNtk, bestId), isUpdated, frameNumber, nLocalPI);
+                DASSERT(isUpdated);
+            }
         }
         else {
             patienceN = patienceM = 0;
@@ -629,11 +633,20 @@ Vec_Ptr_t * App_FindLocalInput(Abc_Obj_t * pNode, int nMax)
     while (fringe.size() && static_cast <int>(fringe.size()) < nMax) {
         // get the front node
         Abc_Obj_t * pFrontNode = fringe.front();
-        // expand the front node
+        // check the number of unvisited fanins
+        int nUnvisited = 0;
         Abc_ObjForEachFanin(pFrontNode, pObj, i) {
             if (!Abc_NodeIsTravIdCurrent(pObj)) {
-                Abc_NodeSetTravIdCurrent(pObj);
-                fringe.emplace_back(pObj);
+                ++nUnvisited;
+            }
+        }
+        // expand the front node
+        if (fringe.size() + nUnvisited <= nMax ) {
+            Abc_ObjForEachFanin(pFrontNode, pObj, i) {
+                if (!Abc_NodeIsTravIdCurrent(pObj)) {
+                    Abc_NodeSetTravIdCurrent(pObj);
+                    fringe.emplace_back(pObj);
+                }
             }
         }
         // if the front node is PI or const, add it to vNodes
