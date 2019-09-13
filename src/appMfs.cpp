@@ -634,21 +634,21 @@ Vec_Ptr_t * App_FindLocalInput(Abc_Obj_t * pNode, int nMax)
         // get the front node
         Abc_Obj_t * pFrontNode = fringe.front();
         // check the number of unvisited fanins
-        int nUnvisited = 0;
-        Abc_ObjForEachFanin(pFrontNode, pObj, i) {
-            if (!Abc_NodeIsTravIdCurrent(pObj)) {
-                ++nUnvisited;
-            }
-        }
-        // expand the front node
-        if (fringe.size() + nUnvisited <= nMax ) {
+        // int nUnvisited = 0;
+        // Abc_ObjForEachFanin(pFrontNode, pObj, i) {
+        //     if (!Abc_NodeIsTravIdCurrent(pObj)) {
+        //         ++nUnvisited;
+        //     }
+        // }
+        // // expand the front node
+        // if (fringe.size() + nUnvisited <= nMax ) {
             Abc_ObjForEachFanin(pFrontNode, pObj, i) {
                 if (!Abc_NodeIsTravIdCurrent(pObj)) {
                     Abc_NodeSetTravIdCurrent(pObj);
                     fringe.emplace_back(pObj);
                 }
             }
-        }
+        // }
         // if the front node is PI or const, add it to vNodes
         if (Abc_ObjFaninNum(pFrontNode) == 0) {
             Vec_PtrPush(vNodes, pFrontNode);
