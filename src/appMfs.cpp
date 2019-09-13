@@ -621,14 +621,21 @@ Vec_Ptr_t * App_FindLocalInput(Abc_Obj_t * pNode, int nMax)
     deque <Abc_Obj_t *> fringe;
     Abc_Obj_t * pObj;
     int i;
+    // set the traversal ID
+    Abc_NtkIncrementTravId(pNode->pNtk);
+    // start the array of nodes
     Vec_Ptr_t * vNodes = Vec_PtrAlloc(20);
     fringe.emplace_back(pNode);
     while (fringe.size() && static_cast <int>(fringe.size()) < nMax) {
         // get the front node
         Abc_Obj_t * pFrontNode = fringe.front();
         // expand the front node
-        Abc_ObjForEachFanin(pFrontNode, pObj, i)
-            fringe.emplace_back(pObj);
+        Abc_ObjForEachFanin(pFrontNode, pObj, i) {
+            if (!Abc_NodeIsTravIdCurrent(pObj)) {
+                Abc_NodeSetTravIdCurrent(pObj);
+                fringe.emplace_back(pObj);
+            }
+        }
         // if the front node is PI or const, add it to vNodes
         if (Abc_ObjFaninNum(pFrontNode) == 0) {
             Vec_PtrPush(vNodes, pFrontNode);

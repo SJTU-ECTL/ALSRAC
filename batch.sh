@@ -19,11 +19,11 @@ do
     if test -f $file
     then
         name=`basename $file`
-		filename="${name%%.*}"
-       	if [[ "$name" == *.blif ]]
-       	then
+        filename="${name%%.*}"
+        if [[ "$name" == *.blif ]]
+        then
             echo ${filename}
-            (nohup ./main -i ${file} -n 64 -m 30 -e 0.001 > log/${filename}.log &)
-		fi
+            (nohup ./main -i ${file} -n 64 -m 30 -e 0.03 > log/${filename}.log &)
+        fi
     fi
 done
