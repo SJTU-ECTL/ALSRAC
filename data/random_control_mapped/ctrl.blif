@@ -1,0 +1,110 @@
+# Benchmark "ctrl" written by ABC on Sat Sep 14 00:05:50 2019
+.model ctrl
+.inputs opcode[0] opcode[1] opcode[2] opcode[3] opcode[4] op_ext[0] \
+ op_ext[1]
+.outputs sel_reg_dst[0] sel_reg_dst[1] sel_alu_opB[0] sel_alu_opB[1] \
+ alu_op[0] alu_op[1] alu_op[2] alu_op_ext[0] alu_op_ext[1] alu_op_ext[2] \
+ alu_op_ext[3] halt reg_write sel_pc_opA sel_pc_opB beqz bnez bgez bltz \
+ jump Cin invA invB sign mem_write sel_wb
+.gate inv1   a=opcode[3] O=new_n34_
+.gate inv1   a=opcode[4] O=new_n35_
+.gate nor2   a=new_n35_ b=new_n34_ O=new_n36_
+.gate inv1   a=new_n36_ O=new_n37_
+.gate nor2   a=opcode[1] b=opcode[0] O=new_n38_
+.gate nor2   a=opcode[4] b=opcode[3] O=new_n39_
+.gate nand2  a=new_n39_ b=opcode[1] O=new_n40_
+.gate inv1   a=new_n40_ O=new_n41_
+.gate oai21  a=new_n41_ b=new_n36_ c=opcode[2] O=new_n42_
+.gate oai21  a=new_n38_ b=new_n37_ c=new_n42_ O=sel_reg_dst[0]
+.gate inv1   a=opcode[2] O=new_n44_
+.gate inv1   a=opcode[1] O=new_n45_
+.gate nor2   a=new_n35_ b=opcode[3] O=new_n46_
+.gate inv1   a=opcode[0] O=new_n47_
+.gate nand3  a=opcode[4] b=opcode[3] c=new_n47_ O=new_n48_
+.gate nand2  a=new_n48_ b=new_n45_ O=new_n49_
+.gate oai21  a=new_n46_ b=new_n45_ c=new_n49_ O=new_n50_
+.gate nand2  a=new_n40_ b=opcode[2] O=new_n51_
+.gate inv1   a=new_n51_ O=new_n52_
+.gate aoi21  a=new_n50_ b=new_n44_ c=new_n52_ O=sel_reg_dst[1]
+.gate aoi21  a=new_n46_ b=new_n47_ c=new_n45_ O=new_n54_
+.gate nor2   a=opcode[4] b=new_n34_ O=new_n55_
+.gate inv1   a=new_n55_ O=new_n56_
+.gate nand2  a=new_n56_ b=new_n54_ O=new_n57_
+.gate nand3  a=new_n57_ b=new_n49_ c=new_n44_ O=new_n58_
+.gate inv1   a=new_n58_ O=sel_alu_opB[0]
+.gate inv1   a=new_n39_ O=new_n60_
+.gate nand2  a=new_n36_ b=opcode[0] O=new_n61_
+.gate nand2  a=new_n44_ b=new_n45_ O=new_n62_
+.gate nand2  a=new_n62_ b=opcode[3] O=new_n63_
+.gate nand3  a=new_n63_ b=new_n61_ c=new_n60_ O=new_n64_
+.gate inv1   a=new_n64_ O=sel_alu_opB[1]
+.gate inv1   a=op_ext[1] O=new_n66_
+.gate nand2  a=new_n66_ b=opcode[4] O=new_n67_
+.gate inv1   a=op_ext[0] O=new_n68_
+.gate nand3  a=op_ext[1] b=new_n68_ c=opcode[4] O=new_n69_
+.gate nand4  a=new_n69_ b=new_n67_ c=opcode[3] d=opcode[0] O=new_n70_
+.gate nand4  a=op_ext[0] b=opcode[4] c=opcode[3] d=new_n47_ O=new_n71_
+.gate nand2  a=new_n71_ b=new_n70_ O=new_n72_
+.gate nand2  a=new_n72_ b=opcode[1] O=new_n73_
+.gate nand2  a=opcode[2] b=new_n47_ O=new_n74_
+.gate oai21  a=new_n46_ b=new_n44_ c=new_n74_ O=new_n75_
+.gate aoi21  a=new_n73_ b=new_n44_ c=new_n75_ O=alu_op[0]
+.gate nor2   a=new_n46_ b=new_n44_ O=new_n77_
+.gate aoi21  a=new_n66_ b=opcode[4] c=new_n34_ O=new_n78_
+.gate nor2   a=new_n78_ b=opcode[2] O=new_n79_
+.gate nor3   a=new_n79_ b=new_n77_ c=new_n45_ O=alu_op[1]
+.gate nor2   a=new_n45_ b=new_n47_ O=new_n81_
+.gate inv1   a=new_n81_ O=new_n82_
+.gate nand3  a=new_n82_ b=new_n36_ c=new_n44_ O=new_n83_
+.gate nand2  a=new_n37_ b=opcode[2] O=new_n84_
+.gate nand3  a=new_n84_ b=new_n83_ c=new_n60_ O=new_n85_
+.gate inv1   a=new_n85_ O=alu_op[2]
+.gate nand2  a=new_n61_ b=new_n40_ O=new_n87_
+.gate nand2  a=new_n87_ b=opcode[2] O=new_n88_
+.gate oai21  a=new_n62_ b=new_n48_ c=new_n88_ O=alu_op_ext[0]
+.gate nand2  a=new_n54_ b=new_n44_ O=new_n90_
+.gate nand3  a=new_n60_ b=new_n37_ c=opcode[2] O=new_n91_
+.gate nand3  a=new_n91_ b=new_n90_ c=opcode[1] O=new_n92_
+.gate inv1   a=new_n92_ O=alu_op_ext[1]
+.gate nand3  a=new_n37_ b=new_n44_ c=new_n45_ O=new_n94_
+.gate nand3  a=new_n94_ b=new_n90_ c=new_n51_ O=new_n95_
+.gate inv1   a=new_n95_ O=alu_op_ext[2]
+.gate oai21  a=new_n35_ b=opcode[1] c=opcode[3] O=new_n97_
+.gate nand2  a=opcode[1] b=new_n47_ O=new_n98_
+.gate aoi21  a=new_n98_ b=new_n46_ c=opcode[2] O=new_n99_
+.gate aoi21  a=new_n99_ b=new_n97_ c=new_n77_ O=alu_op_ext[3]
+.gate nor3   a=new_n62_ b=new_n60_ c=opcode[0] O=halt
+.gate inv1   a=new_n38_ O=new_n102_
+.gate aoi21  a=new_n102_ b=opcode[4] c=opcode[3] O=new_n103_
+.gate oai21  a=opcode[3] b=new_n45_ c=new_n35_ O=new_n104_
+.gate nand2  a=new_n104_ b=opcode[2] O=new_n105_
+.gate oai21  a=new_n103_ b=opcode[2] c=new_n105_ O=reg_write
+.gate nand2  a=new_n39_ b=opcode[2] O=new_n107_
+.gate inv1   a=new_n107_ O=jump
+.gate nand2  a=jump b=opcode[0] O=new_n109_
+.gate inv1   a=new_n109_ O=sel_pc_opA
+.gate nand3  a=new_n39_ b=opcode[2] c=new_n47_ O=new_n111_
+.gate inv1   a=new_n111_ O=sel_pc_opB
+.gate nand2  a=new_n55_ b=new_n45_ O=new_n113_
+.gate nor2   a=new_n113_ b=new_n74_ O=beqz
+.gate nand3  a=new_n55_ b=new_n45_ c=opcode[0] O=new_n115_
+.gate nor2   a=new_n115_ b=new_n44_ O=bnez
+.gate nand2  a=new_n55_ b=opcode[2] O=new_n117_
+.gate nor2   a=new_n117_ b=new_n82_ O=bgez
+.gate nor2   a=new_n117_ b=new_n98_ O=bltz
+.gate aoi21  a=new_n82_ b=new_n36_ c=new_n44_ O=new_n120_
+.gate nand2  a=new_n68_ b=opcode[4] O=new_n121_
+.gate nand3  a=new_n81_ b=new_n121_ c=opcode[3] O=new_n122_
+.gate and2   a=new_n115_ b=new_n44_ O=new_n123_
+.gate aoi21  a=new_n123_ b=new_n122_ c=new_n120_ O=Cin
+.gate nand4  a=new_n36_ b=new_n66_ c=op_ext[0] d=opcode[1] O=new_n125_
+.gate nand2  a=new_n44_ b=opcode[0] O=new_n126_
+.gate aoi21  a=new_n125_ b=new_n113_ c=new_n126_ O=invA
+.gate nand3  a=new_n81_ b=new_n69_ c=new_n78_ O=new_n128_
+.gate aoi21  a=new_n128_ b=new_n44_ c=new_n120_ O=invB
+.gate nand2  a=new_n46_ b=new_n44_ O=new_n131_
+.gate aoi21  a=new_n82_ b=new_n102_ c=new_n131_ O=mem_write
+.gate nand2  a=new_n46_ b=new_n45_ O=new_n133_
+.gate nor2   a=new_n133_ b=new_n126_ O=sel_wb
+.gate one    O=sign
+.end
