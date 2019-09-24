@@ -290,6 +290,8 @@ void Ckt_Obj_t::RenewSimValA(void)
             hopSimValue.resize(maxHopId + 1);
             Vec_PtrForEachEntry( Hop_Obj_t *, vNodes, pHopObj, i )
                 hopSimValue[pHopObj->Id].resize(nSim);
+            Hop_ManForEachPi(pMan, pHopObj, i)
+                hopSimValue[pHopObj->Id].resize(nSim);
             for (int i = 0; i < GetFaninNum(); ++i) {
                 pHopObj = Hop_ManPi(pMan, i);
                 hopSimValue[pHopObj->Id].assign(pCktFanins[i]->simValue.begin(), pCktFanins[i]->simValue.end());
@@ -765,8 +767,9 @@ void Ckt_Ntk_t::FeedForward(void)
             pCktObj->RenewSimValM();
     }
     else if (IsAig()) {
-        for (auto & pCktObj : pTopoObjs)
+        for (auto & pCktObj : pTopoObjs) {
             pCktObj->RenewSimValA();
+        }
     }
     else
         DEBUG_ASSERT(0, module_a{}, "unknown function type");

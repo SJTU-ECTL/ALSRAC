@@ -6,7 +6,7 @@
 #include <boost/random.hpp>
 #include "abcApi.h"
 #include "cktBit.h"
-#include "debug_assert.hpp"
+#include "debugAssert.h"
 
 
 enum class Ckt_Func_t

@@ -3,7 +3,7 @@
 
 
 #include <bits/stdc++.h>
-#include "debug_assert.hpp"
+#include "debugAssert.h"
 #include "boost/progress.hpp"
 #include "abcApi.h"
 #include "cktNtk.h"
