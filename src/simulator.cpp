@@ -7,7 +7,7 @@ using namespace boost;
 typedef vector <uint64_t> tVec;
 
 
-Simulator::Simulator(Abc_Ntk_t * pNtk, int nFrame)
+Simulator_t::Simulator_t(Abc_Ntk_t * pNtk, int nFrame)
 {
     DASSERT(Abc_NtkIsAigLogic(pNtk), "network is not in aig");
     Abc_Obj_t * pObj = nullptr;
@@ -15,6 +15,7 @@ Simulator::Simulator(Abc_Ntk_t * pNtk, int nFrame)
     this->pNtk = pNtk;
     this->nFrame = nFrame;
     this->nBlock = (nFrame % 64) ? ((nFrame >> 6) + 1) : (nFrame >> 6);
+    this->nLastBlock = (nFrame % 64)? (nFrame % 64): 64;
     Abc_NtkForEachObj(pNtk, pObj, i) {
         DASSERT(pObj->pTemp == nullptr && pObj->pCopy == nullptr);
         pObj->pTemp = static_cast <void *>(new tVec);
@@ -23,30 +24,24 @@ Simulator::Simulator(Abc_Ntk_t * pNtk, int nFrame)
 }
 
 
-Simulator::~Simulator()
+Simulator_t::~Simulator_t()
 {
 }
 
 
-void Simulator::Input(Distribution dist, unsigned seed)
+void Simulator_t::Input(Distribution dist, unsigned seed)
 {
     DASSERT(dist == Distribution::uniform);
-    boost::uniform_int <> unf(0, 1);
-    boost::random::mt19937 engine(seed);
-    boost::variate_generator <boost::random::mt19937, boost::uniform_int <> > randomPI(engine, unf);
+    random::uniform_int_distribution <uint64_t> unf;
+    random::mt19937 engine(seed);
+    variate_generator <random::mt19937, random::uniform_int_distribution <uint64_t> > randomPI(engine, unf);
 
     // primary inputs
     Abc_Obj_t * pObj = nullptr;
     int k = 0;
     Abc_NtkForEachPi(pNtk, pObj, k) {
-        for (int i = 0; i < nBlock; ++i) {
-            for (uint64_t j = 0; j < 64; ++j) {
-                if (randomPI())
-                    Ckt_SetBit((*static_cast <tVec *>(pObj->pTemp))[i], j);
-                else
-                    Ckt_ResetBit((*static_cast <tVec *>(pObj->pTemp))[i], j);
-            }
-        }
+        for (int i = 0; i < nBlock; ++i)
+            (*static_cast <tVec *>(pObj->pTemp))[i] = randomPI();
     }
 
     // constant nodes
@@ -67,7 +62,7 @@ void Simulator::Input(Distribution dist, unsigned seed)
 }
 
 
-void Simulator::Simulate()
+void Simulator_t::Simulate()
 {
     Abc_Obj_t * pObj = nullptr;
     int i = 0;
@@ -78,9 +73,10 @@ void Simulator::Simulate()
 }
 
 
-void Simulator::UpdateAigNode(Abc_Obj_t * pObj)
+void Simulator_t::UpdateAigNode(Abc_Obj_t * pObj)
 {
     Hop_Obj_t * pHopObj = nullptr;
+    Abc_Obj_t * pFanin = nullptr;
     int maxHopId = -1;
     int i = 0;
 
@@ -99,8 +95,8 @@ void Simulator::UpdateAigNode(Abc_Obj_t * pObj)
     Vec_PtrForEachEntry(Hop_Obj_t *, vHopNodes, pHopObj, i)
         values[pHopObj->Id].resize(nBlock);
     unordered_map <int, tVec *> hop2Val;
-    Hop_ManForEachPi(pMan, pHopObj, i)
-        hop2Val[pHopObj->Id] = static_cast <tVec *> (Abc_ObjFanin(pObj, i)->pTemp);
+    Abc_ObjForEachFanin(pObj, pFanin, i)
+        hop2Val[Hop_ManPi(pMan, i)->Id] = static_cast <tVec *> (pFanin->pTemp);
 
     // simulate
     Vec_PtrForEachEntry(Hop_Obj_t *, vHopNodes, pHopObj, i) {
@@ -144,27 +140,43 @@ void Simulator::UpdateAigNode(Abc_Obj_t * pObj)
 }
 
 
-vector <multiprecision::int256_t> Simulator::Output()
+multiprecision::int256_t Simulator_t::GetInput(int lsb, int msb, int frameId) const
 {
-    vector <multiprecision::int256_t> out(nFrame);
-    int nLastFrame = (nFrame % 64)? (nFrame % 64): 64;
-    for (int i = 0; i < nBlock; ++i) {
-        for (int j = 0; j < ((i == nBlock - 1)? (nLastFrame): 64); ++j) {
-            int id = (i << 6) + j;
-            out[id] = 0;
-            for (int k = Abc_NtkPoNum(pNtk) - 1; k >= 0; --k) {
-                Abc_Obj_t * pObj = Abc_ObjFanin0(Abc_NtkPo(pNtk, k));
-                if (Ckt_GetBit((*static_cast <tVec *>(pObj->pTemp))[i], j))
-                    out[id] += 1;
-                out[id] <<= 1;
-            }
-        }
+    DASSERT(lsb >= 0 && msb < Abc_NtkPiNum(pNtk));
+    DASSERT(frameId <= nFrame);
+    DASSERT(lsb <= msb && msb - lsb <= 256);
+    multiprecision::int256_t ret(0);
+    int blockId = frameId >> 6;
+    int bitId = frameId % 64;
+    for (int k = msb; k >= lsb; --k) {
+        Abc_Obj_t * pObj = Abc_NtkPi(pNtk, k);
+        if (Ckt_GetBit((*static_cast <tVec *>(pObj->pTemp))[blockId], bitId))
+            ++ret;
+        ret <<= 1;
     }
-    return out;
+    return ret;
 }
 
 
-void Simulator::Stop()
+multiprecision::int256_t Simulator_t::GetOutput(int lsb, int msb, int frameId) const
+{
+    DASSERT(lsb >= 0 && msb < Abc_NtkPoNum(pNtk));
+    DASSERT(frameId <= nFrame);
+    DASSERT(lsb <= msb && msb - lsb <= 256);
+    multiprecision::int256_t ret(0);
+    int blockId = frameId >> 6;
+    int bitId = frameId % 64;
+    for (int k = msb; k >= lsb; --k) {
+        Abc_Obj_t * pObj = Abc_ObjFanin0(Abc_NtkPo(pNtk, k));
+        if (Ckt_GetBit((*static_cast <tVec *>(pObj->pTemp))[blockId], bitId))
+            ++ret;
+        ret <<= 1;
+    }
+    return ret;
+}
+
+
+void Simulator_t::Stop()
 {
     Abc_Obj_t * pObj = nullptr;
     int i = 0;
@@ -176,26 +188,64 @@ void Simulator::Stop()
 }
 
 
-double MeasureAEM(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame)
+// double MeasureAEM(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame)
+// {
+//     Simulator_t smlt1(pNtk1, nFrame);
+//     smlt1.Input(Distribution::uniform, 314);
+//     smlt1.Simulate();
+//     vector <multiprecision::int256_t> out1 = smlt1.Output();
+//     smlt1.Stop();
+//
+//     Simulator_t smlt2(pNtk1, nFrame);
+//     smlt2.Input(Distribution::uniform, 314);
+//     smlt2.Simulate();
+//     vector <multiprecision::int256_t> out2 = smlt2.Output();
+//     smlt2.Stop();
+//
+//     const double factor = 1 / static_cast <double> (nFrame);
+//     multiprecision::cpp_dec_float_50 aem(0);
+//     for (int i = 0; i < nFrame; ++i) {
+//         aem +=
+//             (static_cast <multiprecision::cpp_dec_float_50> (abs(out1[i] - out2[i])) *
+//             static_cast <multiprecision::cpp_dec_float_50> (factor));
+//     }
+//     return static_cast <double>(aem);
+// }
+
+
+double MeasureER(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed)
 {
-    Simulator smlt1(pNtk1, nFrame);
-    smlt1.Input(Distribution::uniform, 314);
+    int nPo = Abc_NtkPoNum(pNtk1);
+    DASSERT(nPo == Abc_NtkPoNum(pNtk2));
+    for (int i = 0; i < nPo; ++i)
+        DASSERT(!strcmp(Abc_ObjName(Abc_NtkPo(pNtk1, i)), Abc_ObjName(Abc_NtkPo(pNtk2, i))));
+    int nPi = Abc_NtkPiNum(pNtk1);
+    DASSERT(nPi == Abc_NtkPiNum(pNtk2));
+    for (int i = 0; i < nPi; ++i)
+        DASSERT(!strcmp(Abc_ObjName(Abc_NtkPi(pNtk1, i)), Abc_ObjName(Abc_NtkPi(pNtk2, i))));
+
+    Simulator_t smlt1(pNtk1, nFrame);
+    smlt1.Input(Distribution::uniform, seed);
     smlt1.Simulate();
-    vector <multiprecision::int256_t> out1 = smlt1.Output();
-    smlt1.Stop();
-
-    Simulator smlt2(pNtk1, nFrame);
-    smlt2.Input(Distribution::uniform, 314);
+    Simulator_t smlt2(pNtk2, nFrame);
+    smlt2.Input(Distribution::uniform, seed);
     smlt2.Simulate();
-    vector <multiprecision::int256_t> out2 = smlt2.Output();
-    smlt2.Stop();
 
-    const double factor = 1 / static_cast <double> (nFrame);
-    multiprecision::cpp_dec_float_50 aem(0);
-    for (int i = 0; i < nFrame; ++i) {
-        aem +=
-            (static_cast <multiprecision::cpp_dec_float_50> (abs(out1[i] - out2[i])) *
-            static_cast <multiprecision::cpp_dec_float_50> (factor));
+    int ret = 0;
+    for (int k = 0; k < smlt1.GetBlockNum(); ++k) {
+        cout << k << endl;
+        uint64_t temp = 0;
+        for (int i = 0; i < nPo; ++i)
+            temp |= (*static_cast <tVec *>(Abc_ObjFanin0(Abc_NtkPo(pNtk1, i))->pTemp))[k] ^
+                    (*static_cast <tVec *>(Abc_ObjFanin0(Abc_NtkPo(pNtk2, i))->pTemp))[k];
+        // if (k == smlt1.GetBlockNum() - 1) {
+        //     temp >>= (64 - smlt1.GetLastBlockLen());
+        //     temp <<= (64 - smlt1.GetLastBlockLen());
+        // }
+        ret += Ckt_CountOneNum(temp);
     }
-    return static_cast <double>(aem);
+
+    smlt1.Stop();
+    smlt2.Stop();
+    return ret / static_cast<float> (nFrame);
 }
