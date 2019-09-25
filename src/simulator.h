@@ -11,6 +11,9 @@
 #include "cktBit.h"
 
 
+typedef std::vector <uint64_t> tVec;
+
+
 enum class Distribution
 {
     uniform, gaussian, exponential, bimodal
@@ -36,11 +39,14 @@ public:
     void UpdateAigNode(abc::Abc_Obj_t * pObj);
     boost::multiprecision::int256_t GetInput(int lsb, int msb, int frameId = 0) const;
     boost::multiprecision::int256_t GetOutput(int lsb, int msb, int frameId = 0) const;
+    void PrintInputStream(int frameId = 0) const;
+    void PrintOutputStream(int frameId = 0) const;
     void Stop();
 
     inline int GetFrameNum() const {return nFrame;}
     inline int GetBlockNum() const {return nBlock;}
     inline int GetLastBlockLen() const {return nLastBlock;}
+    inline bool GetValue(abc::Abc_Obj_t * pObj, int blockId, int bitId) const {return Ckt_GetBit((*static_cast <tVec *>(pObj->pTemp))[blockId], bitId);}
 };
 
 

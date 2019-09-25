@@ -1,8 +1,8 @@
 #include "cktNtk.h"
 
 
-using namespace std;
 using namespace abc;
+using namespace std;
 
 
 Ckt_Obj_t::Ckt_Obj_t(Abc_Obj_t * p_abc_obj)
@@ -353,7 +353,7 @@ void Ckt_Obj_t::RenewSimValA(void)
         default:
         DEBUG_ASSERT(0, module_a{}, "unknown object type");
     }
-    // cout << GetName() << "\t" << type << "\t" << simValue[0] << endl;
+    // cout << GetName() << "," << simValue[0] << endl;
 }
 
 
@@ -887,6 +887,38 @@ shared_ptr <Ckt_Obj_t> Ckt_Ntk_t::GetCktObj(const string & name) const
             return pCktObj;
     DASSERT(0, "object not found");
     return nullptr;
+}
+
+
+boost::multiprecision::int256_t Ckt_Ntk_t::GetInput(int lsb, int msb, int frameId) const
+{
+    DASSERT(lsb >= 0 && msb < GetPiNum());
+    DASSERT(lsb <= msb && msb - lsb <= 256);
+    boost::multiprecision::int256_t ret(0);
+    int blockId = frameId >> 6;
+    int bitId = frameId % 64;
+    for (int k = msb; k >= lsb; --k) {
+        if (GetPi(k)->GetSimVal(blockId, bitId))
+            ++ret;
+        ret <<= 1;
+    }
+    return ret;
+}
+
+
+boost::multiprecision::int256_t Ckt_Ntk_t::GetOutput(int lsb, int msb, int frameId) const
+{
+    DASSERT(lsb >= 0 && msb < GetPoNum());
+    DASSERT(lsb <= msb && msb - lsb <= 256);
+    boost::multiprecision::int256_t ret(0);
+    int blockId = frameId >> 6;
+    int bitId = frameId % 64;
+    for (int k = msb; k >= lsb; --k) {
+        if (GetPo(k)->GetSimVal(blockId, bitId))
+            ++ret;
+        ret <<= 1;
+    }
+    return ret;
 }
 
 

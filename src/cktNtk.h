@@ -4,6 +4,7 @@
 
 #include <bits/stdc++.h>
 #include <boost/random.hpp>
+#include <boost/multiprecision/cpp_int.hpp>
 #include "abcApi.h"
 #include "cktBit.h"
 #include "debugAssert.h"
@@ -144,6 +145,8 @@ public:
     float                                                   MeasureError(std::shared_ptr <Ckt_Ntk_t> pRefNtk, unsigned seed = 314);
     std::shared_ptr <Ckt_Obj_t>                             GetCktObj   (int id) const;
     std::shared_ptr <Ckt_Obj_t>                             GetCktObj   (const std::string & name) const;
+    boost::multiprecision::int256_t                         GetInput    (int lsb, int msb, int frameId = 0) const;
+    boost::multiprecision::int256_t                         GetOutput   (int lsb, int msb, int frameId = 0) const;
 
 
     inline std::string                                      GetName     (void) const                                                    {return std::string(pAbcNtk->pName);}

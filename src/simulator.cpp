@@ -4,9 +4,6 @@ using namespace std;
 using namespace boost;
 
 
-typedef vector <uint64_t> tVec;
-
-
 Simulator_t::Simulator_t(Abc_Ntk_t * pNtk, int nFrame)
 {
     DASSERT(Abc_NtkIsAigLogic(pNtk), "network is not in aig");
@@ -17,7 +14,7 @@ Simulator_t::Simulator_t(Abc_Ntk_t * pNtk, int nFrame)
     this->nBlock = (nFrame % 64) ? ((nFrame >> 6) + 1) : (nFrame >> 6);
     this->nLastBlock = (nFrame % 64)? (nFrame % 64): 64;
     Abc_NtkForEachObj(pNtk, pObj, i) {
-        DASSERT(pObj->pTemp == nullptr && pObj->pCopy == nullptr);
+        // DASSERT(pObj->pTemp == nullptr && pObj->pCopy == nullptr);
         pObj->pTemp = static_cast <void *>(new tVec);
         static_cast <tVec *>(pObj->pTemp)->resize(nBlock);
     }
@@ -80,10 +77,15 @@ void Simulator_t::UpdateAigNode(Abc_Obj_t * pObj)
     int maxHopId = -1;
     int i = 0;
 
-    // get hop order
     Hop_Man_t * pMan = static_cast <Hop_Man_t *> (pNtk->pManFunc);
     Hop_Obj_t * pRoot = static_cast <Hop_Obj_t *> (pObj->pData);
     Hop_Obj_t * pRootR = Hop_Regular(pRoot);
+
+    // skip constant node
+    if (pRootR->Type == AIG_CONST1)
+        return;
+
+    // get topological order of subnetwork in aig
     Vec_Ptr_t * vHopNodes = Hop_ManDfsNode(pMan, pRootR);
 
     // init
@@ -96,7 +98,16 @@ void Simulator_t::UpdateAigNode(Abc_Obj_t * pObj)
         values[pHopObj->Id].resize(nBlock);
     unordered_map <int, tVec *> hop2Val;
     Abc_ObjForEachFanin(pObj, pFanin, i)
-        hop2Val[Hop_ManPi(pMan, i)->Id] = static_cast <tVec *> (pFanin->pTemp);
+        hop2Val[Hop_ManPi(pMan, i)->Id] = static_cast <tVec *>(pFanin->pTemp);
+
+    // special case for inverter or buffer
+    if (pRootR->Type == AIG_PI) {
+        pFanin = Abc_ObjFanin0(pObj);
+        static_cast <tVec *>(pObj->pTemp)->assign(
+            static_cast <tVec *>(pFanin->pTemp)->begin(),
+            static_cast <tVec *>(pFanin->pTemp)->end()
+        );
+    }
 
     // simulate
     Vec_PtrForEachEntry(Hop_Obj_t *, vHopNodes, pHopObj, i) {
@@ -129,11 +140,11 @@ void Simulator_t::UpdateAigNode(Abc_Obj_t * pObj)
     }
 
     // record
-    DASSERT(pRootR->Type != AIG_CONST1);
     if (Hop_IsComplement(pRoot)) {
         for (int j = 0; j < nBlock; ++j)
             (*static_cast <tVec *>(pObj->pTemp))[j] ^= static_cast <uint64_t> (ULLONG_MAX);
     }
+    // cout << Abc_ObjName(pObj) << "," << (*static_cast <tVec *>(pObj->pTemp))[0] << endl;
 
     // recycle memory
     Vec_PtrFree(vHopNodes);
@@ -176,6 +187,30 @@ multiprecision::int256_t Simulator_t::GetOutput(int lsb, int msb, int frameId) c
 }
 
 
+void Simulator_t::PrintInputStream(int frameId) const
+{
+    Abc_Obj_t * pObj = nullptr;
+    int i = 0;
+    int blockId = frameId >> 6;
+    int bitId = frameId % 64;
+    Abc_NtkForEachPi(pNtk, pObj, i)
+        cout << Ckt_GetBit((*static_cast <tVec *>(pObj->pTemp))[blockId], bitId);
+    cout << endl;
+}
+
+
+void Simulator_t::PrintOutputStream(int frameId) const
+{
+    Abc_Obj_t * pObj = nullptr;
+    int i = 0;
+    int blockId = frameId >> 6;
+    int bitId = frameId % 64;
+    Abc_NtkForEachPo(pNtk, pObj, i)
+        cout << Ckt_GetBit((*static_cast <tVec *>(Abc_ObjFanin0(pObj)->pTemp))[blockId], bitId);
+    cout << endl;
+}
+
+
 void Simulator_t::Stop()
 {
     Abc_Obj_t * pObj = nullptr;
@@ -188,29 +223,29 @@ void Simulator_t::Stop()
 }
 
 
-// double MeasureAEM(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame)
-// {
-//     Simulator_t smlt1(pNtk1, nFrame);
-//     smlt1.Input(Distribution::uniform, 314);
-//     smlt1.Simulate();
-//     vector <multiprecision::int256_t> out1 = smlt1.Output();
-//     smlt1.Stop();
-//
-//     Simulator_t smlt2(pNtk1, nFrame);
-//     smlt2.Input(Distribution::uniform, 314);
-//     smlt2.Simulate();
-//     vector <multiprecision::int256_t> out2 = smlt2.Output();
-//     smlt2.Stop();
-//
-//     const double factor = 1 / static_cast <double> (nFrame);
-//     multiprecision::cpp_dec_float_50 aem(0);
-//     for (int i = 0; i < nFrame; ++i) {
-//         aem +=
-//             (static_cast <multiprecision::cpp_dec_float_50> (abs(out1[i] - out2[i])) *
-//             static_cast <multiprecision::cpp_dec_float_50> (factor));
-//     }
-//     return static_cast <double>(aem);
-// }
+double MeasureAEM(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame)
+{
+    // Simulator_t smlt1(pNtk1, nFrame);
+    // smlt1.Input(Distribution::uniform, 314);
+    // smlt1.Simulate();
+    // vector <multiprecision::int256_t> out1 = smlt1.Output();
+    // smlt1.Stop();
+
+    // Simulator_t smlt2(pNtk1, nFrame);
+    // smlt2.Input(Distribution::uniform, 314);
+    // smlt2.Simulate();
+    // vector <multiprecision::int256_t> out2 = smlt2.Output();
+    // smlt2.Stop();
+
+    // const double factor = 1 / static_cast <double> (nFrame);
+    // multiprecision::cpp_dec_float_50 aem(0);
+    // for (int i = 0; i < nFrame; ++i) {
+    //     aem +=
+    //         (static_cast <multiprecision::cpp_dec_float_50> (abs(out1[i] - out2[i])) *
+    //         static_cast <multiprecision::cpp_dec_float_50> (factor));
+    // }
+    // return static_cast <double>(aem);
+}
 
 
 double MeasureER(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed)
@@ -233,15 +268,14 @@ double MeasureER(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed
 
     int ret = 0;
     for (int k = 0; k < smlt1.GetBlockNum(); ++k) {
-        cout << k << endl;
         uint64_t temp = 0;
         for (int i = 0; i < nPo; ++i)
             temp |= (*static_cast <tVec *>(Abc_ObjFanin0(Abc_NtkPo(pNtk1, i))->pTemp))[k] ^
                     (*static_cast <tVec *>(Abc_ObjFanin0(Abc_NtkPo(pNtk2, i))->pTemp))[k];
-        // if (k == smlt1.GetBlockNum() - 1) {
-        //     temp >>= (64 - smlt1.GetLastBlockLen());
-        //     temp <<= (64 - smlt1.GetLastBlockLen());
-        // }
+        if (k == smlt1.GetBlockNum() - 1) {
+            temp >>= (64 - smlt1.GetLastBlockLen());
+            temp <<= (64 - smlt1.GetLastBlockLen());
+        }
         ret += Ckt_CountOneNum(temp);
     }
 

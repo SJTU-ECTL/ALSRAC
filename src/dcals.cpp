@@ -5,21 +5,27 @@ using namespace std;
 using namespace abc;
 
 
-Dcals_Man_t::Dcals_Man_t(abc::Abc_Ntk_t * pNtk, int nFrame, int cutSize, double maxAEM)
+Dcals_Man_t::Dcals_Man_t(abc::Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound)
 {
-    this->pNtk = pNtk;
+    this->pOriNtk = pNtk;
+    this->pAppNtk = Abc_NtkDup(this->pOriNtk);
     this->nFrame = nFrame;
     this->cutSize = cutSize;
-    this->maxAEM = maxAEM;
+    this->metric = 0;
+    this->metricBound = metricBound;
     this->pPars = InitMfsPars();
     DASSERT(nFrame > 0);
-    DASSERT(pNtk != nullptr);
-    DASSERT(Abc_NtkIsLogic(pNtk));
+    DASSERT(pOriNtk != nullptr);
+    DASSERT(Abc_NtkIsLogic(pOriNtk));
+    DASSERT(Abc_NtkToAig(pOriNtk));
+    DASSERT(Abc_NtkHasAig(pOriNtk));
 }
 
 
 Dcals_Man_t::~Dcals_Man_t()
 {
+    Abc_NtkDelete(pAppNtk);
+    pAppNtk = nullptr;
     delete pPars;
 }
 
@@ -46,44 +52,76 @@ Mfs_Par_t * Dcals_Man_t::InitMfsPars()
 }
 
 
+void Dcals_Man_t::DCALS()
+{
+    while (metric < metricBound) {
+        LocalAppChange();
+    }
+}
+
+
 void Dcals_Man_t::LocalAppChange()
 {
-    DASSERT(Abc_NtkToAig(pNtk));
-    DASSERT(Abc_NtkHasAig(pNtk));
-    DASSERT(pNtk->pExcare == nullptr);
+    DASSERT(Abc_NtkIsLogic(pAppNtk));
+    DASSERT(Abc_NtkToAig(pAppNtk));
+    DASSERT(Abc_NtkHasAig(pAppNtk));
+    DASSERT(pAppNtk->pExcare == nullptr);
 
     // start the manager
     Mfs_Man_t * pMfsMan = Mfs_ManAlloc(pPars);
     DASSERT(pMfsMan->pCare == nullptr);
 
     // generate candidates
-    for (int i = 0; i < Abc_NtkObjNum(pNtk); ++i) {
+    double bestEr = 1.0;
+    int bestId = -1;
+    for (int i = 0; i < Abc_NtkObjNum(pAppNtk); ++i) {
         // duplicate network
-        Abc_Ntk_t * pNewNtk = Abc_NtkDup(pNtk);
-        DASSERT(Abc_NtkObjNum(pNtk) == Abc_NtkObjNum(pNewNtk));
-        pMfsMan->pNtk = pNewNtk;
-        Abc_Obj_t * pObj = Abc_NtkObj(pNewNtk, i);
-        if (pObj == nullptr || !Abc_ObjIsNode(pObj))
+        Abc_Ntk_t * pCandNtk = Abc_NtkDup(pAppNtk);
+        DASSERT(Abc_NtkObjNum(pAppNtk) == Abc_NtkObjNum(pCandNtk));
+        pMfsMan->pNtk = pCandNtk;
+        Abc_Obj_t * pObj = Abc_NtkObj(pCandNtk, i);
+        if (pObj == nullptr || !Abc_ObjIsNode(pObj)) {
+            Abc_NtkDelete(pCandNtk);
             continue;
+        }
+        cout << Abc_ObjName(pObj) << endl;
         // compute level
-        Abc_NtkLevel(pNewNtk);
-        Abc_NtkStartReverseLevels(pNewNtk, pPars->nGrowthLevel);
+        Abc_NtkLevel(pCandNtk);
+        Abc_NtkStartReverseLevels(pCandNtk, pPars->nGrowthLevel);
         // evaluate a candidate
-        LocalAppChangeNode(pMfsMan, pObj);
+        int isUpdated = LocalAppChangeNode(pMfsMan, pObj);
+        if (isUpdated) {
+            double er = MeasureER(pOriNtk, pAppNtk, 102400, 100);
+            if (er < bestEr) {
+                bestEr = er;
+                bestId = i;
+            }
+        }
         // recycle memory
-        Abc_NtkStopReverseLevels(pNewNtk);
-        Abc_NtkDelete(pNewNtk);
+        Abc_NtkStopReverseLevels(pCandNtk);
+        Abc_NtkDelete(pCandNtk);
+    }
+
+    // apply local approximate change
+    if (bestId != -1) {
+        cout << "best node " << Abc_ObjName(Abc_NtkObj(pAppNtk, bestId)) << " best error " << bestEr << endl;
+        metric = bestEr;
+        pMfsMan->pNtk = pAppNtk;
+        Abc_NtkLevel(pAppNtk);
+        Abc_NtkStartReverseLevels(pAppNtk, pPars->nGrowthLevel);
+        LocalAppChangeNode(pMfsMan, Abc_NtkObj(pAppNtk, bestId));
+        Abc_NtkStopReverseLevels(pAppNtk);
     }
 
     // sweep
-    Abc_NtkSweep(pNtk, 0);
+    Abc_NtkSweep(pAppNtk, 0);
 
     // recycle memory
     Mfs_ManStop(pMfsMan);
 }
 
 
-void Dcals_Man_t::LocalAppChangeNode(Mfs_Man_t * p, Abc_Obj_t * pNode)
+int Dcals_Man_t::LocalAppChangeNode(Mfs_Man_t * p, Abc_Obj_t * pNode)
 {
     // prepare data structure for this node
     Mfs_ManClean(p);
@@ -92,7 +130,7 @@ void Dcals_Man_t::LocalAppChangeNode(Mfs_Man_t * p, Abc_Obj_t * pNode)
     p->vSupp  = Abc_NtkNodeSupport(p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots));
     p->vNodes = Abc_NtkDfsNodes(p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots));
     if (p->pPars->nWinMax && Vec_PtrSize(p->vNodes) > p->pPars->nWinMax)
-        return;
+        return 0;
     // compute the divisors of the window
     p->vDivs  = Abc_MfsComputeDivisors(p, pNode, Abc_ObjRequiredLevel(pNode) - 1);
     p->nTotalDivs += Vec_PtrSize(p->vDivs) - Abc_ObjFaninNum(pNode);
@@ -103,74 +141,71 @@ void Dcals_Man_t::LocalAppChangeNode(Mfs_Man_t * p, Abc_Obj_t * pNode)
     // create the SAT problem
     p->pSat = Abc_MfsCreateSolverResub(p, nullptr, 0, 0);
     if (p->pSat == nullptr)
-        return;
+        return 0;
     // solve the SAT problem
-    Abc_NtkMfsResubNode(p, pNode);
+    return Abc_NtkMfsResubNode(p, pNode);
 }
 
 
 Aig_Man_t * Dcals_Man_t::ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode)
 {
-    // perform logic simulation
-    // Simulator_t smlt(p->pNtk, nFrame);
-    // smlt.Input();
-    // smlt.Simulate();
-    // find local pi
-    // Vec_Ptr_t * vLocalPI = App_FindLocalInput(pNode, nLocalPI);
-
-    Aig_Man_t * pMan;
-    Abc_Obj_t * pFanin, * pObj;
     Aig_Obj_t * pObjAig, * pDC, * pRoot;
-    int i, k;
+    // find local pi
+    Vec_Ptr_t * vLocalPI = App_FindLocalInput(pNode, cutSize);
+    // perform logic simulation
+    Simulator_t smlt(pNode->pNtk, nFrame);
+    smlt.Input();
+    smlt.Simulate();
+    set <string> patterns;
+    for (int i = 0; i < smlt.GetBlockNum(); ++i) {
+        for (int j = 0; j < 64; ++j) {
+            string pattern = "";
+            Abc_Obj_t * pObj = nullptr;
+            int k = 0;
+            Vec_PtrForEachEntry(Abc_Obj_t *, vLocalPI, pObj, k)
+                pattern += smlt.GetValue(pObj, i, j)? '1': '0';
+            patterns.insert(pattern);
+        }
+    }
+    smlt.Stop();
+
     // start the new manager
-    pMan = Aig_ManStart(1000);
+    Aig_Man_t * pMan = Aig_ManStart( 1000 );
     // construct the root node's AIG cone
-    pObjAig = Abc_NtkConstructAig_rec(p, pNode, pMan);
-    Aig_ObjCreateCo(pMan, pObjAig);
+    pObjAig = Abc_NtkConstructAig_rec( p, pNode, pMan );
+    Aig_ObjCreateCo( pMan, pObjAig );
 
     // add approximate care set
-    // set <string> patterns;
-    // int nCluster = min(frameNumber, 64);
-    // for (int i = 0; i < pCktNtk->GetSimNum(); ++i) {
-    //     for (int j = 0; j < nCluster; ++j) {
-    //         string pattern = "";
-    //         Vec_PtrForEachEntry(Abc_Obj_t *, vLocalPI, pObj, k) {
-    //             shared_ptr <Ckt_Obj_t> pCktObj = pCktNtk->GetCktObj(string(Abc_ObjName(pObj)));
-    //             DEBUG_ASSERT(pCktObj->GetName() == string(Abc_ObjName(pObj)), module_a{}, "object does not match");
-    //             pattern +=  pCktObj->GetSimVal(i, j)? '1': '0';
-    //         }
-    //         DASSERT(static_cast <int>(pattern.length()) == Vec_PtrSize(vLocalPI));
-    //         patterns.insert(pattern);
-    //     }
-    // }
-    // pRoot = Aig_ManConst0(pMan);
-    // for (auto pattern: patterns) {
-    //     pDC = Aig_ManConst1(pMan);
-    //     Vec_PtrForEachEntry(Abc_Obj_t *, vLocalPI, pObj, k) {
-    //         if (pattern[k] == '1')
-    //             pDC = Aig_And(pMan, pDC, (Aig_Obj_t *)pObj->pCopy);
-    //         else
-    //             pDC = Aig_And(pMan, pDC, Aig_Not((Aig_Obj_t *)pObj->pCopy));
-    //     }
-    //     pRoot = Aig_Or(pMan, pRoot, pDC);
-    // }
-    // Aig_ObjCreateCo(pMan, pRoot);
+    pRoot = Aig_ManConst0(pMan);
+    for (auto pattern: patterns) {
+        pDC = Aig_ManConst1(pMan);
+        int k = 0;
+        Abc_Obj_t * pObj = nullptr;
+        Vec_PtrForEachEntry(Abc_Obj_t *, vLocalPI, pObj, k) {
+            if (pattern[k] == '1')
+                pDC = Aig_And(pMan, pDC, (Aig_Obj_t *)pObj->pCopy);
+            else
+                pDC = Aig_And(pMan, pDC, Aig_Not((Aig_Obj_t *)pObj->pCopy));
+        }
+        pRoot = Aig_Or(pMan, pRoot, pDC);
+    }
+    Aig_ObjCreateCo(pMan, pRoot);
 
-    // Vec_PtrFree(vLocalPI);
+    Vec_PtrFree(vLocalPI);
 
     // construct the node
     pObjAig = (Aig_Obj_t *)pNode->pCopy;
-    Aig_ObjCreateCo(pMan, pObjAig);
+    Aig_ObjCreateCo( pMan, pObjAig );
     // construct the divisors
-    Vec_PtrForEachEntry( Abc_Obj_t *, p->vDivs, pFanin, i )
+    Abc_Obj_t * pFanin = nullptr;
+    int i = 0;
+    Vec_PtrForEachEntry(Abc_Obj_t *, p->vDivs, pFanin, i)
     {
         pObjAig = (Aig_Obj_t *)pFanin->pCopy;
-        Aig_ObjCreateCo( pMan, pObjAig );
+        Aig_ObjCreateCo(pMan, pObjAig);
     }
-    Aig_ManCleanup( pMan );
 
-    // recycle memory
-    // smlt.Stop();
+    Aig_ManCleanup(pMan);
     return pMan;
 }
 
@@ -245,4 +280,47 @@ void Abc_MfsConvertHopToAig_rec( Hop_Obj_t * pObj, Aig_Man_t * pMan )
     pObj->pData = Aig_And( pMan, (Aig_Obj_t *)Hop_ObjChild0Copy(pObj), (Aig_Obj_t *)Hop_ObjChild1Copy(pObj) );
     assert( !Hop_ObjIsMarkA(pObj) ); // loop detection
     Hop_ObjSetMarkA( pObj );
+}
+
+
+Vec_Ptr_t * App_FindLocalInput(Abc_Obj_t * pNode, int nMax)
+{
+    deque <Abc_Obj_t *> fringe;
+    Abc_Obj_t * pObj;
+    int i;
+    // set the traversal ID
+    Abc_NtkIncrementTravId(pNode->pNtk);
+    // start the array of nodes
+    Vec_Ptr_t * vNodes = Vec_PtrAlloc(20);
+    fringe.emplace_back(pNode);
+    while (fringe.size() && static_cast <int>(fringe.size()) < nMax) {
+        // get the front node
+        Abc_Obj_t * pFrontNode = fringe.front();
+        // check the number of unvisited fanins
+        // int nUnvisited = 0;
+        // Abc_ObjForEachFanin(pFrontNode, pObj, i) {
+        //     if (!Abc_NodeIsTravIdCurrent(pObj)) {
+        //         ++nUnvisited;
+        //     }
+        // }
+        // // expand the front node
+        // if (fringe.size() + nUnvisited <= nMax ) {
+            Abc_ObjForEachFanin(pFrontNode, pObj, i) {
+                if (!Abc_NodeIsTravIdCurrent(pObj)) {
+                    Abc_NodeSetTravIdCurrent(pObj);
+                    fringe.emplace_back(pObj);
+                }
+            }
+        // }
+        // if the front node is PI or const, add it to vNodes
+        if (Abc_ObjFaninNum(pFrontNode) == 0) {
+            Vec_PtrPush(vNodes, pFrontNode);
+            --nMax;
+        }
+        // pop the front node
+        fringe.pop_front();
+    }
+    for (auto & pObj : fringe)
+        Vec_PtrPush(vNodes, pObj);
+    return vNodes;
 }
