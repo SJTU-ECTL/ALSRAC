@@ -2,7 +2,7 @@
 #define CKT_BIT_H
 
 
-#include <bits/stdc++.h>
+#include "headers.h"
 
 
 const uint64_t TABLE_LEN = (1 << 22);

@@ -1,9 +1,6 @@
 #ifndef ABC_API_H
 #define ABC_API_H
 
-namespace abc
-{
-
 
 #include "aig/aig/aig.h"
 #include "aig/saig/saig.h"
@@ -41,6 +38,5 @@ struct Abc_ManTime_t_
 };
 typedef struct Abc_ManTime_t_ Abc_ManTime_t;
 
-}
 
 #endif // ABC_API_H

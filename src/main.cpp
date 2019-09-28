@@ -1,11 +1,9 @@
-#include <bits/stdc++.h>
+#include "headers.h"
 #include "cmdline.h"
 #include "dcals.h"
-#include "cktNtk.h"
 
 
 using namespace std;
-using namespace abc;
 using namespace cmdline;
 
 

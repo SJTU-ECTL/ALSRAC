@@ -2,10 +2,9 @@
 
 
 using namespace std;
-using namespace abc;
 
 
-Dcals_Man_t::Dcals_Man_t(abc::Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound)
+Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound)
 {
     this->pOriNtk = pNtk;
     this->pAppNtk = Abc_NtkDup(this->pOriNtk);
@@ -54,9 +53,8 @@ Mfs_Par_t * Dcals_Man_t::InitMfsPars()
 
 void Dcals_Man_t::DCALS()
 {
-    while (metric < metricBound) {
+    while (metric < metricBound)
         LocalAppChange();
-    }
 }
 
 
@@ -74,27 +72,25 @@ void Dcals_Man_t::LocalAppChange()
     // generate candidates
     double bestEr = 1.0;
     int bestId = -1;
-    for (int i = 0; i < Abc_NtkObjNum(pAppNtk); ++i) {
+    Abc_Obj_t * pObjApp = nullptr;
+    int i = 0;
+    Abc_NtkForEachNode(pAppNtk, pObjApp, i) {
         // duplicate network
         Abc_Ntk_t * pCandNtk = Abc_NtkDup(pAppNtk);
-        DASSERT(Abc_NtkObjNum(pAppNtk) == Abc_NtkObjNum(pCandNtk));
         pMfsMan->pNtk = pCandNtk;
-        Abc_Obj_t * pObj = Abc_NtkObj(pCandNtk, i);
-        if (pObj == nullptr || !Abc_ObjIsNode(pObj)) {
-            Abc_NtkDelete(pCandNtk);
-            continue;
-        }
-        cout << Abc_ObjName(pObj) << endl;
+        Abc_Obj_t * pObjCand = Abc_NtkObj(pCandNtk, i);
+        DASSERT(!strcmp(Abc_ObjName(pObjCand), Abc_ObjName(pObjApp)));
         // compute level
         Abc_NtkLevel(pCandNtk);
         Abc_NtkStartReverseLevels(pCandNtk, pPars->nGrowthLevel);
         // evaluate a candidate
-        int isUpdated = LocalAppChangeNode(pMfsMan, pObj);
+        int isUpdated = LocalAppChangeNode(pMfsMan, pObjCand);
         if (isUpdated) {
-            double er = MeasureER(pOriNtk, pAppNtk, 102400, 100);
+            double er = MeasureER(pOriNtk, pCandNtk, 102400, 100);
             if (er < bestEr) {
                 bestEr = er;
                 bestId = i;
+                // cout << "candidate node " << Abc_ObjName(pObjApp) << " best error " << bestEr << endl;
             }
         }
         // recycle memory
@@ -118,6 +114,11 @@ void Dcals_Man_t::LocalAppChange()
 
     // recycle memory
     Mfs_ManStop(pMfsMan);
+
+    // make sure the consistence of id
+    Abc_Ntk_t * pAppNtkNew = Abc_NtkDup(pAppNtk);
+    Abc_NtkDelete(pAppNtk);
+    pAppNtk = pAppNtkNew;
 }
 
 
@@ -296,22 +297,13 @@ Vec_Ptr_t * App_FindLocalInput(Abc_Obj_t * pNode, int nMax)
     while (fringe.size() && static_cast <int>(fringe.size()) < nMax) {
         // get the front node
         Abc_Obj_t * pFrontNode = fringe.front();
-        // check the number of unvisited fanins
-        // int nUnvisited = 0;
-        // Abc_ObjForEachFanin(pFrontNode, pObj, i) {
-        //     if (!Abc_NodeIsTravIdCurrent(pObj)) {
-        //         ++nUnvisited;
-        //     }
-        // }
-        // // expand the front node
-        // if (fringe.size() + nUnvisited <= nMax ) {
-            Abc_ObjForEachFanin(pFrontNode, pObj, i) {
-                if (!Abc_NodeIsTravIdCurrent(pObj)) {
-                    Abc_NodeSetTravIdCurrent(pObj);
-                    fringe.emplace_back(pObj);
-                }
+        // expand the front node
+        Abc_ObjForEachFanin(pFrontNode, pObj, i) {
+            if (!Abc_NodeIsTravIdCurrent(pObj)) {
+                Abc_NodeSetTravIdCurrent(pObj);
+                fringe.emplace_back(pObj);
             }
-        // }
+        }
         // if the front node is PI or const, add it to vNodes
         if (Abc_ObjFaninNum(pFrontNode) == 0) {
             Vec_PtrPush(vNodes, pFrontNode);
