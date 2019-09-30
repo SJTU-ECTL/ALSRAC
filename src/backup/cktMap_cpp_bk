@@ -1,0 +1,532 @@
+#include "cktMap.h"
+
+
+int MapToASIC(Abc_Ntk_t * pNtk)
+{
+    double DelayTarget = -1;
+    double AreaMulti = 0;
+    double DelayMulti = 0;
+    float LogFan = 0;
+    float Slew = 0;
+    float Gain = 250;
+    int nGatesMin = 0;
+    int fRecovery = 1;
+    int fSwitching = 0;
+    int fSkipFanout = 0;
+    int fUseProfile = 0;
+    int fVerbose = 0;
+    Abc_Ntk_t * pNtkRes = nullptr;
+    if ( !Abc_NtkIsStrash(pNtk) )
+    {
+        pNtk = Abc_NtkStrash( pNtk, 0, 0, 0 );
+        if ( pNtk == NULL )
+        {
+            Abc_Print( -1, "Strashing before mapping has failed.\n" );
+            return 1;
+        }
+        pNtk = Abc_NtkBalance( pNtkRes = pNtk, 0, 0, 1 );
+        Abc_NtkDelete( pNtkRes );
+        if ( pNtk == NULL )
+        {
+            Abc_Print( -1, "Balancing before mapping has failed.\n" );
+            return 1;
+        }
+        Abc_Print( 0, "The network was strashed and balanced before mapping.\n" );
+        // get the new network
+        pNtkRes = Abc_NtkMap( pNtk, DelayTarget, AreaMulti, DelayMulti, LogFan, Slew, Gain, nGatesMin, fRecovery, fSwitching, fSkipFanout, fUseProfile, fVerbose );
+        if ( pNtkRes == NULL )
+        {
+            Abc_NtkDelete( pNtk );
+            Abc_Print( -1, "Mapping has failed.\n" );
+            return 1;
+        }
+        Abc_NtkDelete( pNtk );
+    }
+    else
+    {
+        // get the new network
+        pNtkRes = Abc_NtkMap( pNtk, DelayTarget, AreaMulti, DelayMulti, LogFan, Slew, Gain, nGatesMin, fRecovery, fSwitching, fSkipFanout, fUseProfile, fVerbose );
+        if ( pNtkRes == NULL )
+        {
+            Abc_Print( -1, "Mapping has failed.\n" );
+            return 1;
+        }
+    }
+}
+
+
+Abc_Ntk_t * Abc_NtkMap(Abc_Ntk_t * pNtk, double DelayTarget, double AreaMulti, double DelayMulti, float LogFan, float Slew, float Gain, int nGatesMin, int fRecovery, int fSwitching, int fSkipFanout, int fUseProfile, int fVerbose)
+{
+    static int fUseMulti = 0;
+    int fShowSwitching = 1;
+    Abc_Ntk_t * pNtkNew;
+    Map_Man_t * pMan;
+    Vec_Int_t * vSwitching = NULL;
+    float * pSwitching = NULL;
+    abctime clkTotal = Abc_Clock();
+    Mio_Library_t * pLib = (Mio_Library_t *)Abc_FrameReadLibGen();
+
+    assert( Abc_NtkIsStrash(pNtk) );
+    // derive library from SCL
+    // if the library is created here, it will be deleted when pSuperLib is deleted in Map_SuperLibFree()
+    if ( Abc_FrameReadLibScl() && Abc_SclHasDelayInfo( Abc_FrameReadLibScl() ) )
+    {
+        if ( pLib && Mio_LibraryHasProfile(pLib) )
+            pLib = Abc_SclDeriveGenlib( Abc_FrameReadLibScl(), pLib, Slew, Gain, nGatesMin, fVerbose );
+        else
+            pLib = Abc_SclDeriveGenlib( Abc_FrameReadLibScl(), NULL, Slew, Gain, nGatesMin, fVerbose );
+        if ( Abc_FrameReadLibGen() )
+        {
+            Mio_LibraryTransferDelays( (Mio_Library_t *)Abc_FrameReadLibGen(), pLib );
+            Mio_LibraryTransferProfile( pLib, (Mio_Library_t *)Abc_FrameReadLibGen() );
+        }
+        // remove supergate library
+        Map_SuperLibFree( (Map_SuperLib_t *)Abc_FrameReadLibSuper() );
+        Abc_FrameSetLibSuper( NULL );
+    }
+    // quit if there is no library
+    if ( pLib == NULL )
+    {
+        printf( "The current library is not available.\n" );
+        return 0;
+    }
+    if ( AreaMulti != 0.0 )
+        fUseMulti = 1, printf( "The cell areas are multiplied by the factor: <num_fanins> ^ (%.2f).\n", AreaMulti );
+    if ( DelayMulti != 0.0 )
+        fUseMulti = 1, printf( "The cell delays are multiplied by the factor: <num_fanins> ^ (%.2f).\n", DelayMulti );
+
+    // penalize large gates by increasing their area
+    if ( AreaMulti != 0.0 )
+        Mio_LibraryMultiArea( pLib, AreaMulti );
+    if ( DelayMulti != 0.0 )
+        Mio_LibraryMultiDelay( pLib, DelayMulti );
+
+    // derive the supergate library
+    if ( fUseMulti || Abc_FrameReadLibSuper() == NULL )
+    {
+        if ( fVerbose ) {
+            char * tmp = (char *)(".super");
+            printf( "Converting \"%s\" into supergate library \"%s\".\n",
+                Mio_LibraryReadName(pLib), Extra_FileNameGenericAppend(Mio_LibraryReadName(pLib), tmp) );
+        }
+        // compute supergate library to be used for mapping
+        if ( Mio_LibraryHasProfile(pLib) )
+            printf( "Abc_NtkMap(): Genlib library has profile.\n" );
+        Map_SuperLibDeriveFromGenlib( pLib, fVerbose );
+    }
+
+    // return the library to normal
+    if ( AreaMulti != 0.0 )
+        Mio_LibraryMultiArea( (Mio_Library_t *)Abc_FrameReadLibGen(), -AreaMulti );
+    if ( DelayMulti != 0.0 )
+        Mio_LibraryMultiDelay( (Mio_Library_t *)Abc_FrameReadLibGen(), -DelayMulti );
+
+    // print a warning about choice nodes
+    if ( fVerbose && Abc_NtkGetChoiceNum( pNtk ) )
+        printf( "Performing mapping with choices.\n" );
+
+    // compute switching activity
+    fShowSwitching |= fSwitching;
+    if ( fShowSwitching )
+    {
+        // extern Vec_Int_t * Sim_NtkComputeSwitching( Abc_Ntk_t * pNtk, int nPatterns );
+        vSwitching = Sim_NtkComputeSwitching( pNtk, 4096 );
+        pSwitching = (float *)vSwitching->pArray;
+    }
+
+    // perform the mapping
+    pMan = Abc_NtkToMap( pNtk, DelayTarget, fRecovery, pSwitching, fVerbose );
+    if ( pSwitching ) Vec_IntFree( vSwitching );
+    if ( pMan == NULL )
+        return NULL;
+// clk = Abc_Clock();
+    Map_ManSetSwitching( pMan, fSwitching );
+    Map_ManSetSkipFanout( pMan, fSkipFanout );
+    if ( fUseProfile )
+        Map_ManSetUseProfile( pMan );
+    if ( LogFan != 0 )
+        Map_ManCreateNodeDelays( pMan, LogFan );
+    if ( !Map_Mapping( pMan ) )
+    {
+        Map_ManFree( pMan );
+        return NULL;
+    }
+//    Map_ManPrintStatsToFile( pNtk->pSpec, Map_ManReadAreaFinal(pMan), Map_ManReadRequiredGlo(pMan), Abc_Clock()-clk );
+
+    // reconstruct the network after mapping
+    pNtkNew = Abc_NtkFromMap( pMan, pNtk );
+    if ( Mio_LibraryHasProfile(pLib) )
+        Mio_LibraryTransferProfile2( (Mio_Library_t *)Abc_FrameReadLibGen(), pLib );
+    Map_ManFree( pMan );
+    if ( pNtkNew == NULL )
+        return NULL;
+
+    if ( pNtk->pExdc )
+        pNtkNew->pExdc = Abc_NtkDup( pNtk->pExdc );
+if ( fVerbose )
+{
+ABC_PRT( "Total runtime", Abc_Clock() - clkTotal );
+}
+
+    // make sure that everything is okay
+    if ( !Abc_NtkCheck( pNtkNew ) )
+    {
+        printf( "Abc_NtkMap: The network check has failed.\n" );
+        Abc_NtkDelete( pNtkNew );
+        return NULL;
+    }
+    return pNtkNew;
+}
+
+
+Map_Man_t * Abc_NtkToMap( Abc_Ntk_t * pNtk, double DelayTarget, int fRecovery, float * pSwitching, int fVerbose )
+{
+    Map_Man_t * pMan;
+    Map_Node_t * pNodeMap;
+    Vec_Ptr_t * vNodes;
+    Abc_Obj_t * pNode, * pFanin, * pPrev;
+    int i;
+
+    assert( Abc_NtkIsStrash(pNtk) );
+
+    // start the mapping manager and set its parameters
+    pMan = Map_ManCreate( Abc_NtkPiNum(pNtk) + Abc_NtkLatchNum(pNtk) - pNtk->nBarBufs, Abc_NtkPoNum(pNtk) + Abc_NtkLatchNum(pNtk) - pNtk->nBarBufs, fVerbose );
+    if ( pMan == NULL )
+        return NULL;
+    Map_ManSetAreaRecovery( pMan, fRecovery );
+    Map_ManSetOutputNames( pMan, Abc_NtkCollectCioNames(pNtk, 1) );
+    Map_ManSetDelayTarget( pMan, (float)DelayTarget );
+
+    // set arrival and requireds
+    if ( Scl_ConIsRunning() && Scl_ConHasInArrs() )
+        Map_ManSetInputArrivals( pMan, Abc_NtkMapCopyCiArrivalCon(pNtk) );
+    else
+        Map_ManSetInputArrivals( pMan, Abc_NtkMapCopyCiArrival(pNtk, Abc_NtkGetCiArrivalTimes(pNtk)) );
+    if ( Scl_ConIsRunning() && Scl_ConHasOutReqs() )
+        Map_ManSetOutputRequireds( pMan, Abc_NtkMapCopyCoRequiredCon(pNtk) );
+    else
+        Map_ManSetOutputRequireds( pMan, Abc_NtkMapCopyCoRequired(pNtk, Abc_NtkGetCoRequiredTimes(pNtk)) );
+
+    // create PIs and remember them in the old nodes
+    Abc_NtkCleanCopy( pNtk );
+    Abc_AigConst1(pNtk)->pCopy = (Abc_Obj_t *)Map_ManReadConst1(pMan);
+    Abc_NtkForEachCi( pNtk, pNode, i )
+    {
+        if ( i == Abc_NtkCiNum(pNtk) - pNtk->nBarBufs )
+            break;
+        pNodeMap = Map_ManReadInputs(pMan)[i];
+        pNode->pCopy = (Abc_Obj_t *)pNodeMap;
+        if ( pSwitching )
+            Map_NodeSetSwitching( pNodeMap, pSwitching[pNode->Id] );
+    }
+
+    // load the AIG into the mapper
+    vNodes = Abc_AigDfsMap( pNtk );
+    Vec_PtrForEachEntry( Abc_Obj_t *, vNodes, pNode, i )
+    {
+        if ( Abc_ObjIsLatch(pNode) )
+        {
+            pFanin = Abc_ObjFanin0(pNode);
+            pNodeMap = Map_NodeBuf( pMan, Map_NotCond( Abc_ObjFanin0(pFanin)->pCopy, (int)Abc_ObjFaninC0(pFanin) ) );
+            Abc_ObjFanout0(pNode)->pCopy = (Abc_Obj_t *)pNodeMap;
+            continue;
+        }
+        assert( Abc_ObjIsNode(pNode) );
+        // add the node to the mapper
+        pNodeMap = Map_NodeAnd( pMan,
+            Map_NotCond( Abc_ObjFanin0(pNode)->pCopy, (int)Abc_ObjFaninC0(pNode) ),
+            Map_NotCond( Abc_ObjFanin1(pNode)->pCopy, (int)Abc_ObjFaninC1(pNode) ) );
+        assert( pNode->pCopy == NULL );
+        // remember the node
+        pNode->pCopy = (Abc_Obj_t *)pNodeMap;
+        if ( pSwitching )
+            Map_NodeSetSwitching( pNodeMap, pSwitching[pNode->Id] );
+        // set up the choice node
+        if ( Abc_AigNodeIsChoice( pNode ) )
+            for ( pPrev = pNode, pFanin = (Abc_Obj_t *)pNode->pData; pFanin; pPrev = pFanin, pFanin = (Abc_Obj_t *)pFanin->pData )
+            {
+                Map_NodeSetNextE( (Map_Node_t *)pPrev->pCopy, (Map_Node_t *)pFanin->pCopy );
+                Map_NodeSetRepr( (Map_Node_t *)pFanin->pCopy, (Map_Node_t *)pNode->pCopy );
+            }
+    }
+    assert( Map_ManReadBufNum(pMan) == pNtk->nBarBufs );
+    Vec_PtrFree( vNodes );
+
+    // set the primary outputs in the required phase
+    Abc_NtkForEachCo( pNtk, pNode, i )
+    {
+        if ( i == Abc_NtkCoNum(pNtk) - pNtk->nBarBufs )
+            break;
+        Map_ManReadOutputs(pMan)[i] = Map_NotCond( (Map_Node_t *)Abc_ObjFanin0(pNode)->pCopy, (int)Abc_ObjFaninC0(pNode) );
+    }
+    return pMan;
+}
+
+
+Map_Time_t * Abc_NtkMapCopyCiArrivalCon( Abc_Ntk_t * pNtk )
+{
+    Map_Time_t * p; int i;
+    p = ABC_CALLOC( Map_Time_t, Abc_NtkCiNum(pNtk) );
+    for ( i = 0; i < Abc_NtkCiNum(pNtk); i++ )
+        p[i].Fall = p[i].Rise = p[i].Worst = Scl_Int2Flt( Scl_ConGetInArr(i) );
+    return p;
+}
+
+
+Map_Time_t * Abc_NtkMapCopyCoRequiredCon( Abc_Ntk_t * pNtk )
+{
+    Map_Time_t * p; int i;
+    p = ABC_CALLOC( Map_Time_t, Abc_NtkCoNum(pNtk) );
+    for ( i = 0; i < Abc_NtkCoNum(pNtk); i++ )
+        p[i].Fall = p[i].Rise = p[i].Worst = Scl_Int2Flt( Scl_ConGetOutReq(i) );
+    return p;
+}
+
+
+Map_Time_t * Abc_NtkMapCopyCiArrival( Abc_Ntk_t * pNtk, Abc_Time_t * ppTimes )
+{
+    Map_Time_t * p;
+    int i;
+    p = ABC_CALLOC( Map_Time_t, Abc_NtkCiNum(pNtk) );
+    for ( i = 0; i < Abc_NtkCiNum(pNtk); i++ )
+    {
+        p[i].Fall = ppTimes[i].Fall;
+        p[i].Rise = ppTimes[i].Rise;
+        p[i].Worst = Abc_MaxFloat( p[i].Fall, p[i].Rise );
+    }
+    ABC_FREE( ppTimes );
+    return p;
+}
+
+
+Map_Time_t * Abc_NtkMapCopyCoRequired( Abc_Ntk_t * pNtk, Abc_Time_t * ppTimes )
+{
+    Map_Time_t * p;
+    int i;
+    p = ABC_CALLOC( Map_Time_t, Abc_NtkCoNum(pNtk) );
+    for ( i = 0; i < Abc_NtkCoNum(pNtk); i++ )
+    {
+        p[i].Fall = ppTimes[i].Fall;
+        p[i].Rise = ppTimes[i].Rise;
+        p[i].Worst = Abc_MaxFloat( p[i].Fall, p[i].Rise );
+    }
+    ABC_FREE( ppTimes );
+    return p;
+}
+
+
+Abc_Ntk_t * Abc_NtkFromMap( Map_Man_t * pMan, Abc_Ntk_t * pNtk )
+{
+    Abc_Ntk_t * pNtkNew;
+    Map_Node_t * pNodeMap;
+    Abc_Obj_t * pNode, * pNodeNew;
+    int i;
+    assert( Map_ManReadBufNum(pMan) == pNtk->nBarBufs );
+    // create the new network
+    pNtkNew = Abc_NtkStartFrom( pNtk, ABC_NTK_LOGIC, ABC_FUNC_MAP );
+    // make the mapper point to the new network
+    Map_ManCleanData( pMan );
+    Abc_NtkForEachCi( pNtk, pNode, i )
+    {
+        if ( i >= Abc_NtkCiNum(pNtk) - pNtk->nBarBufs )
+            break;
+        Map_NodeSetData( Map_ManReadInputs(pMan)[i], 1, (char *)pNode->pCopy );
+    }
+    Abc_NtkForEachCi( pNtk, pNode, i )
+    {
+        if ( i < Abc_NtkCiNum(pNtk) - pNtk->nBarBufs )
+            continue;
+        Map_NodeSetData( Map_ManReadBufs(pMan)[i - (Abc_NtkCiNum(pNtk) - pNtk->nBarBufs)], 1, (char *)pNode->pCopy );
+    }
+    // assign the mapping of the required phase to the POs
+    Abc_NtkForEachCo( pNtk, pNode, i )
+    {
+        if ( i < Abc_NtkCoNum(pNtk) - pNtk->nBarBufs )
+            continue;
+        pNodeMap = Map_ManReadBufDriver( pMan, i - (Abc_NtkCoNum(pNtk) - pNtk->nBarBufs) );
+        pNodeNew = Abc_NodeFromMap_rec( pNtkNew, Map_Regular(pNodeMap), !Map_IsComplement(pNodeMap) );
+        assert( !Abc_ObjIsComplement(pNodeNew) );
+        Abc_ObjAddFanin( pNode->pCopy, pNodeNew );
+    }
+    Abc_NtkForEachCo( pNtk, pNode, i )
+    {
+        if ( i >= Abc_NtkCoNum(pNtk) - pNtk->nBarBufs )
+            break;
+        pNodeMap = Map_ManReadOutputs(pMan)[i];
+        pNodeNew = Abc_NodeFromMap_rec( pNtkNew, Map_Regular(pNodeMap), !Map_IsComplement(pNodeMap) );
+        assert( !Abc_ObjIsComplement(pNodeNew) );
+        Abc_ObjAddFanin( pNode->pCopy, pNodeNew );
+    }
+    // decouple the PO driver nodes to reduce the number of levels
+    // nDupGates = Abc_NtkLogicMakeSimpleCos( pNtkNew, 1 );
+//    if ( nDupGates && Map_ManReadVerbose(pMan) )
+//        printf( "Duplicated %d gates to decouple the CO drivers.\n", nDupGates );
+    return pNtkNew;
+}
+
+
+Abc_Obj_t * Abc_NodeFromMap_rec( Abc_Ntk_t * pNtkNew, Map_Node_t * pNodeMap, int fPhase )
+{
+    Abc_Obj_t * pNodeNew, * pNodeInv;
+
+    // check the case of constant node
+    if ( Map_NodeIsConst(pNodeMap) )
+    {
+        pNodeNew = fPhase? Abc_NtkCreateNodeConst1(pNtkNew) : Abc_NtkCreateNodeConst0(pNtkNew);
+        if ( pNodeNew->pData == NULL )
+            printf( "Error creating mapped network: Library does not have a constant %d gate.\n", fPhase );
+        return pNodeNew;
+    }
+
+    // check if the phase is already implemented
+    pNodeNew = (Abc_Obj_t *)Map_NodeReadData( pNodeMap, fPhase );
+    if ( pNodeNew )
+        return pNodeNew;
+
+    // implement the node if the best cut is assigned
+    if ( Map_NodeReadCutBest(pNodeMap, fPhase) != NULL )
+        return Abc_NodeFromMapPhase_rec( pNtkNew, pNodeMap, fPhase );
+
+    // if the cut is not assigned, implement the node
+    assert( Map_NodeReadCutBest(pNodeMap, !fPhase) != NULL || Map_NodeIsConst(pNodeMap) );
+    pNodeNew = Abc_NodeFromMapPhase_rec( pNtkNew, pNodeMap, !fPhase );
+
+    // add the inverter
+    pNodeInv = Abc_NtkCreateNode( pNtkNew );
+    Abc_ObjAddFanin( pNodeInv, pNodeNew );
+    pNodeInv->pData = Mio_LibraryReadInv((Mio_Library_t *)Abc_FrameReadLibGen());
+
+    // set the inverter
+    Map_NodeSetData( pNodeMap, fPhase, (char *)pNodeInv );
+    return pNodeInv;
+}
+
+
+Abc_Obj_t * Abc_NodeFromMapPhase_rec( Abc_Ntk_t * pNtkNew, Map_Node_t * pNodeMap, int fPhase )
+{
+    Abc_Obj_t * pNodePIs[10];
+    Abc_Obj_t * pNodeNew;
+    Map_Node_t ** ppLeaves;
+    Map_Cut_t * pCutBest;
+    Map_Super_t * pSuperBest;
+    unsigned uPhaseBest;
+    int i, fInvPin, nLeaves;
+
+    // make sure the node can be implemented in this phase
+    assert( Map_NodeReadCutBest(pNodeMap, fPhase) != NULL || Map_NodeIsConst(pNodeMap) );
+    // check if the phase is already implemented
+    pNodeNew = (Abc_Obj_t *)Map_NodeReadData( pNodeMap, fPhase );
+    if ( pNodeNew )
+        return pNodeNew;
+
+    // get the information about the best cut
+    pCutBest   = Map_NodeReadCutBest( pNodeMap, fPhase );
+    pSuperBest = Map_CutReadSuperBest( pCutBest, fPhase );
+    uPhaseBest = Map_CutReadPhaseBest( pCutBest, fPhase );
+    nLeaves    = Map_CutReadLeavesNum( pCutBest );
+    ppLeaves   = Map_CutReadLeaves( pCutBest );
+
+    // collect the PI nodes
+    for ( i = 0; i < nLeaves; i++ )
+    {
+        fInvPin = ((uPhaseBest & (1 << i)) > 0);
+        pNodePIs[i] = Abc_NodeFromMap_rec( pNtkNew, ppLeaves[i], !fInvPin );
+        assert( pNodePIs[i] != NULL );
+    }
+
+    // implement the supergate
+    pNodeNew = Abc_NodeFromMapSuper_rec( pNtkNew, pNodeMap, pSuperBest, pNodePIs, nLeaves );
+    Map_NodeSetData( pNodeMap, fPhase, (char *)pNodeNew );
+    return pNodeNew;
+}
+
+
+Abc_Obj_t * Abc_NodeFromMapSuper_rec( Abc_Ntk_t * pNtkNew, Map_Node_t * pNodeMap, Map_Super_t * pSuper, Abc_Obj_t * pNodePis[], int nNodePis )
+{
+    Mio_Library_t * pLib = (Mio_Library_t *)Abc_FrameReadLibGen();
+    Mio_Gate_t * pRoot;
+    Map_Super_t ** ppFanins;
+    Abc_Obj_t * pNodeNew, * pNodeFanin;
+    int nFanins, Number, i;
+
+    // get the parameters of the supergate
+    pRoot = Map_SuperReadRoot(pSuper);
+    if ( pRoot == NULL )
+    {
+        Number = Map_SuperReadNum(pSuper);
+        if ( Number < nNodePis )
+        {
+            return pNodePis[Number];
+        }
+        else
+        {
+//            assert( 0 );
+            /* It might happen that a super gate with 5 inputs is constructed that
+             * actually depends only on the first four variables; i.e the fifth is a
+             * don't care -- in that case we connect constant node for the fifth
+             * (since the cut only has 4 variables). An interesting question is what
+             * if the first variable (and not the fifth one is the redundant one;
+             * can that happen?) */
+            return Abc_NtkCreateNodeConst0(pNtkNew);
+        }
+    }
+    pRoot = Mio_LibraryReadGateByName( pLib, Mio_GateReadName(pRoot), NULL );
+
+    // get information about the fanins of the supergate
+    nFanins  = Map_SuperReadFaninNum( pSuper );
+    ppFanins = Map_SuperReadFanins( pSuper );
+    // create a new node with these fanins
+    pNodeNew = Abc_NtkCreateNode( pNtkNew );
+    for ( i = 0; i < nFanins; i++ )
+    {
+        pNodeFanin = Abc_NodeFromMapSuper_rec( pNtkNew, pNodeMap, ppFanins[i], pNodePis, nNodePis );
+        Abc_ObjAddFanin( pNodeNew, pNodeFanin );
+    }
+    pNodeNew->pData = pRoot;
+    return pNodeNew;
+}
+
+
+Vec_Int_t * Sim_NtkComputeSwitching( Abc_Ntk_t * pNtk, int nPatterns )
+{
+    Vec_Int_t * vSwitching;
+    float * pSwitching;
+    Vec_Ptr_t * vNodes;
+    Vec_Ptr_t * vSimInfo;
+    Abc_Obj_t * pNode;
+    unsigned * pSimInfo;
+    int nSimWords, i;
+
+    // allocate space for simulation info of all nodes
+    nSimWords = SIM_NUM_WORDS(nPatterns);
+    vSimInfo = Sim_UtilInfoAlloc( Abc_NtkObjNumMax(pNtk), nSimWords, 0 );
+    // assign the random simulation to the CIs
+    vSwitching = Vec_IntStart( Abc_NtkObjNumMax(pNtk) );
+    pSwitching = (float *)vSwitching->pArray;
+    Abc_NtkForEachCi( pNtk, pNode, i )
+    {
+        pSimInfo = (unsigned *)Vec_PtrEntry(vSimInfo, pNode->Id);
+        Sim_UtilSetRandom( pSimInfo, nSimWords );
+        pSwitching[pNode->Id] = Sim_ComputeSwitching( pSimInfo, nSimWords );
+    }
+    // simulate the internal nodes
+    vNodes  = Abc_AigDfs( pNtk, 1, 0 );
+    Vec_PtrForEachEntry( Abc_Obj_t *, vNodes, pNode, i )
+    {
+        pSimInfo = (unsigned *)Vec_PtrEntry(vSimInfo, pNode->Id);
+        Sim_UtilSimulateNodeOne( pNode, vSimInfo, nSimWords, 0 );
+        pSwitching[pNode->Id] = Sim_ComputeSwitching( pSimInfo, nSimWords );
+    }
+    Vec_PtrFree( vNodes );
+    Sim_UtilInfoFree( vSimInfo );
+    return vSwitching;
+}
+
+
+float Sim_ComputeSwitching( unsigned * pSimInfo, int nSimWords )
+{
+    int nOnes, nTotal;
+    nTotal = 32 * nSimWords;
+    nOnes = Sim_UtilCountOnes( pSimInfo, nSimWords );
+    return (float)2.0 * nOnes / nTotal * (nTotal - nOnes) / nTotal;
+}

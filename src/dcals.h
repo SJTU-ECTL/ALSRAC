@@ -3,6 +3,7 @@
 
 
 #include "simulator.h"
+#include "cktUtil.h"
 
 
 class Dcals_Man_t
@@ -14,6 +15,7 @@ private:
     int cutSize;
     double metric;
     double metricBound;
+    double maxDelay;
     Mfs_Par_t * pPars;
 public:
     explicit Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound);

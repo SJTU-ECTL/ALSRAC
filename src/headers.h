@@ -3,8 +3,10 @@
 
 
 #include <iostream>
+#include <sstream>
 #include <stdint.h>
 #include <unordered_map>
+#include <random>
 
 
 #endif

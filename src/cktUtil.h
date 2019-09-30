@@ -7,7 +7,17 @@
 #include "debugAssert.h"
 
 
-Abc_Ntk_t * MapToASIC(Abc_Ntk_t * pNtk);
+// evaluate asic
+void Ckt_EvalASIC(Abc_Ntk_t * pNtk, std::string fileName, double maxDelay);
+float Ckt_GetArea(Abc_Ntk_t * pNtk);
+float Ckt_GetDelay(Abc_Ntk_t * pNtk);
+
+// timing
+float Abc_GetArrivalTime(Abc_Ntk_t * pNtk);
+void Abc_NtkTimePrepare(Abc_Ntk_t * pNtk);
+void Abc_NodeDelayTraceArrival(Abc_Obj_t * pNode, Vec_Int_t * vSlacks);
+void Abc_ManTimeExpand(Abc_ManTime_t * p, int nSize, int fProgressive);
+Abc_ManTime_t * Abc_ManTimeStart(Abc_Ntk_t * pNtk);
 
 
 #endif

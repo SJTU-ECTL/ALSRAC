@@ -12,6 +12,8 @@ Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metri
     this->cutSize = cutSize;
     this->metric = 0;
     this->metricBound = metricBound;
+    DASSERT(Abc_NtkHasMapping(this->pOriNtk));
+    this->maxDelay = Ckt_GetDelay(this->pOriNtk);
     this->pPars = InitMfsPars();
     DASSERT(nFrame > 0);
     DASSERT(pOriNtk != nullptr);
@@ -65,6 +67,10 @@ void Dcals_Man_t::LocalAppChange()
     DASSERT(Abc_NtkHasAig(pAppNtk));
     DASSERT(pAppNtk->pExcare == nullptr);
 
+    // new seed for logic simulation
+    random_device rd;
+    unsigned seed = static_cast <unsigned>(rd());
+
     // start the manager
     Mfs_Man_t * pMfsMan = Mfs_ManAlloc(pPars);
     DASSERT(pMfsMan->pCare == nullptr);
@@ -86,11 +92,10 @@ void Dcals_Man_t::LocalAppChange()
         // evaluate a candidate
         int isUpdated = LocalAppChangeNode(pMfsMan, pObjCand);
         if (isUpdated) {
-            double er = MeasureER(pOriNtk, pCandNtk, 102400, 100);
+            double er = MeasureER(pOriNtk, pCandNtk, 102400, seed);
             if (er < bestEr) {
                 bestEr = er;
                 bestId = i;
-                // cout << "candidate node " << Abc_ObjName(pObjApp) << " best error " << bestEr << endl;
             }
         }
         // recycle memory
@@ -100,6 +105,7 @@ void Dcals_Man_t::LocalAppChange()
 
     // apply local approximate change
     if (bestId != -1) {
+        cout << "seed = " << seed << endl;
         cout << "best node " << Abc_ObjName(Abc_NtkObj(pAppNtk, bestId)) << " best error " << bestEr << endl;
         metric = bestEr;
         pMfsMan->pNtk = pAppNtk;
@@ -109,16 +115,25 @@ void Dcals_Man_t::LocalAppChange()
         Abc_NtkStopReverseLevels(pAppNtk);
     }
 
-    // sweep
-    Abc_NtkSweep(pAppNtk, 0);
+    // // sweep
+    // Abc_NtkSweep(pAppNtk, 0);
 
     // recycle memory
     Mfs_ManStop(pMfsMan);
 
-    // make sure the consistence of id
-    Abc_Ntk_t * pAppNtkNew = Abc_NtkDup(pAppNtk);
-    Abc_NtkDelete(pAppNtk);
-    pAppNtk = pAppNtkNew;
+    // disturb the network
+    Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
+    Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pAppNtk));
+    string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance");
+    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+    Command = string("logic; sweep; mfs");
+    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+    pAppNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
+
+    // evaluate the current approximate circuit
+    ostringstream fileName("");
+    fileName << pAppNtk->pName << "_" << metric;
+    Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay);
 }
 
 

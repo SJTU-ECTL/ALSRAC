@@ -1,0 +1,26 @@
+#ifndef CKT_MAP_H
+#define CKT_MAP_H
+
+
+#include "headers.h"
+#include "abcApi.h"
+#include "debugAssert.h"
+
+
+// script "map"
+int MapToASIC( Abc_Ntk_t * pNtk );
+Abc_Ntk_t * Abc_NtkMap( Abc_Ntk_t * pNtk, double DelayTarget, double AreaMulti, double DelayMulti, float LogFan, float Slew, float Gain, int nGatesMin, int fRecovery, int fSwitching, int fSkipFanout, int fUseProfile, int fVerbose );
+Map_Man_t *  Abc_NtkToMap( Abc_Ntk_t * pNtk, double DelayTarget, int fRecovery, float * pSwitching, int fVerbose );
+Map_Time_t * Abc_NtkMapCopyCiArrivalCon( Abc_Ntk_t * pNtk );
+Map_Time_t * Abc_NtkMapCopyCoRequiredCon( Abc_Ntk_t * pNtk );
+Map_Time_t * Abc_NtkMapCopyCiArrival( Abc_Ntk_t * pNtk, Abc_Time_t * ppTimes );
+Map_Time_t * Abc_NtkMapCopyCoRequired( Abc_Ntk_t * pNtk, Abc_Time_t * ppTimes );
+Abc_Ntk_t * Abc_NtkFromMap( Map_Man_t * pMan, Abc_Ntk_t * pNtk );
+Abc_Obj_t * Abc_NodeFromMap_rec( Abc_Ntk_t * pNtkNew, Map_Node_t * pNodeMap, int fPhase );
+Abc_Obj_t * Abc_NodeFromMapPhase_rec( Abc_Ntk_t * pNtkNew, Map_Node_t * pNodeMap, int fPhase );
+Abc_Obj_t * Abc_NodeFromMapSuper_rec( Abc_Ntk_t * pNtkNew, Map_Node_t * pNodeMap, Map_Super_t * pSuper, Abc_Obj_t * pNodePis[], int nNodePis );
+Vec_Int_t * Sim_NtkComputeSwitching( Abc_Ntk_t * pNtk, int nPatterns );
+float Sim_ComputeSwitching( unsigned * pSimInfo, int nSimWords );
+
+
+#endif
