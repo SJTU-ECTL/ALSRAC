@@ -266,7 +266,7 @@ void Simulator_t::Stop()
 }
 
 
-double MeasureAEM(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
+double MeasureAEMR(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
 {
     // check PI/PO
     int nPo = Abc_NtkPoNum(pNtk1);
@@ -289,16 +289,16 @@ double MeasureAEM(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned see
     smlt2.Simulate();
 
     // compute
-    typedef double hpfloat;
-    hpfloat aem(0);
-    const hpfloat factor = 1 / static_cast <double> (nFrame);
-    for (int k = 0; k < nFrame; ++k) {
-        aem += (static_cast <hpfloat> (abs(smlt1.GetOutput(0, nPo - 1, k) - smlt2.GetOutput(0, nPo - 1, k))) * factor);
-    }
+    typedef multiprecision::cpp_dec_float_100 bigFlt;
+    typedef multiprecision::int256_t bigInt;
+    bigInt sum(0);
+    for (int k = 0; k < nFrame; ++k)
+        sum += (abs(smlt1.GetOutput(0, nPo - 1, k) - smlt2.GetOutput(0, nPo - 1, k)));
 
     smlt1.Stop();
     smlt2.Stop();
-    return static_cast<double> (aem);
+    bigInt frac = (static_cast <bigInt> (nFrame)) << nPo;
+    return static_cast <double> (static_cast <bigFlt>(sum) / static_cast <bigFlt>(frac));
 }
 
 

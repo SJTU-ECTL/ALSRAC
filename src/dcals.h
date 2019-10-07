@@ -12,6 +12,7 @@ private:
     Abc_Ntk_t * pOriNtk;
     Abc_Ntk_t * pAppNtk;
     unsigned seed;
+    int mode;
     int nFrame;
     int cutSize;
     double metric;
@@ -19,11 +20,12 @@ private:
     double maxDelay;
     Mfs_Par_t * pPars;
 public:
-    explicit Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound);
+    explicit Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound, int mode = 0);
     ~Dcals_Man_t();
     Mfs_Par_t * InitMfsPars();
     void DCALS();
     void LocalAppChange();
+    void ConstReplace();
     int LocalAppChangeNode(Mfs_Man_t * p, Abc_Obj_t * pNode);
     Aig_Man_t * ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode);
 };

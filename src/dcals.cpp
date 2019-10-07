@@ -4,10 +4,11 @@
 using namespace std;
 
 
-Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound)
+Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound, int mode)
 {
     this->pOriNtk = pNtk;
     this->pAppNtk = Abc_NtkDup(this->pOriNtk);
+    this->mode = mode;
     this->nFrame = nFrame;
     this->cutSize = cutSize;
     this->metric = 0;
@@ -55,8 +56,12 @@ Mfs_Par_t * Dcals_Man_t::InitMfsPars()
 
 void Dcals_Man_t::DCALS()
 {
-    while (metric < metricBound)
-        LocalAppChange();
+    while (metric < metricBound) {
+        if (nFrame != 0)
+            LocalAppChange();
+        else
+            ConstReplace();
+    }
 }
 
 
@@ -96,7 +101,11 @@ void Dcals_Man_t::LocalAppChange()
         // evaluate a candidate
         int isUpdated = LocalAppChangeNode(pMfsMan, pObjCand);
         if (isUpdated) {
-            double er = MeasureER(pOriNtk, pCandNtk, 102400, 100);
+            double er = 0;
+            if (!mode)
+                er = MeasureER(pOriNtk, pCandNtk, 102400, 100);
+            else
+                er = MeasureAEMR(pOriNtk, pCandNtk, 102400, 100);
             if (er < bestEr) {
                 bestEr = er;
                 bestId = i;
@@ -112,7 +121,7 @@ void Dcals_Man_t::LocalAppChange()
         pat1 = 0;
         bool isApply = false;
         if (bestEr <= metricBound) {
-            pat2 = 0;
+            pat1 = pat2 = 0;
             isApply = true;
         }
         else {
@@ -135,15 +144,83 @@ void Dcals_Man_t::LocalAppChange()
         ++pat1;
         if (pat1 == 5) {
             nFrame >>= 1;
-            pat1 = 0;
+            pat1 = pat2 = 0;
         }
     }
 
-    // // sweep
-    // Abc_NtkSweep(pAppNtk, 0);
-
     // recycle memory
     Mfs_ManStop(pMfsMan);
+
+    // disturb the network
+    Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
+    Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pAppNtk));
+    string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance");
+    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+    Command = string("logic; sweep; mfs");
+    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+    pAppNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
+
+    // evaluate the current approximate circuit
+    ostringstream fileName("");
+    fileName << pAppNtk->pName << "_" << metric;
+    Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay);
+}
+
+
+void Dcals_Man_t::ConstReplace()
+{
+    double er = 0;
+    double bestEr = 1.0;
+    int bestId = -1;
+    bool isConst0 = false;
+    Abc_Obj_t * pObjApp = nullptr;
+    int i = 0;
+    cout << "nframe = " << nFrame << endl;
+    Abc_NtkForEachNode(pAppNtk, pObjApp, i) {
+        Abc_Ntk_t * pCandNtk = Abc_NtkDup(pAppNtk);
+        Abc_Obj_t * pObjCand = Abc_NtkObj(pCandNtk, i);
+        DASSERT(!strcmp(Abc_ObjName(pObjCand), Abc_ObjName(pObjApp)));
+
+        // replace with const 0
+        Abc_Obj_t * pConst0 = Abc_NtkCreateNodeConst0(pCandNtk);
+        Abc_ObjReplace(pObjCand, pConst0);
+
+        // evaluate
+        if (!mode)
+            er = MeasureER(pOriNtk, pCandNtk, 102400, 100);
+        else
+            er = MeasureAEMR(pOriNtk, pCandNtk, 102400, 100);
+        if (er < bestEr) {
+            bestEr = er;
+            bestId = i;
+            isConst0 = true;
+        }
+
+        // replace with const 1
+        Abc_Obj_t * pConst1 = Abc_NtkCreateNodeConst1(pCandNtk);
+        Abc_ObjReplace(pConst0, pConst1);
+
+        // evaluate
+        if (!mode)
+            er = MeasureER(pOriNtk, pCandNtk, 102400, 100);
+        else
+            er = MeasureAEMR(pOriNtk, pCandNtk, 102400, 100);
+        if (er < bestEr) {
+            bestEr = er;
+            bestId = i;
+            isConst0 = false;
+        }
+
+        Abc_NtkDelete(pCandNtk);
+    }
+
+    // apply the constant replacement
+    DASSERT(bestId != -1);
+    cout << "best node " << Abc_ObjName(Abc_NtkObj(pAppNtk, bestId)) << " best error " << bestEr << endl;
+    if (isConst0)
+        Abc_ObjReplace(Abc_NtkObj(pAppNtk, bestId), Abc_NtkCreateNodeConst0(pAppNtk));
+    else
+        Abc_ObjReplace(Abc_NtkObj(pAppNtk, bestId), Abc_NtkCreateNodeConst1(pAppNtk));
 
     // disturb the network
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
