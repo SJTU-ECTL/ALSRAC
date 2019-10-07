@@ -222,42 +222,21 @@ void Simulator_t::Stop()
 }
 
 
-double MeasureAEM(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame)
+double MeasureAEM(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
 {
-    // Simulator_t smlt1(pNtk1, nFrame);
-    // smlt1.Input(Distribution::uniform, 314);
-    // smlt1.Simulate();
-    // vector <multiprecision::int256_t> out1 = smlt1.Output();
-    // smlt1.Stop();
-
-    // Simulator_t smlt2(pNtk1, nFrame);
-    // smlt2.Input(Distribution::uniform, 314);
-    // smlt2.Simulate();
-    // vector <multiprecision::int256_t> out2 = smlt2.Output();
-    // smlt2.Stop();
-
-    // const double factor = 1 / static_cast <double> (nFrame);
-    // multiprecision::cpp_dec_float_50 aem(0);
-    // for (int i = 0; i < nFrame; ++i) {
-    //     aem +=
-    //         (static_cast <multiprecision::cpp_dec_float_50> (abs(out1[i] - out2[i])) *
-    //         static_cast <multiprecision::cpp_dec_float_50> (factor));
-    // }
-    // return static_cast <double>(aem);
-}
-
-
-double MeasureER(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed)
-{
+    // check PI/PO
     int nPo = Abc_NtkPoNum(pNtk1);
-    DASSERT(nPo == Abc_NtkPoNum(pNtk2));
-    for (int i = 0; i < nPo; ++i)
-        DASSERT(!strcmp(Abc_ObjName(Abc_NtkPo(pNtk1, i)), Abc_ObjName(Abc_NtkPo(pNtk2, i))));
-    int nPi = Abc_NtkPiNum(pNtk1);
-    DASSERT(nPi == Abc_NtkPiNum(pNtk2));
-    for (int i = 0; i < nPi; ++i)
-        DASSERT(!strcmp(Abc_ObjName(Abc_NtkPi(pNtk1, i)), Abc_ObjName(Abc_NtkPi(pNtk2, i))));
+    if (isCheck) {
+        DASSERT(nPo == Abc_NtkPoNum(pNtk2));
+        for (int i = 0; i < nPo; ++i)
+            DASSERT(!strcmp(Abc_ObjName(Abc_NtkPo(pNtk1, i)), Abc_ObjName(Abc_NtkPo(pNtk2, i))));
+        int nPi = Abc_NtkPiNum(pNtk1);
+        DASSERT(nPi == Abc_NtkPiNum(pNtk2));
+        for (int i = 0; i < nPi; ++i)
+            DASSERT(!strcmp(Abc_ObjName(Abc_NtkPi(pNtk1, i)), Abc_ObjName(Abc_NtkPi(pNtk2, i))));
+    }
 
+    // simulation
     Simulator_t smlt1(pNtk1, nFrame);
     smlt1.Input(Distribution::uniform, seed);
     smlt1.Simulate();
@@ -265,6 +244,43 @@ double MeasureER(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed
     smlt2.Input(Distribution::uniform, seed);
     smlt2.Simulate();
 
+    // compute
+    typedef double hpfloat;
+    hpfloat aem(0);
+    const hpfloat factor = 1 / static_cast <double> (nFrame);
+    for (int k = 0; k < nFrame; ++k) {
+        aem += (static_cast <hpfloat> (abs(smlt1.GetOutput(0, nPo - 1, k) - smlt2.GetOutput(0, nPo - 1, k))) * factor);
+    }
+
+    smlt1.Stop();
+    smlt2.Stop();
+    return static_cast<double> (aem);
+}
+
+
+double MeasureER(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
+{
+    // check PI/PO
+    int nPo = Abc_NtkPoNum(pNtk1);
+    if (isCheck) {
+        DASSERT(nPo == Abc_NtkPoNum(pNtk2));
+        for (int i = 0; i < nPo; ++i)
+            DASSERT(!strcmp(Abc_ObjName(Abc_NtkPo(pNtk1, i)), Abc_ObjName(Abc_NtkPo(pNtk2, i))));
+        int nPi = Abc_NtkPiNum(pNtk1);
+        DASSERT(nPi == Abc_NtkPiNum(pNtk2));
+        for (int i = 0; i < nPi; ++i)
+            DASSERT(!strcmp(Abc_ObjName(Abc_NtkPi(pNtk1, i)), Abc_ObjName(Abc_NtkPi(pNtk2, i))));
+    }
+
+    // simulation
+    Simulator_t smlt1(pNtk1, nFrame);
+    smlt1.Input(Distribution::uniform, seed);
+    smlt1.Simulate();
+    Simulator_t smlt2(pNtk2, nFrame);
+    smlt2.Input(Distribution::uniform, seed);
+    smlt2.Simulate();
+
+    // compute
     int ret = 0;
     for (int k = 0; k < smlt1.GetBlockNum(); ++k) {
         uint64_t temp = 0;
@@ -280,5 +296,5 @@ double MeasureER(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed
 
     smlt1.Stop();
     smlt2.Stop();
-    return ret / static_cast<float> (nFrame);
+    return ret / static_cast<double> (nFrame);
 }

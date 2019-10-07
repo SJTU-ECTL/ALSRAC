@@ -11,6 +11,7 @@ class Dcals_Man_t
 private:
     Abc_Ntk_t * pOriNtk;
     Abc_Ntk_t * pAppNtk;
+    unsigned seed;
     int nFrame;
     int cutSize;
     double metric;

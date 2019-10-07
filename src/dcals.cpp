@@ -62,6 +62,8 @@ void Dcals_Man_t::DCALS()
 
 void Dcals_Man_t::LocalAppChange()
 {
+    static int pat1, pat2;
+
     DASSERT(Abc_NtkIsLogic(pAppNtk));
     DASSERT(Abc_NtkToAig(pAppNtk));
     DASSERT(Abc_NtkHasAig(pAppNtk));
@@ -69,7 +71,9 @@ void Dcals_Man_t::LocalAppChange()
 
     // new seed for logic simulation
     random_device rd;
-    unsigned seed = static_cast <unsigned>(rd());
+    seed = static_cast <unsigned>(rd());
+    cout << "nframe = " << nFrame << " seed = " << seed << endl;
+    cout << "patience = " << pat1 << "," << pat2 << endl;
 
     // start the manager
     Mfs_Man_t * pMfsMan = Mfs_ManAlloc(pPars);
@@ -92,7 +96,7 @@ void Dcals_Man_t::LocalAppChange()
         // evaluate a candidate
         int isUpdated = LocalAppChangeNode(pMfsMan, pObjCand);
         if (isUpdated) {
-            double er = MeasureER(pOriNtk, pCandNtk, 102400, seed);
+            double er = MeasureER(pOriNtk, pCandNtk, 102400, 100);
             if (er < bestEr) {
                 bestEr = er;
                 bestId = i;
@@ -105,14 +109,34 @@ void Dcals_Man_t::LocalAppChange()
 
     // apply local approximate change
     if (bestId != -1) {
-        cout << "seed = " << seed << endl;
-        cout << "best node " << Abc_ObjName(Abc_NtkObj(pAppNtk, bestId)) << " best error " << bestEr << endl;
-        metric = bestEr;
-        pMfsMan->pNtk = pAppNtk;
-        Abc_NtkLevel(pAppNtk);
-        Abc_NtkStartReverseLevels(pAppNtk, pPars->nGrowthLevel);
-        LocalAppChangeNode(pMfsMan, Abc_NtkObj(pAppNtk, bestId));
-        Abc_NtkStopReverseLevels(pAppNtk);
+        pat1 = 0;
+        bool isApply = false;
+        if (bestEr <= metricBound) {
+            pat2 = 0;
+            isApply = true;
+        }
+        else {
+            ++pat2;
+            isApply = false;
+            if (pat2 == 5)
+                isApply = true;
+        }
+        if (isApply) {
+            cout << "best node " << Abc_ObjName(Abc_NtkObj(pAppNtk, bestId)) << " best error " << bestEr << endl;
+            metric = bestEr;
+            pMfsMan->pNtk = pAppNtk;
+            Abc_NtkLevel(pAppNtk);
+            Abc_NtkStartReverseLevels(pAppNtk, pPars->nGrowthLevel);
+            LocalAppChangeNode(pMfsMan, Abc_NtkObj(pAppNtk, bestId));
+            Abc_NtkStopReverseLevels(pAppNtk);
+        }
+    }
+    else {
+        ++pat1;
+        if (pat1 == 5) {
+            nFrame >>= 1;
+            pat1 = 0;
+        }
     }
 
     // // sweep
@@ -170,7 +194,7 @@ Aig_Man_t * Dcals_Man_t::ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode)
     Vec_Ptr_t * vLocalPI = App_FindLocalInput(pNode, cutSize);
     // perform logic simulation
     Simulator_t smlt(pNode->pNtk, nFrame);
-    smlt.Input();
+    smlt.Input(Distribution::uniform, seed);
     smlt.Simulate();
     set <string> patterns;
     for (int i = 0; i < smlt.GetBlockNum(); ++i) {
