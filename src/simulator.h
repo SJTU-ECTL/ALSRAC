@@ -34,6 +34,7 @@ public:
     explicit Simulator_t(Abc_Ntk_t * pNtk, int nFrame = 64);
     ~Simulator_t();
     void Input(Distribution dist = Distribution::uniform, unsigned seed = 314);
+    void Input(std::string fileName);
     void Simulate();
     void UpdateAigNode(Abc_Obj_t * pObj);
     boost::multiprecision::int256_t GetInput(int lsb, int msb, int frameId = 0) const;

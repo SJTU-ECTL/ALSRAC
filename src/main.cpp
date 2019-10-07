@@ -67,8 +67,8 @@ int main(int argc, char * argv[])
         cout << "area = " << Ckt_GetArea(pNtk2) << endl;
         cout << "delay = " << Ckt_GetDelay(pNtk2) << endl;
         DASSERT(Abc_NtkToAig(pNtk2));
-        cout << "error rate = " << MeasureER(pNtk1, pNtk2, 1024000) << endl;
-        cout << "average error magnitude = " << MeasureAEM(pNtk1, pNtk2, 1024000) << endl;
+        cout << "error rate = " << MeasureER(pNtk1, pNtk2, nFrame) << endl;
+        cout << "average error magnitude = " << MeasureAEM(pNtk1, pNtk2, nFrame) << endl;
         Abc_NtkDelete(pNtk1);
         Abc_NtkDelete(pNtk2);
     }

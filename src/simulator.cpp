@@ -58,6 +58,50 @@ void Simulator_t::Input(Distribution dist, unsigned seed)
 }
 
 
+void Simulator_t::Input(string fileName)
+{
+    // primary inputs
+    FILE * fp = fopen(fileName.c_str(), "r");
+    char buf[1000];
+    int cnt = 0;
+    while (fgets(buf, sizeof(buf), fp) != nullptr) {
+        DASSERT(static_cast <int>(strlen(buf)) == Abc_NtkPiNum(pNtk) + 3);
+        int blockId = cnt >> 6;
+        // int bitId = cnt % 64;
+        int bitId = cnt % 64;
+        for (int i = 0; i < Abc_NtkPiNum(pNtk); ++i) {
+            Abc_Obj_t * pObj = Abc_NtkPi(pNtk, i);
+            if (buf[i + 2] == '1')
+                Ckt_SetBit( (*static_cast <tVec *>(pObj->pTemp))[blockId], bitId );
+            else
+                Ckt_ResetBit( (*static_cast <tVec *>(pObj->pTemp))[blockId], bitId );
+        }
+        ++cnt;
+        DASSERT(cnt <= nFrame);
+    }
+    DASSERT(cnt == nFrame);
+    fclose(fp);
+
+    // constant nodes
+    DASSERT(Abc_NtkIsAigLogic(pNtk), "network is not in aig");
+    Abc_Obj_t * pObj = nullptr;
+    int k = 0;
+    Abc_NtkForEachNode(pNtk, pObj, k) {
+        Hop_Obj_t * pHopObj = static_cast <Hop_Obj_t *> (pObj->pData);
+        if (Hop_ObjFanin0(pHopObj) == nullptr && Hop_ObjFanin1(pHopObj) == nullptr && pHopObj->Type != AIG_PI) {
+            if (Hop_ObjIsConst1(pHopObj)) {
+                for (int i = 0; i < nBlock; ++i)
+                    (*static_cast <tVec *>(pObj->pTemp))[i] = static_cast <uint64_t> (ULLONG_MAX);
+            }
+            else {
+                for (int i = 0; i < nBlock; ++i)
+                    (*static_cast <tVec *>(pObj->pTemp))[i] = 0;
+            }
+        }
+    }
+}
+
+
 void Simulator_t::Simulate()
 {
     Abc_Obj_t * pObj = nullptr;
@@ -177,10 +221,10 @@ multiprecision::int256_t Simulator_t::GetOutput(int lsb, int msb, int frameId) c
     int blockId = frameId >> 6;
     int bitId = frameId % 64;
     for (int k = msb; k >= lsb; --k) {
+        ret <<= 1;
         Abc_Obj_t * pObj = Abc_ObjFanin0(Abc_NtkPo(pNtk, k));
         if (Ckt_GetBit((*static_cast <tVec *>(pObj->pTemp))[blockId], bitId))
             ++ret;
-        ret <<= 1;
     }
     return ret;
 }
