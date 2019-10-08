@@ -2,6 +2,7 @@
 #define DCALS_H
 
 
+#include <boost/progress.hpp>
 #include "simulator.h"
 #include "cktUtil.h"
 

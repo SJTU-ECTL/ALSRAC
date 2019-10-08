@@ -4,11 +4,9 @@
 using namespace std;
 
 
-// evaluate asic
-void Ckt_EvalASIC(Abc_Ntk_t * pNtk, std::string fileName, double maxDelay)
+void Ckt_EvalASIC(Abc_Ntk_t * pNtk, string fileName, double maxDelay)
 {
     string Command;
-    string ntkName(pNtk->pName);
     string resyn2 = "strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance;";
     float area, delay;
 
@@ -50,6 +48,29 @@ void Ckt_EvalASIC(Abc_Ntk_t * pNtk, std::string fileName, double maxDelay)
     Command += str;
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
     // return make_pair <double, double> (area, delay);
+}
+
+
+void Ckt_EvalFPGA(Abc_Ntk_t * pNtk, string fileName)
+{
+    string Command;
+    string resyn2 = "strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance;";
+
+    Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
+    Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pNtk));
+    Command = resyn2 + string("if -K 6;");
+    for (int i = 0; i < 10; ++i)
+        DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+    // Command = string("print_stats");
+    // DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+    int size = Abc_NtkNodeNum(Abc_FrameReadNtk(pAbc));
+    int depth = Abc_NtkLevel(Abc_FrameReadNtk(pAbc));
+    Command = string("write_blif ");
+    ostringstream ss("");
+    ss << "appntk/" << fileName << "_" << size << "_" << depth << ".blif";
+    string str = ss.str();
+    Command += str;
+    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
 }
 
 

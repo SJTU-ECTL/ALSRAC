@@ -9,6 +9,7 @@
 
 // evaluate asic
 void Ckt_EvalASIC(Abc_Ntk_t * pNtk, std::string fileName, double maxDelay);
+void Ckt_EvalFPGA(Abc_Ntk_t * pNtk, std::string fileName);
 float Ckt_GetArea(Abc_Ntk_t * pNtk);
 float Ckt_GetDelay(Abc_Ntk_t * pNtk);
 

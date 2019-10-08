@@ -47,7 +47,7 @@ int main(int argc, char * argv[])
         command << "read_blif " << input;
         DASSERT(!Cmd_CommandExecute(pAbc, command.str().c_str()));
         Abc_Ntk_t * pNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
-        DASSERT(Abc_NtkHasMapping(pNtk));
+        // DASSERT(Abc_NtkHasMapping(pNtk));
 
         if (er < 1.0) {
             Dcals_Man_t alsEng(pNtk, nFrame, nCut, er, 0);

@@ -60,7 +60,9 @@ void Dcals_Man_t::DCALS()
         if (nFrame != 0)
             LocalAppChange();
         else
-            ConstReplace();
+            DASSERT(0);
+        // else
+        //     ConstReplace();
     }
 }
 
@@ -89,7 +91,10 @@ void Dcals_Man_t::LocalAppChange()
     int bestId = -1;
     Abc_Obj_t * pObjApp = nullptr;
     int i = 0;
+    boost::progress_display pd(Abc_NtkNodeNum(pAppNtk));
     Abc_NtkForEachNode(pAppNtk, pObjApp, i) {
+        // process bar
+        ++pd;
         // duplicate network
         Abc_Ntk_t * pCandNtk = Abc_NtkDup(pAppNtk);
         pMfsMan->pNtk = pCandNtk;
@@ -105,7 +110,7 @@ void Dcals_Man_t::LocalAppChange()
             if (!mode)
                 er = MeasureER(pOriNtk, pCandNtk, 102400, 100);
             else
-                er = MeasureAEMR(pOriNtk, pCandNtk, 102400, 100);
+                er = MeasureAEMR(pOriNtk, pCandNtk, 10240, 100);
             if (er < bestEr) {
                 bestEr = er;
                 bestId = i;
@@ -164,6 +169,7 @@ void Dcals_Man_t::LocalAppChange()
     ostringstream fileName("");
     fileName << pAppNtk->pName << "_" << metric;
     Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay);
+    // Ckt_EvalFPGA(pAppNtk, fileName.str());
 }
 
 
@@ -189,7 +195,7 @@ void Dcals_Man_t::ConstReplace()
         if (!mode)
             er = MeasureER(pOriNtk, pCandNtk, 102400, 100);
         else
-            er = MeasureAEMR(pOriNtk, pCandNtk, 102400, 100);
+            er = MeasureAEMR(pOriNtk, pCandNtk, 10240, 100);
         if (er < bestEr) {
             bestEr = er;
             bestId = i;
@@ -204,7 +210,7 @@ void Dcals_Man_t::ConstReplace()
         if (!mode)
             er = MeasureER(pOriNtk, pCandNtk, 102400, 100);
         else
-            er = MeasureAEMR(pOriNtk, pCandNtk, 102400, 100);
+            er = MeasureAEMR(pOriNtk, pCandNtk, 10240, 100);
         if (er < bestEr) {
             bestEr = er;
             bestId = i;
