@@ -4,17 +4,20 @@
 using namespace std;
 
 
-Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound, int mode)
+Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound, int metricType, int mapType)
 {
     this->pOriNtk = pNtk;
     this->pAppNtk = Abc_NtkDup(this->pOriNtk);
-    this->mode = mode;
+    this->metricType = metricType;
+    this->mapType = mapType;
     this->nFrame = nFrame;
     this->cutSize = cutSize;
     this->metric = 0;
     this->metricBound = metricBound;
-    DASSERT(Abc_NtkHasMapping(this->pOriNtk));
-    this->maxDelay = Ckt_GetDelay(this->pOriNtk);
+    if (Abc_NtkHasMapping(this->pOriNtk))
+        this->maxDelay = Ckt_GetDelay(this->pOriNtk);
+    else
+        this->maxDelay = DBL_MAX;
     this->pPars = InitMfsPars();
     DASSERT(nFrame > 0);
     DASSERT(pOriNtk != nullptr);
@@ -107,7 +110,7 @@ void Dcals_Man_t::LocalAppChange()
         int isUpdated = LocalAppChangeNode(pMfsMan, pObjCand);
         if (isUpdated) {
             double er = 0;
-            if (!mode)
+            if (!metricType)
                 er = MeasureER(pOriNtk, pCandNtk, 102400, 100);
             else
                 er = MeasureAEMR(pOriNtk, pCandNtk, 10240, 100);
@@ -168,8 +171,10 @@ void Dcals_Man_t::LocalAppChange()
     // evaluate the current approximate circuit
     ostringstream fileName("");
     fileName << pAppNtk->pName << "_" << metric;
-    Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay);
-    // Ckt_EvalFPGA(pAppNtk, fileName.str());
+    if (!mapType)
+        Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay);
+    else
+        Ckt_EvalFPGA(pAppNtk, fileName.str());
 }
 
 
@@ -192,7 +197,7 @@ void Dcals_Man_t::ConstReplace()
         Abc_ObjReplace(pObjCand, pConst0);
 
         // evaluate
-        if (!mode)
+        if (!metricType)
             er = MeasureER(pOriNtk, pCandNtk, 102400, 100);
         else
             er = MeasureAEMR(pOriNtk, pCandNtk, 10240, 100);
@@ -207,7 +212,7 @@ void Dcals_Man_t::ConstReplace()
         Abc_ObjReplace(pConst0, pConst1);
 
         // evaluate
-        if (!mode)
+        if (!metricType)
             er = MeasureER(pOriNtk, pCandNtk, 102400, 100);
         else
             er = MeasureAEMR(pOriNtk, pCandNtk, 10240, 100);

@@ -14,7 +14,7 @@ then
     mkdir appntk
 fi
 
-for file in data/epfl/random_control/*
+for file in data/epfl/size/random/*
 do
     if test -f $file
     then
@@ -23,7 +23,7 @@ do
         if [[ "$name" == *.blif ]]
         then
             echo ${filename}
-            (nohup ./main -i ${file} -s 0 -f 64 -c 30 -r 0.01 > log/${filename}.log &)
+            (nohup ./main -i ${file} -r 0.01 -t 1 > log/${filename}.log &)
         fi
     fi
 done

@@ -58,13 +58,12 @@ void Ckt_EvalFPGA(Abc_Ntk_t * pNtk, string fileName)
 
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
     Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pNtk));
-    Command = resyn2 + string("if -K 6;");
+    Command = resyn2 + string("if -K 6 -a;");
     for (int i = 0; i < 10; ++i)
         DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
-    // Command = string("print_stats");
-    // DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
     int size = Abc_NtkNodeNum(Abc_FrameReadNtk(pAbc));
     int depth = Abc_NtkLevel(Abc_FrameReadNtk(pAbc));
+    cout << "size = " << size << ", " << "depth = " << depth << endl;
     Command = string("write_blif ");
     ostringstream ss("");
     ss << "appntk/" << fileName << "_" << size << "_" << depth << ".blif";
@@ -321,4 +320,12 @@ void Abc_NodeDelayTraceArrival(Abc_Obj_t * pNode, Vec_Int_t * vSlacks)
             Abc_NtkDelayTraceSetSlack( vSlacks, pNode, i, Slack );
         }
     }
+}
+
+
+void Ckt_NtkRename(Abc_Ntk_t * pNtk, const char * name)
+{
+    free(pNtk->pName);
+    pNtk->pName = (char *)malloc(strlen(name) + 1);
+    memcpy(pNtk->pName, name, strlen(name) + 1);
 }

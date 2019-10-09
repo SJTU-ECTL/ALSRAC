@@ -14,6 +14,7 @@ parser Cmdline_Parser(int argc, char * argv[])
     option.add <string> ("approx", 'x', "Approximate Circuit file", false, "");
     option.add <string> ("genlib", 'l', "Standard Cell Library", false, "data/genlib/mcnc.genlib");
     option.add <int> ("select", 's', "Mode Selection, 0 = dcals, 1 = measure", false, 0, range(0, 1));
+    option.add <int> ("mapType", 't', "Mapping Type, 0 = mcnc, 1 = lut", false, 0, range(0, 1));
     option.add <int> ("nFrame", 'f', "Initial Simulation Round", false, 64, range(1, INT_MAX));
     option.add <int> ("nCut", 'c', "Initial Cut Size", false, 30, range(1, INT_MAX));
     option.add <double> ("aemr", 'm', "Average Error Magnitude Rate Constraint", false, 1.0, range(0.0, 1.0));
@@ -30,6 +31,7 @@ int main(int argc, char * argv[])
     string approx = option.get <string> ("approx");
     string genlib = option.get <string> ("genlib");
     int select = option.get <int> ("select");
+    int mapType = option.get <int> ("mapType");
     int nFrame = option.get <int> ("nFrame");
     int nCut = option.get <int> ("nCut");
     double aemr = option.get <double> ("aemr");
@@ -47,15 +49,20 @@ int main(int argc, char * argv[])
         command << "read_blif " << input;
         DASSERT(!Cmd_CommandExecute(pAbc, command.str().c_str()));
         Abc_Ntk_t * pNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
-        // DASSERT(Abc_NtkHasMapping(pNtk));
+        uint32_t pos0 = input.find(".blif");
+        DASSERT(pos0 != input.npos);
+        uint32_t pos1 = input.rfind("/");
+        if (pos1 == input.npos)
+            pos1 = -1;
+        Ckt_NtkRename(pNtk, input.substr(pos1 + 1, pos0 - pos1 - 1).c_str());
 
         if (er < 1.0) {
-            Dcals_Man_t alsEng(pNtk, nFrame, nCut, er, 0);
+            Dcals_Man_t alsEng(pNtk, nFrame, nCut, er, 0, mapType);
             alsEng.DCALS();
         }
         else {
             DASSERT(aemr < 1.0);
-            Dcals_Man_t alsEng(pNtk, nFrame, nCut, aemr, 1);
+            Dcals_Man_t alsEng(pNtk, nFrame, nCut, aemr, 1, mapType);
             alsEng.DCALS();
         }
 

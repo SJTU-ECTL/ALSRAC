@@ -20,5 +20,8 @@ void Abc_NodeDelayTraceArrival(Abc_Obj_t * pNode, Vec_Int_t * vSlacks);
 void Abc_ManTimeExpand(Abc_ManTime_t * p, int nSize, int fProgressive);
 Abc_ManTime_t * Abc_ManTimeStart(Abc_Ntk_t * pNtk);
 
+// misc
+void Ckt_NtkRename(Abc_Ntk_t * pNtk, const char * name);
+
 
 #endif
