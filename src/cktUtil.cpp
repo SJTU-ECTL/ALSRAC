@@ -4,6 +4,7 @@
 using namespace std;
 
 
+// evaluate
 void Ckt_EvalASIC(Abc_Ntk_t * pNtk, string fileName, double maxDelay)
 {
     string Command;
@@ -47,22 +48,46 @@ void Ckt_EvalASIC(Abc_Ntk_t * pNtk, string fileName, double maxDelay)
     string str = ss.str();
     Command += str;
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
-    // return make_pair <double, double> (area, delay);
 }
 
 
-void Ckt_EvalFPGA(Abc_Ntk_t * pNtk, string fileName)
+void Ckt_EvalFPGA(Abc_Ntk_t * pNtk, string fileName, string map)
 {
-    string Command;
-    string resyn2 = "strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance;";
+    const string resyn2 = "strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance;";
 
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
     Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pNtk));
-    Command = resyn2 + string("if -K 6 -a;");
-    for (int i = 0; i < 10; ++i)
-        DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+    string Command = resyn2 + map;
+
+    // synthesis and mapping
+    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
     int size = Abc_NtkNodeNum(Abc_FrameReadNtk(pAbc));
     int depth = Abc_NtkLevel(Abc_FrameReadNtk(pAbc));
+    int bestSize = size;
+    int bestDepth = depth;
+    bool terminate = false;
+    int nRounds = 0;
+
+    // repeat until no improvement
+    while (!terminate) {
+        terminate = true;
+        ++nRounds;
+
+        DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+        size = Abc_NtkNodeNum(Abc_FrameReadNtk(pAbc));
+        depth = Abc_NtkLevel(Abc_FrameReadNtk(pAbc));
+        if (size < bestSize) {
+            bestSize = size;
+            bestDepth = depth;
+            terminate = false;
+        }
+        else if (size == bestSize && depth < bestDepth) {
+            bestDepth = depth;
+            terminate = false;
+        }
+    }
+
+    // output
     cout << "size = " << size << ", " << "depth = " << depth << endl;
     Command = string("write_blif ");
     ostringstream ss("");
@@ -177,74 +202,6 @@ void Abc_NtkTimePrepare(Abc_Ntk_t * pNtk)
 }
 
 
-void Abc_ManTimeExpand(Abc_ManTime_t * p, int nSize, int fProgressive)
-{
-    Vec_Ptr_t * vTimes;
-    Abc_Time_t * ppTimes, * ppTimesOld, * pTime;
-    int nSizeOld, nSizeNew, i;
-
-    nSizeOld = p->vArrs->nSize;
-    if ( nSizeOld >= nSize )
-        return;
-    nSizeNew = fProgressive? 2 * nSize : nSize;
-    if ( nSizeNew < 100 )
-        nSizeNew = 100;
-
-    vTimes = p->vArrs;
-    Vec_PtrGrow( vTimes, nSizeNew );
-    vTimes->nSize = nSizeNew;
-    ppTimesOld = ( nSizeOld == 0 )? NULL : (Abc_Time_t *)vTimes->pArray[0];
-    ppTimes = ABC_REALLOC( Abc_Time_t, ppTimesOld, nSizeNew );
-    for ( i = 0; i < nSizeNew; i++ )
-        vTimes->pArray[i] = ppTimes + i;
-    for ( i = nSizeOld; i < nSizeNew; i++ )
-    {
-        pTime = (Abc_Time_t *)vTimes->pArray[i];
-        pTime->Rise  = -ABC_INFINITY;
-        pTime->Fall  = -ABC_INFINITY;
-    }
-
-    vTimes = p->vReqs;
-    Vec_PtrGrow( vTimes, nSizeNew );
-    vTimes->nSize = nSizeNew;
-    ppTimesOld = ( nSizeOld == 0 )? NULL : (Abc_Time_t *)vTimes->pArray[0];
-    ppTimes = ABC_REALLOC( Abc_Time_t, ppTimesOld, nSizeNew );
-    for ( i = 0; i < nSizeNew; i++ )
-        vTimes->pArray[i] = ppTimes + i;
-    for ( i = nSizeOld; i < nSizeNew; i++ )
-    {
-        pTime = (Abc_Time_t *)vTimes->pArray[i];
-        pTime->Rise  = ABC_INFINITY;
-        pTime->Fall  = ABC_INFINITY;
-    }
-}
-
-
-Abc_ManTime_t * Abc_ManTimeStart(Abc_Ntk_t * pNtk)
-{
-    int fUseZeroDefaultOutputRequired = 1;
-    Abc_ManTime_t * p;
-    Abc_Obj_t * pObj; int i;
-    p = pNtk->pManTime = ABC_ALLOC( Abc_ManTime_t, 1 );
-    memset( p, 0, sizeof(Abc_ManTime_t) );
-    p->vArrs = Vec_PtrAlloc( 0 );
-    p->vReqs = Vec_PtrAlloc( 0 );
-    // set default default input=arrivals (assumed to be 0)
-    // set default default output-requireds (can be either 0 or +infinity, based on the flag)
-    p->tReqDef.Rise = fUseZeroDefaultOutputRequired ? 0 : ABC_INFINITY;
-    p->tReqDef.Fall = fUseZeroDefaultOutputRequired ? 0 : ABC_INFINITY;
-    // extend manager
-    Abc_ManTimeExpand( p, Abc_NtkObjNumMax(pNtk) + 1, 0 );
-    // set the default timing for CIs
-    Abc_NtkForEachCi( pNtk, pObj, i )
-        Abc_NtkTimeSetArrival( pNtk, Abc_ObjId(pObj), p->tArrDef.Rise, p->tArrDef.Rise );
-    // set the default timing for COs
-    Abc_NtkForEachCo( pNtk, pObj, i )
-        Abc_NtkTimeSetRequired( pNtk, Abc_ObjId(pObj), p->tReqDef.Rise, p->tReqDef.Rise );
-    return p;
-}
-
-
 void Abc_NodeDelayTraceArrival(Abc_Obj_t * pNode, Vec_Int_t * vSlacks)
 {
     Abc_Obj_t * pFanin;
@@ -323,9 +280,109 @@ void Abc_NodeDelayTraceArrival(Abc_Obj_t * pNode, Vec_Int_t * vSlacks)
 }
 
 
+void Abc_ManTimeExpand(Abc_ManTime_t * p, int nSize, int fProgressive)
+{
+    Vec_Ptr_t * vTimes;
+    Abc_Time_t * ppTimes, * ppTimesOld, * pTime;
+    int nSizeOld, nSizeNew, i;
+
+    nSizeOld = p->vArrs->nSize;
+    if ( nSizeOld >= nSize )
+        return;
+    nSizeNew = fProgressive? 2 * nSize : nSize;
+    if ( nSizeNew < 100 )
+        nSizeNew = 100;
+
+    vTimes = p->vArrs;
+    Vec_PtrGrow( vTimes, nSizeNew );
+    vTimes->nSize = nSizeNew;
+    ppTimesOld = ( nSizeOld == 0 )? NULL : (Abc_Time_t *)vTimes->pArray[0];
+    ppTimes = ABC_REALLOC( Abc_Time_t, ppTimesOld, nSizeNew );
+    for ( i = 0; i < nSizeNew; i++ )
+        vTimes->pArray[i] = ppTimes + i;
+    for ( i = nSizeOld; i < nSizeNew; i++ )
+    {
+        pTime = (Abc_Time_t *)vTimes->pArray[i];
+        pTime->Rise  = -ABC_INFINITY;
+        pTime->Fall  = -ABC_INFINITY;
+    }
+
+    vTimes = p->vReqs;
+    Vec_PtrGrow( vTimes, nSizeNew );
+    vTimes->nSize = nSizeNew;
+    ppTimesOld = ( nSizeOld == 0 )? NULL : (Abc_Time_t *)vTimes->pArray[0];
+    ppTimes = ABC_REALLOC( Abc_Time_t, ppTimesOld, nSizeNew );
+    for ( i = 0; i < nSizeNew; i++ )
+        vTimes->pArray[i] = ppTimes + i;
+    for ( i = nSizeOld; i < nSizeNew; i++ )
+    {
+        pTime = (Abc_Time_t *)vTimes->pArray[i];
+        pTime->Rise  = ABC_INFINITY;
+        pTime->Fall  = ABC_INFINITY;
+    }
+}
+
+
+Abc_ManTime_t * Abc_ManTimeStart(Abc_Ntk_t * pNtk)
+{
+    int fUseZeroDefaultOutputRequired = 1;
+    Abc_ManTime_t * p;
+    Abc_Obj_t * pObj; int i;
+    p = pNtk->pManTime = ABC_ALLOC( Abc_ManTime_t, 1 );
+    memset( p, 0, sizeof(Abc_ManTime_t) );
+    p->vArrs = Vec_PtrAlloc( 0 );
+    p->vReqs = Vec_PtrAlloc( 0 );
+    // set default default input=arrivals (assumed to be 0)
+    // set default default output-requireds (can be either 0 or +infinity, based on the flag)
+    p->tReqDef.Rise = fUseZeroDefaultOutputRequired ? 0 : ABC_INFINITY;
+    p->tReqDef.Fall = fUseZeroDefaultOutputRequired ? 0 : ABC_INFINITY;
+    // extend manager
+    Abc_ManTimeExpand( p, Abc_NtkObjNumMax(pNtk) + 1, 0 );
+    // set the default timing for CIs
+    Abc_NtkForEachCi( pNtk, pObj, i )
+        Abc_NtkTimeSetArrival( pNtk, Abc_ObjId(pObj), p->tArrDef.Rise, p->tArrDef.Rise );
+    // set the default timing for COs
+    Abc_NtkForEachCo( pNtk, pObj, i )
+        Abc_NtkTimeSetRequired( pNtk, Abc_ObjId(pObj), p->tReqDef.Rise, p->tReqDef.Rise );
+    return p;
+}
+
+
+// misc
 void Ckt_NtkRename(Abc_Ntk_t * pNtk, const char * name)
 {
     free(pNtk->pName);
     pNtk->pName = (char *)malloc(strlen(name) + 1);
     memcpy(pNtk->pName, name, strlen(name) + 1);
+}
+
+
+Abc_Obj_t * Ckt_GetConst(Abc_Ntk_t * pNtk, bool isConst1)
+{
+    Abc_Obj_t * pNode = nullptr;
+    int i = 0;
+    Abc_Obj_t * pConst = nullptr;
+    if (!isConst1) {
+        Abc_NtkForEachNode(pNtk, pNode, i) {
+            if (Abc_NodeIsConst0(pNode)) {
+                pConst = pNode;
+                break;
+            }
+        }
+    }
+    else {
+        Abc_NtkForEachNode(pNtk, pNode, i) {
+            if (Abc_NodeIsConst1(pNode)) {
+                pConst = pNode;
+                break;
+            }
+        }
+    }
+    if (pConst == nullptr) {
+        if (!isConst1)
+            pConst = Abc_NtkCreateNodeConst0(pNtk);
+        else
+            pConst = Abc_NtkCreateNodeConst1(pNtk);
+    }
+    return pConst;
 }

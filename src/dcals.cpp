@@ -59,13 +59,17 @@ Mfs_Par_t * Dcals_Man_t::InitMfsPars()
 
 void Dcals_Man_t::DCALS()
 {
+    if (mapType == 1) {
+        cout << "Original circuit: size = " << Abc_NtkNodeNum(pOriNtk)
+        << ", depth = " << Abc_NtkLevel(pOriNtk) << endl;
+    }
+    clock_t st = clock();
     while (metric < metricBound) {
         if (nFrame != 0)
             LocalAppChange();
         else
-            DASSERT(0);
-        // else
-        //     ConstReplace();
+            ConstReplace();
+        cout << "time = " << clock() - st << endl << endl;
     }
 }
 
@@ -108,6 +112,7 @@ void Dcals_Man_t::LocalAppChange()
         Abc_NtkStartReverseLevels(pCandNtk, pPars->nGrowthLevel);
         // evaluate a candidate
         int isUpdated = LocalAppChangeNode(pMfsMan, pObjCand);
+
         if (isUpdated) {
             double er = 0;
             if (!metricType)
@@ -166,6 +171,7 @@ void Dcals_Man_t::LocalAppChange()
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
     Command = string("logic; sweep; mfs");
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+    Abc_NtkDelete(pAppNtk);
     pAppNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
 
     // evaluate the current approximate circuit
@@ -173,13 +179,19 @@ void Dcals_Man_t::LocalAppChange()
     fileName << pAppNtk->pName << "_" << metric;
     if (!mapType)
         Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay);
-    else
-        Ckt_EvalFPGA(pAppNtk, fileName.str());
+    else {
+        Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6 -a;");
+        Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6;");
+    }
 }
 
 
 void Dcals_Man_t::ConstReplace()
 {
+    DASSERT(Abc_NtkIsLogic(pAppNtk));
+    DASSERT(Abc_NtkToAig(pAppNtk));
+    DASSERT(Abc_NtkHasAig(pAppNtk));
+
     double er = 0;
     double bestEr = 1.0;
     int bestId = -1;
@@ -188,12 +200,14 @@ void Dcals_Man_t::ConstReplace()
     int i = 0;
     cout << "nframe = " << nFrame << endl;
     Abc_NtkForEachNode(pAppNtk, pObjApp, i) {
+        if (Abc_NodeIsConst(pObjApp))
+            continue;
         Abc_Ntk_t * pCandNtk = Abc_NtkDup(pAppNtk);
         Abc_Obj_t * pObjCand = Abc_NtkObj(pCandNtk, i);
         DASSERT(!strcmp(Abc_ObjName(pObjCand), Abc_ObjName(pObjApp)));
 
         // replace with const 0
-        Abc_Obj_t * pConst0 = Abc_NtkCreateNodeConst0(pCandNtk);
+        Abc_Obj_t * pConst0 = Ckt_GetConst(pCandNtk, 0);
         Abc_ObjReplace(pObjCand, pConst0);
 
         // evaluate
@@ -208,7 +222,7 @@ void Dcals_Man_t::ConstReplace()
         }
 
         // replace with const 1
-        Abc_Obj_t * pConst1 = Abc_NtkCreateNodeConst1(pCandNtk);
+        Abc_Obj_t * pConst1 = Ckt_GetConst(pCandNtk, 1);
         Abc_ObjReplace(pConst0, pConst1);
 
         // evaluate
@@ -226,12 +240,14 @@ void Dcals_Man_t::ConstReplace()
     }
 
     // apply the constant replacement
-    DASSERT(bestId != -1);
-    cout << "best node " << Abc_ObjName(Abc_NtkObj(pAppNtk, bestId)) << " best error " << bestEr << endl;
-    if (isConst0)
-        Abc_ObjReplace(Abc_NtkObj(pAppNtk, bestId), Abc_NtkCreateNodeConst0(pAppNtk));
-    else
-        Abc_ObjReplace(Abc_NtkObj(pAppNtk, bestId), Abc_NtkCreateNodeConst1(pAppNtk));
+    if (bestId != -1) {
+        cout << "best node " << Abc_ObjName(Abc_NtkObj(pAppNtk, bestId)) << " best error " << bestEr << endl;
+        if (isConst0)
+            Abc_ObjReplace(Abc_NtkObj(pAppNtk, bestId), Ckt_GetConst(pAppNtk, 0));
+        else
+            Abc_ObjReplace(Abc_NtkObj(pAppNtk, bestId), Ckt_GetConst(pAppNtk, 1));
+        metric = bestEr;
+    }
 
     // disturb the network
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
@@ -240,12 +256,18 @@ void Dcals_Man_t::ConstReplace()
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
     Command = string("logic; sweep; mfs");
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+    Abc_NtkDelete(pAppNtk);
     pAppNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
 
     // evaluate the current approximate circuit
     ostringstream fileName("");
     fileName << pAppNtk->pName << "_" << metric;
-    Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay);
+    if (!mapType)
+        Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay);
+    else {
+        Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6 -a;");
+        Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6;");
+    }
 }
 
 

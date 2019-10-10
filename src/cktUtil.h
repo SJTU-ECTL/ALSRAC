@@ -7,9 +7,9 @@
 #include "debugAssert.h"
 
 
-// evaluate asic
+// evaluate
 void Ckt_EvalASIC(Abc_Ntk_t * pNtk, std::string fileName, double maxDelay);
-void Ckt_EvalFPGA(Abc_Ntk_t * pNtk, std::string fileName);
+void Ckt_EvalFPGA(Abc_Ntk_t * pNtk, std::string fileName, std::string map = "strash;if -K 6 -a;");
 float Ckt_GetArea(Abc_Ntk_t * pNtk);
 float Ckt_GetDelay(Abc_Ntk_t * pNtk);
 
@@ -22,6 +22,7 @@ Abc_ManTime_t * Abc_ManTimeStart(Abc_Ntk_t * pNtk);
 
 // misc
 void Ckt_NtkRename(Abc_Ntk_t * pNtk, const char * name);
+Abc_Obj_t * Ckt_GetConst(Abc_Ntk_t * pNtk, bool isConst1 = true);
 
 
 #endif
