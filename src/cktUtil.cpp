@@ -386,3 +386,39 @@ Abc_Obj_t * Ckt_GetConst(Abc_Ntk_t * pNtk, bool isConst1)
     }
     return pConst;
 }
+
+
+void Ckt_PrintNodeFunc(Abc_Obj_t * pNode)
+{
+    DASSERT(pNode != nullptr);
+    DASSERT(Abc_NtkIsAigLogic(pNode->pNtk));
+    Vec_Vec_t * vLevels = Vec_VecAlloc( 10 );
+    // set the input names
+    Abc_Obj_t * pFanin = nullptr;
+    int k = 0;
+    Abc_ObjForEachFanin( pNode, pFanin, k )
+        Hop_IthVar((Hop_Man_t *)pNode->pNtk->pManFunc, k)->pData = Abc_ObjName(pFanin);
+    // write the formula
+    cout << Abc_ObjName(pNode) << " = ";
+    Hop_ObjPrintEqn( stdout, (Hop_Obj_t *)pNode->pData, vLevels, 0 );
+    cout << endl;
+    Vec_VecFree( vLevels );
+}
+
+
+void Ckt_PrintHopFunc(Hop_Obj_t * pHopObj, Vec_Ptr_t * vFanins)
+{
+    DASSERT(pHopObj != nullptr);
+    DASSERT(vFanins != nullptr);
+    Vec_Vec_t * vLevels = Vec_VecAlloc( 10 );
+    // set the input names
+    int k = 0;
+    Abc_Obj_t * pFanin = nullptr;
+    Vec_PtrForEachEntry(Abc_Obj_t *, vFanins, pFanin, k)
+        Hop_IthVar((Hop_Man_t *)pFanin->pNtk->pManFunc, k)->pData = Abc_ObjName(pFanin);
+    // write the formula
+    cout << "F = ";
+    Hop_ObjPrintEqn( stdout, pHopObj, vLevels, 0 );
+    cout << endl;
+    Vec_VecFree( vLevels );
+}

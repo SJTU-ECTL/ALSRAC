@@ -43,6 +43,7 @@ public:
     void PrintOutputStream(int frameId = 0) const;
     void Stop();
 
+    inline Abc_Ntk_t * GetNetwork() const {return pNtk;}
     inline int GetFrameNum() const {return nFrame;}
     inline int GetBlockNum() const {return nBlock;}
     inline int GetLastBlockLen() const {return nLastBlock;}
@@ -52,6 +53,9 @@ public:
 
 double MeasureAEMR(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame = 102400, unsigned seed = 314, bool isCheck = true);
 double MeasureER(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame = 102400, unsigned seed = 314, bool isCheck = true);
+double GetER(Simulator_t * pSmlt1, Simulator_t * pSmlt2, bool isCheck = true);
+bool IOChecker(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2);
+bool SmltChecker(Simulator_t * pSmlt1, Simulator_t * pSmlt2);
 
 
 #endif

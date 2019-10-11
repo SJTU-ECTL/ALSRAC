@@ -28,14 +28,19 @@ public:
     void DCALS();
     void LocalAppChange();
     void ConstReplace();
-    int LocalAppChangeNode(Mfs_Man_t * p, Abc_Obj_t * pNode);
+    Hop_Obj_t * LocalAppChangeNode(Mfs_Man_t * p, Abc_Obj_t * pNode);
     Aig_Man_t * ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode);
 };
+
 
 Aig_Obj_t * Abc_NtkConstructAig_rec(Mfs_Man_t * p, Abc_Obj_t * pNode, Aig_Man_t * pMan);
 void Abc_MfsConvertHopToAig(Abc_Obj_t * pObjOld, Aig_Man_t * pMan);
 void Abc_MfsConvertHopToAig_rec(Hop_Obj_t * pObj, Aig_Man_t * pMan);
-Vec_Ptr_t * App_FindLocalInput(Abc_Obj_t * pNode, int nMax);
+Vec_Ptr_t * Ckt_FindCut(Abc_Obj_t * pNode, int nMax);
+Hop_Obj_t * Ckt_NtkMfsResubNode(Mfs_Man_t * p, Abc_Obj_t * pNode);
+Hop_Obj_t * Ckt_NtkMfsSolveSatResub(Mfs_Man_t * p, Abc_Obj_t * pNode, int iFanin, int fOnlyRemove);
+int Ckt_NtkMfsTryResubOnce(Mfs_Man_t * p, int * pCands, int nCands);
+void Ckt_NtkMfsUpdateNetwork(Mfs_Man_t * p, Abc_Obj_t * pObj, Vec_Ptr_t * vMfsFanins, Hop_Obj_t * pFunc);
 
 
 #endif

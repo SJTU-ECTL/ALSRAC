@@ -78,11 +78,19 @@ int main(int argc, char * argv[])
         command << "read_blif " << approx;
         DASSERT(!Cmd_CommandExecute(pAbc, command.str().c_str()));
         Abc_Ntk_t * pNtk2 = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
-        cout << "area = " << Ckt_GetArea(pNtk2) << endl;
-        cout << "delay = " << Ckt_GetDelay(pNtk2) << endl;
+        if (Abc_NtkHasMapping(pNtk2)) {
+            cout << "area = " << Ckt_GetArea(pNtk2) << endl;
+            cout << "delay = " << Ckt_GetDelay(pNtk2) << endl;
+        }
+        else {
+            cout << "size = " << Abc_NtkNodeNum(pNtk2) << endl;
+            cout << "depth = " << Abc_NtkLevel(pNtk2) << endl;
+        }
         DASSERT(Abc_NtkToAig(pNtk2));
-        cout << "error rate = " << MeasureER(pNtk1, pNtk2, nFrame) << endl;
-        cout << "average error magnitude rate = " << MeasureAEMR(pNtk1, pNtk2, nFrame) << endl;
+        random_device rd;
+        unsigned seed = static_cast <unsigned>(rd());
+        cout << "error rate = " << MeasureER(pNtk1, pNtk2, nFrame, seed) << endl;
+        cout << "average error magnitude rate = " << MeasureAEMR(pNtk1, pNtk2, nFrame, seed) << endl;
         Abc_NtkDelete(pNtk1);
         Abc_NtkDelete(pNtk2);
     }

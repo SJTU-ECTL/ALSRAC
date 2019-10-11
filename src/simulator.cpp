@@ -115,6 +115,10 @@ void Simulator_t::Simulate()
 
 void Simulator_t::UpdateAigNode(Abc_Obj_t * pObj)
 {
+    // cout << "simulate " << Abc_ObjName(pObj) << endl;
+    // extern void Ckt_PrintNodeFunc(Abc_Obj_t * pNode);
+    // Ckt_PrintNodeFunc(pObj);
+
     Hop_Obj_t * pHopObj = nullptr;
     Abc_Obj_t * pFanin = nullptr;
     int maxHopId = -1;
@@ -304,17 +308,8 @@ double MeasureAEMR(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned se
 
 double MeasureER(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
 {
-    // check PI/PO
-    int nPo = Abc_NtkPoNum(pNtk1);
-    if (isCheck) {
-        DASSERT(nPo == Abc_NtkPoNum(pNtk2));
-        for (int i = 0; i < nPo; ++i)
-            DASSERT(!strcmp(Abc_ObjName(Abc_NtkPo(pNtk1, i)), Abc_ObjName(Abc_NtkPo(pNtk2, i))));
-        int nPi = Abc_NtkPiNum(pNtk1);
-        DASSERT(nPi == Abc_NtkPiNum(pNtk2));
-        for (int i = 0; i < nPi; ++i)
-            DASSERT(!strcmp(Abc_ObjName(Abc_NtkPi(pNtk1, i)), Abc_ObjName(Abc_NtkPi(pNtk2, i))));
-    }
+    if (isCheck)
+        DASSERT(IOChecker(pNtk1, pNtk2));
 
     // simulation
     Simulator_t smlt1(pNtk1, nFrame);
@@ -325,20 +320,64 @@ double MeasureER(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed
     smlt2.Simulate();
 
     // compute
+    double ret = GetER(&smlt1, &smlt2, true);
+
+    // stop simulation manager
+    smlt1.Stop();
+    smlt2.Stop();
+    return ret;
+}
+
+
+double GetER(Simulator_t * pSmlt1, Simulator_t * pSmlt2, bool isCheck)
+{
+    if (isCheck)
+        DASSERT(SmltChecker(pSmlt1, pSmlt2));
+
     int ret = 0;
-    for (int k = 0; k < smlt1.GetBlockNum(); ++k) {
+    Abc_Ntk_t * pNtk1 = pSmlt1->GetNetwork();
+    Abc_Ntk_t * pNtk2 = pSmlt2->GetNetwork();
+    int nPo = Abc_NtkPoNum(pNtk1);
+    int nBlock = pSmlt1->GetBlockNum();
+    int nLastBlock = pSmlt1->GetLastBlockLen();
+    for (int k = 0; k < nBlock; ++k) {
         uint64_t temp = 0;
         for (int i = 0; i < nPo; ++i)
             temp |= (*static_cast <tVec *>(Abc_ObjFanin0(Abc_NtkPo(pNtk1, i))->pTemp))[k] ^
                     (*static_cast <tVec *>(Abc_ObjFanin0(Abc_NtkPo(pNtk2, i))->pTemp))[k];
-        if (k == smlt1.GetBlockNum() - 1) {
-            temp >>= (64 - smlt1.GetLastBlockLen());
-            temp <<= (64 - smlt1.GetLastBlockLen());
+        if (k == nBlock - 1) {
+            temp >>= (64 - nLastBlock);
+            temp <<= (64 - nLastBlock);
         }
         ret += Ckt_CountOneNum(temp);
     }
+    return ret / static_cast<double> (pSmlt1->GetFrameNum());
+}
 
-    smlt1.Stop();
-    smlt2.Stop();
-    return ret / static_cast<double> (nFrame);
+
+bool IOChecker(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2)
+{
+    int nPo = Abc_NtkPoNum(pNtk1);
+    if (nPo != Abc_NtkPoNum(pNtk2))
+        return false;
+    for (int i = 0; i < nPo; ++i)
+        if (strcmp(Abc_ObjName(Abc_NtkPo(pNtk1, i)), Abc_ObjName(Abc_NtkPo(pNtk2, i))) != 0)
+            return false;
+    int nPi = Abc_NtkPiNum(pNtk1);
+    if (nPi != Abc_NtkPiNum(pNtk2))
+        return false;
+    for (int i = 0; i < nPi; ++i)
+        if (strcmp(Abc_ObjName(Abc_NtkPi(pNtk1, i)), Abc_ObjName(Abc_NtkPi(pNtk2, i))) != 0)
+            return false;
+    return true;
+}
+
+
+bool SmltChecker(Simulator_t * pSmlt1, Simulator_t * pSmlt2)
+{
+    if (!IOChecker(pSmlt1->GetNetwork(), pSmlt2->GetNetwork()))
+        return false;
+    if (pSmlt1->GetFrameNum() != pSmlt2->GetFrameNum())
+        return false;
+    return true;
 }
