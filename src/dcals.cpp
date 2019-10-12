@@ -68,10 +68,10 @@ void Dcals_Man_t::DCALS()
     }
     clock_t st = clock();
     while (metric < metricBound) {
-        if (nFrame != 0)
-            LocalAppChange();
-        else
-            ConstReplace();
+        // if (nFrame != 0)
+        //     LocalAppChange();
+        // else
+            ConstResub();
         cout << "time = " << clock() - st << endl << endl;
     }
 }
@@ -207,57 +207,60 @@ void Dcals_Man_t::LocalAppChange()
 }
 
 
-void Dcals_Man_t::ConstReplace()
+void Dcals_Man_t::ConstResub()
 {
     DASSERT(Abc_NtkIsLogic(pAppNtk));
     DASSERT(Abc_NtkToAig(pAppNtk));
     DASSERT(Abc_NtkHasAig(pAppNtk));
 
-    double er = 0;
     double bestEr = 1.0;
     int bestId = -1;
     bool isConst0 = false;
     Abc_Obj_t * pObjApp = nullptr;
     int i = 0;
     cout << "nframe = " << nFrame << endl;
+
+    // init simulator
+    pOriSmlt = new Simulator_Pro_t(this->pOriNtk, maxNFrame);
+    pOriSmlt->Input(100);
+    pOriSmlt->Simulate();
+    pAppSmlt = new Simulator_Pro_t(this->pAppNtk, maxNFrame);
+    pAppSmlt->Input(100);
+    pAppSmlt->Simulate();
+
+    // generate candidates
+    boost::progress_display pd(Abc_NtkNodeNum(pAppNtk));
+    Hop_Man_t * pHopMan = static_cast <Hop_Man_t *> (pAppNtk->pManFunc);
+    Vec_Ptr_t * vFanins = Vec_PtrAlloc(10);
     Abc_NtkForEachNode(pAppNtk, pObjApp, i) {
+        // process bar
+        ++pd;
+        // skip constant nodes
         if (Abc_NodeIsConst(pObjApp))
             continue;
-        Abc_Ntk_t * pCandNtk = Abc_NtkDup(pAppNtk);
-        Abc_Obj_t * pObjCand = Abc_NtkObj(pCandNtk, i);
-        DASSERT(!strcmp(Abc_ObjName(pObjCand), Abc_ObjName(pObjApp)));
-
-        // replace with const 0
-        Abc_Obj_t * pConst0 = Ckt_GetConst(pCandNtk, 0);
-        Abc_ObjReplace(pObjCand, pConst0);
-
-        // evaluate
+        // evaluate candidate zero
+        Hop_Obj_t * pFunc = Hop_ManConst0(pHopMan);
+        double er = 0;
         if (!metricType)
-            er = MeasureER(pOriNtk, pCandNtk, maxNFrame, 100);
+            er = MeasureResubER(pOriSmlt, pAppSmlt, pObjApp, pFunc, vFanins, false);
         else
-            er = MeasureAEMR(pOriNtk, pCandNtk, 10240, 100);
+            DASSERT(0);
         if (er < bestEr) {
             bestEr = er;
             bestId = i;
             isConst0 = true;
         }
-
-        // replace with const 1
-        Abc_Obj_t * pConst1 = Ckt_GetConst(pCandNtk, 1);
-        Abc_ObjReplace(pConst0, pConst1);
-
-        // evaluate
+        // evaluate candidate one
+        pFunc = Hop_ManConst1(pHopMan);
         if (!metricType)
-            er = MeasureER(pOriNtk, pCandNtk, maxNFrame, 100);
+            er = MeasureResubER(pOriSmlt, pAppSmlt, pObjApp, pFunc, vFanins, false);
         else
-            er = MeasureAEMR(pOriNtk, pCandNtk, 10240, 100);
+            DASSERT(0);
         if (er < bestEr) {
             bestEr = er;
             bestId = i;
             isConst0 = false;
         }
-
-        Abc_NtkDelete(pCandNtk);
     }
 
     // apply the constant replacement
@@ -269,6 +272,11 @@ void Dcals_Man_t::ConstReplace()
             Abc_ObjReplace(Abc_NtkObj(pAppNtk, bestId), Ckt_GetConst(pAppNtk, 1));
         metric = bestEr;
     }
+
+    // recycle memory
+    Vec_PtrFree(vFanins);
+    delete pOriSmlt;
+    delete pAppSmlt;
 
     // disturb the network
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
@@ -324,39 +332,23 @@ Aig_Man_t * Dcals_Man_t::ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode)
 {
     // find local pi
     Vec_Ptr_t * vCut = Ckt_FindCut(pNode, cutSize);
-    // // uniform distribution
-    // random::uniform_int_distribution <int> unf(0, maxNFrame - 1);
-    // random::mt19937 engine(seed);
-    // variate_generator <random::mt19937, random::uniform_int_distribution <int> > genId(engine, unf);
-    // // generate approximate care set
-    // set <string> patterns;
-    // for (int i = 0; i < nFrame; ++i) {
-    //     int frameId = genId();
-    //     int blockId = frameId >> 6;
-    //     int bitId = frameId % 64;
-    //     string pattern = "";
-    //     Abc_Obj_t * pObj = nullptr;
-    //     int k = 0;
-    //     Vec_PtrForEachEntry(Abc_Obj_t *, vCut, pObj, k)
-    //         pattern += pAppSmlt->GetValue(pObj, blockId, bitId) ? '1': '0';
-    //     patterns.insert(pattern);
-    // }
-    // perform logic simulation
-    Simulator_Pro_t smlt(pNode->pNtk, nFrame);
-    smlt.Input(seed);
-    smlt.Simulate();
+    // uniform distribution
+    random::uniform_int_distribution <int> unf(0, maxNFrame - 1);
+    random::mt19937 engine(seed);
+    variate_generator <random::mt19937, random::uniform_int_distribution <int> > genId(engine, unf);
+    // generate approximate care set
     set <string> patterns;
-    for (int i = 0; i < smlt.GetBlockNum(); ++i) {
-        for (int j = 0; j < 64; ++j) {
-            string pattern = "";
-            Abc_Obj_t * pObj = nullptr;
-            int k = 0;
-            Vec_PtrForEachEntry(Abc_Obj_t *, vCut, pObj, k)
-                pattern += smlt.GetValue(pObj, i, j)? '1': '0';
-            patterns.insert(pattern);
-        }
+    for (int i = 0; i < nFrame; ++i) {
+        int frameId = genId();
+        int blockId = frameId >> 6;
+        int bitId = frameId % 64;
+        string pattern = "";
+        Abc_Obj_t * pObj = nullptr;
+        int k = 0;
+        Vec_PtrForEachEntry(Abc_Obj_t *, vCut, pObj, k)
+            pattern += pAppSmlt->GetValue(pObj, blockId, bitId) ? '1': '0';
+        patterns.insert(pattern);
     }
-
     // start the new manager
     Aig_Man_t * pMan = Aig_ManStart( 1000 );
     // construct the root node's AIG cone
