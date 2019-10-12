@@ -9,6 +9,10 @@ Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metri
 {
     DASSERT(nFrame > 0);
     DASSERT(pNtk != nullptr);
+    if (Abc_NtkHasMapping(pNtk))
+        this->maxDelay = Ckt_GetDelay(pNtk);
+    else
+        this->maxDelay = DBL_MAX;
     DASSERT(Abc_NtkIsLogic(pNtk));
     DASSERT(Abc_NtkToAig(pNtk));
     DASSERT(Abc_NtkHasAig(pNtk));
@@ -22,10 +26,6 @@ Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metri
     this->cutSize = cutSize;
     this->metric = 0;
     this->metricBound = metricBound;
-    if (Abc_NtkHasMapping(this->pOriNtk))
-        this->maxDelay = Ckt_GetDelay(this->pOriNtk);
-    else
-        this->maxDelay = DBL_MAX;
     this->pPars = InitMfsPars();
 }
 
@@ -68,9 +68,9 @@ void Dcals_Man_t::DCALS()
     }
     clock_t st = clock();
     while (metric < metricBound) {
-        // if (nFrame != 0)
-        //     LocalAppChange();
-        // else
+        if (nFrame != 0)
+            LocalAppChange();
+        else
             ConstResub();
         cout << "time = " << clock() - st << endl << endl;
     }
