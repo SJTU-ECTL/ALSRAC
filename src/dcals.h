@@ -3,7 +3,7 @@
 
 
 #include <boost/progress.hpp>
-#include "simulator.h"
+#include "simulatorPro.h"
 #include "cktUtil.h"
 
 

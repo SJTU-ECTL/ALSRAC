@@ -1,6 +1,7 @@
 #include "headers.h"
 #include "cmdline.h"
 #include "dcals.h"
+#include "simulatorPro.h"
 
 
 using namespace std;

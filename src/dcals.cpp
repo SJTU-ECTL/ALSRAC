@@ -118,11 +118,11 @@ void Dcals_Man_t::LocalAppChange()
     Abc_NtkForEachNode(pAppNtk, pObjApp, i) {
         // process bar
         ++pd;
-        // skip nodes with deep levels and too much fanins
-        if ( pMfsMan->pPars->nDepthMax && (int)pObjApp->Level > pMfsMan->pPars->nDepthMax )
-            continue;
-        if ( Abc_ObjFaninNum(pObjApp) < 2 || Abc_ObjFaninNum(pObjApp) > nFaninMax )
-            continue;
+        // // skip nodes with deep levels and too much fanins
+        // if ( pMfsMan->pPars->nDepthMax && (int)pObjApp->Level > pMfsMan->pPars->nDepthMax )
+        //     continue;
+        // if ( Abc_ObjFaninNum(pObjApp) < 2 || Abc_ObjFaninNum(pObjApp) > nFaninMax )
+        //     continue;
 
         // print node function
         if ( pMfsMan->pPars->fVeryVerbose )
@@ -336,8 +336,8 @@ Aig_Man_t * Dcals_Man_t::ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode)
     // find local pi
     Vec_Ptr_t * vLocalPI = Ckt_FindCut(pNode, cutSize);
     // perform logic simulation
-    Simulator_t smlt(pNode->pNtk, nFrame);
-    smlt.Input(Distribution::uniform, seed);
+    Simulator_Pro_t smlt(pNode->pNtk, nFrame);
+    smlt.Input(seed);
     smlt.Simulate();
     set <string> patterns;
     for (int i = 0; i < smlt.GetBlockNum(); ++i) {
@@ -350,7 +350,6 @@ Aig_Man_t * Dcals_Man_t::ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode)
             patterns.insert(pattern);
         }
     }
-    smlt.Stop();
 
     // start the new manager
     Aig_Man_t * pMan = Aig_ManStart( 1000 );
