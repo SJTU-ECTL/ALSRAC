@@ -118,11 +118,11 @@ void Dcals_Man_t::LocalAppChange()
     Abc_NtkForEachNode(pAppNtk, pObjApp, i) {
         // process bar
         ++pd;
-        // // skip nodes with deep levels and too much fanins
-        // if ( pMfsMan->pPars->nDepthMax && (int)pObjApp->Level > pMfsMan->pPars->nDepthMax )
-        //     continue;
-        // if ( Abc_ObjFaninNum(pObjApp) < 2 || Abc_ObjFaninNum(pObjApp) > nFaninMax )
-        //     continue;
+        // skip nodes with deep levels and too much fanins
+        if ( pMfsMan->pPars->nDepthMax && (int)pObjApp->Level > pMfsMan->pPars->nDepthMax )
+            continue;
+        if ( Abc_ObjFaninNum(pObjApp) < 2 || Abc_ObjFaninNum(pObjApp) > nFaninMax )
+            continue;
 
         // print node function
         if ( pMfsMan->pPars->fVeryVerbose )
