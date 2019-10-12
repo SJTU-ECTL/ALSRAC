@@ -3,6 +3,7 @@
 
 
 #include <boost/progress.hpp>
+#include <boost/random.hpp>
 #include "simulatorPro.h"
 #include "cktUtil.h"
 
@@ -10,8 +11,12 @@
 class Dcals_Man_t
 {
 private:
+    const int maxNFrame = 102400;
+
     Abc_Ntk_t * pOriNtk;
     Abc_Ntk_t * pAppNtk;
+    Simulator_Pro_t * pOriSmlt;
+    Simulator_Pro_t * pAppSmlt;
     unsigned seed;
     int metricType;
     int mapType;
@@ -21,6 +26,10 @@ private:
     double metricBound;
     double maxDelay;
     Mfs_Par_t * pPars;
+
+    Dcals_Man_t & operator = (const Dcals_Man_t &);
+    Dcals_Man_t(const Dcals_Man_t &);
+
 public:
     explicit Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound, int metricType = 0, int mapType = 0);
     ~Dcals_Man_t();

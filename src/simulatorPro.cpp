@@ -18,8 +18,11 @@ Simulator_Pro_t::Simulator_Pro_t(Abc_Ntk_t * pNtk, int nFrame)
     Abc_NtkForEachObj(pNtk, pObj, i)
         maxId = max(maxId, pObj->Id);
     this->values.resize(maxId + 1);
-    Abc_NtkForEachObj(pNtk, pObj, i)
+    this->tmpValues.resize(maxId + 1);
+    Abc_NtkForEachObj(pNtk, pObj, i) {
         this->values[pObj->Id].resize(nBlock);
+        this->tmpValues[pObj->Id].resize(nBlock);
+    }
 }
 
 
@@ -39,8 +42,10 @@ void Simulator_Pro_t::Input(unsigned seed)
     Abc_Obj_t * pObj = nullptr;
     int k = 0;
     Abc_NtkForEachPi(pNtk, pObj, k) {
-        for (int i = 0; i < nBlock; ++i)
+        for (int i = 0; i < nBlock; ++i) {
             values[pObj->Id][i] = randomPI();
+            tmpValues[pObj->Id][i] = values[pObj->Id][i];
+        }
     }
 
     // constant nodes
@@ -49,12 +54,16 @@ void Simulator_Pro_t::Input(unsigned seed)
         Hop_Obj_t * pHopObj = static_cast <Hop_Obj_t *> (pObj->pData);
         if (Hop_ObjFanin0(pHopObj) == nullptr && Hop_ObjFanin1(pHopObj) == nullptr && pHopObj->Type != AIG_PI) {
             if (Hop_ObjIsConst1(pHopObj)) {
-                for (int i = 0; i < nBlock; ++i)
+                for (int i = 0; i < nBlock; ++i) {
                     values[pObj->Id][i] = static_cast <uint64_t> (ULLONG_MAX);
+                    tmpValues[pObj->Id][i] = static_cast <uint64_t> (ULLONG_MAX);
+                }
             }
             else {
-                for (int i = 0; i < nBlock; ++i)
+                for (int i = 0; i < nBlock; ++i) {
                     values[pObj->Id][i] = 0;
+                    tmpValues[pObj->Id][i] = 0;
+                }
             }
         }
     }
@@ -115,6 +124,21 @@ void Simulator_Pro_t::Simulate()
 }
 
 
+void Simulator_Pro_t::SimulateResub(Abc_Obj_t * pOldObj, Hop_Obj_t * pResubFunc, Vec_Ptr_t * vResubFanins)
+{
+    Abc_Obj_t * pObj = nullptr;
+    int i = 0;
+    Vec_Ptr_t * vNodes = Abc_NtkDfs(pNtk, 0);
+    Vec_PtrForEachEntry(Abc_Obj_t *, vNodes, pObj, i) {
+        if (pObj != pOldObj)
+            UpdateAigNodeResub(pObj, nullptr, nullptr);
+        else
+            UpdateAigNodeResub(pObj, pResubFunc, vResubFanins);
+    }
+    Vec_PtrFree(vNodes);
+}
+
+
 void Simulator_Pro_t::UpdateAigNode(Abc_Obj_t * pObj)
 {
     Hop_Man_t * pMan = static_cast <Hop_Man_t *> (pNtk->pManFunc);
@@ -136,9 +160,9 @@ void Simulator_Pro_t::UpdateAigNode(Abc_Obj_t * pObj)
         maxHopId = max(maxHopId, pHopObj->Id);
     Hop_ManForEachPi(pMan, pHopObj, i)
         maxHopId = max(maxHopId, pHopObj->Id);
-    vector < tVec > tmpValues(maxHopId + 1);
+    vector < tVec > interValues(maxHopId + 1);
     Vec_PtrForEachEntry(Hop_Obj_t *, vHopNodes, pHopObj, i)
-        tmpValues[pHopObj->Id].resize(nBlock);
+        interValues[pHopObj->Id].resize(nBlock);
     unordered_map <int, tVec *> hop2Val;
     Abc_Obj_t * pFanin = nullptr;
     Abc_ObjForEachFanin(pObj, pFanin, i)
@@ -157,9 +181,9 @@ void Simulator_Pro_t::UpdateAigNode(Abc_Obj_t * pObj)
         Hop_Obj_t * pHopFanin1 = Hop_ObjFanin1(pHopObj);
         DASSERT(!Hop_ObjIsConst1(pHopFanin0));
         DASSERT(!Hop_ObjIsConst1(pHopFanin1));
-        tVec & val0 = Hop_ObjIsPi(pHopFanin0) ? *hop2Val[pHopFanin0->Id] : tmpValues[pHopFanin0->Id];
-        tVec & val1 = Hop_ObjIsPi(pHopFanin1) ? *hop2Val[pHopFanin1->Id] : tmpValues[pHopFanin1->Id];
-        tVec & out = (pHopObj == pRootR) ? values[pObj->Id] : tmpValues[pHopObj->Id];
+        tVec & val0 = Hop_ObjIsPi(pHopFanin0) ? *hop2Val[pHopFanin0->Id] : interValues[pHopFanin0->Id];
+        tVec & val1 = Hop_ObjIsPi(pHopFanin1) ? *hop2Val[pHopFanin1->Id] : interValues[pHopFanin1->Id];
+        tVec & out = (pHopObj == pRootR) ? values[pObj->Id] : interValues[pHopObj->Id];
         bool isFanin0C = Hop_ObjFaninC0(pHopObj);
         bool isFanin1C = Hop_ObjFaninC1(pHopObj);
         if (!isFanin0C && !isFanin1C) {
@@ -184,6 +208,104 @@ void Simulator_Pro_t::UpdateAigNode(Abc_Obj_t * pObj)
     if (Hop_IsComplement(pRoot)) {
         for (int j = 0; j < nBlock; ++j)
             values[pObj->Id][j] ^= static_cast <uint64_t> (ULLONG_MAX);
+    }
+
+    // recycle memory
+    Vec_PtrFree(vHopNodes);
+}
+
+
+void Simulator_Pro_t::UpdateAigNodeResub(Abc_Obj_t * pObj, Hop_Obj_t * pResubFunc, Vec_Ptr_t * vResubFanins)
+{
+    Hop_Man_t * pMan = static_cast <Hop_Man_t *> (pNtk->pManFunc);
+    Hop_Obj_t * pRoot = (pResubFunc == nullptr) ? static_cast <Hop_Obj_t *> (pObj->pData): pResubFunc;
+    Hop_Obj_t * pRootR = Hop_Regular(pRoot);
+
+    // update constant node
+    if (Hop_ObjFanin0(pRoot) == nullptr && Hop_ObjFanin1(pRoot) == nullptr && pRoot->Type != AIG_PI) {
+        if (Hop_ObjIsConst1(pRootR)) {
+            for (int i = 0; i < nBlock; ++i)
+                tmpValues[pObj->Id][i] = static_cast <uint64_t> (ULLONG_MAX);
+            return;
+        }
+        else {
+            for (int i = 0; i < nBlock; ++i)
+                tmpValues[pObj->Id][i] = 0;
+            return;
+        }
+    }
+
+    // get topological order of subnetwork in aig
+    Vec_Ptr_t * vHopNodes = Hop_ManDfsNode(pMan, pRootR);
+
+    // init internal hop nodes
+    int maxHopId = -1;
+    int i = 0;
+    Hop_Obj_t * pHopObj = nullptr;
+    Vec_PtrForEachEntry(Hop_Obj_t *, vHopNodes, pHopObj, i)
+        maxHopId = max(maxHopId, pHopObj->Id);
+    Hop_ManForEachPi(pMan, pHopObj, i)
+        maxHopId = max(maxHopId, pHopObj->Id);
+    vector < tVec > interValues(maxHopId + 1);
+    Vec_PtrForEachEntry(Hop_Obj_t *, vHopNodes, pHopObj, i)
+        interValues[pHopObj->Id].resize(nBlock);
+    unordered_map <int, tVec *> hop2Val;
+    Abc_Obj_t * pFanin = nullptr;
+    if (pResubFunc != nullptr) {
+        Vec_PtrForEachEntry(Abc_Obj_t *, vResubFanins, pFanin, i) {
+            hop2Val[Hop_ManPi(pMan, i)->Id] = &tmpValues[pFanin->Id];
+        }
+    }
+    else {
+        Abc_ObjForEachFanin(pObj, pFanin, i)
+            hop2Val[Hop_ManPi(pMan, i)->Id] = &tmpValues[pFanin->Id];
+    }
+
+    // special case for inverter or buffer
+    if (pRootR->Type == AIG_PI) {
+        DASSERT(Vec_PtrSize(vHopNodes) == 0);
+        if (pResubFunc == nullptr)
+            pFanin = Abc_ObjFanin0(pObj);
+        else {
+            pFanin = static_cast <Abc_Obj_t *> (Vec_PtrEntry(vResubFanins, 0));
+        }
+        tmpValues[pObj->Id].assign(tmpValues[pFanin->Id].begin(), tmpValues[pFanin->Id].end());
+    }
+
+    // simulate
+    Vec_PtrForEachEntry(Hop_Obj_t *, vHopNodes, pHopObj, i) {
+        DASSERT(Hop_ObjIsAnd(pHopObj));
+        Hop_Obj_t * pHopFanin0 = Hop_ObjFanin0(pHopObj);
+        Hop_Obj_t * pHopFanin1 = Hop_ObjFanin1(pHopObj);
+        DASSERT(!Hop_ObjIsConst1(pHopFanin0));
+        DASSERT(!Hop_ObjIsConst1(pHopFanin1));
+        tVec & val0 = Hop_ObjIsPi(pHopFanin0) ? *hop2Val[pHopFanin0->Id] : interValues[pHopFanin0->Id];
+        tVec & val1 = Hop_ObjIsPi(pHopFanin1) ? *hop2Val[pHopFanin1->Id] : interValues[pHopFanin1->Id];
+        tVec & out = (pHopObj == pRootR) ? tmpValues[pObj->Id] : interValues[pHopObj->Id];
+        bool isFanin0C = Hop_ObjFaninC0(pHopObj);
+        bool isFanin1C = Hop_ObjFaninC1(pHopObj);
+        if (!isFanin0C && !isFanin1C) {
+            for (int j = 0; j < nBlock; ++j)
+                out[j] = val0[j] & val1[j];
+        }
+        else if (!isFanin0C && isFanin1C) {
+            for (int j = 0; j < nBlock; ++j)
+                out[j] = val0[j] & (~val1[j]);
+        }
+        else if (isFanin0C && !isFanin1C) {
+            for (int j = 0; j < nBlock; ++j)
+                out[j] = (~val0[j]) & val1[j];
+        }
+        else if (isFanin0C && isFanin1C) {
+            for (int j = 0; j < nBlock; ++j)
+                out[j] = ~(val0[j] | val1[j]);
+        }
+    }
+
+    // complement
+    if (Hop_IsComplement(pRoot)) {
+        for (int j = 0; j < nBlock; ++j)
+            tmpValues[pObj->Id][j] ^= static_cast <uint64_t> (ULLONG_MAX);
     }
 
     // recycle memory
@@ -299,14 +421,20 @@ double MeasureER(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed
     smlt2.Simulate();
 
     // compute
-    double ret = GetER(&smlt1, &smlt2, true);
-
-    // stop simulation manager
-    return ret;
+    return GetER(&smlt1, &smlt2, false, false);
 }
 
 
-double GetER(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck)
+double MeasureResubER(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, Abc_Obj_t * pOldObj, Hop_Obj_t * pResubFunc, Vec_Ptr_t * vResubFanins, bool isCheck)
+{
+    if (isCheck)
+        DASSERT(SmltChecker(pSmlt1, pSmlt2));
+    pSmlt2->SimulateResub(pOldObj, pResubFunc, vResubFanins);
+    return GetER(pSmlt1, pSmlt2, false, true);
+}
+
+
+double GetER(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck, bool isResub)
 {
     if (isCheck)
         DASSERT(SmltChecker(pSmlt1, pSmlt2));
@@ -318,7 +446,11 @@ double GetER(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck)
     int nBlock = pSmlt1->GetBlockNum();
     int nLastBlock = pSmlt1->GetLastBlockLen();
     vector <tVec> * pValues1 = pSmlt1->GetPValues();
-    vector <tVec> * pValues2 = pSmlt2->GetPValues();
+    vector <tVec> * pValues2 = nullptr;
+    if (!isResub)
+         pValues2 = pSmlt2->GetPValues();
+    else
+         pValues2 = pSmlt2->GetPTmpValues();
     for (int k = 0; k < nBlock; ++k) {
         uint64_t temp = 0;
         for (int i = 0; i < nPo; ++i)

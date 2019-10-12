@@ -2,12 +2,20 @@
 
 
 using namespace std;
+using namespace boost;
 
 
 Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound, int metricType, int mapType)
 {
+    DASSERT(nFrame > 0);
+    DASSERT(pNtk != nullptr);
+    DASSERT(Abc_NtkIsLogic(pNtk));
+    DASSERT(Abc_NtkToAig(pNtk));
+    DASSERT(Abc_NtkHasAig(pNtk));
     this->pOriNtk = pNtk;
     this->pAppNtk = Abc_NtkDup(this->pOriNtk);
+    this->pOriSmlt = nullptr;
+    this->pAppSmlt = nullptr;
     this->metricType = metricType;
     this->mapType = mapType;
     this->nFrame = nFrame;
@@ -19,11 +27,6 @@ Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metri
     else
         this->maxDelay = DBL_MAX;
     this->pPars = InitMfsPars();
-    DASSERT(nFrame > 0);
-    DASSERT(pOriNtk != nullptr);
-    DASSERT(Abc_NtkIsLogic(pOriNtk));
-    DASSERT(Abc_NtkToAig(pOriNtk));
-    DASSERT(Abc_NtkHasAig(pOriNtk));
 }
 
 
@@ -83,25 +86,28 @@ void Dcals_Man_t::LocalAppChange()
     DASSERT(Abc_NtkHasAig(pAppNtk));
     DASSERT(pAppNtk->pExcare == nullptr);
 
+    // check metric
+    double curEr = MeasureER(pOriNtk, pAppNtk, maxNFrame, 100, true);
+    DASSERT(curEr == metric);
+
     // new seed for logic simulation
     random_device rd;
     seed = static_cast <unsigned>(rd());
     cout << "nframe = " << nFrame << " seed = " << seed << endl;
     cout << "patience = " << pat1 << "," << pat2 << endl;
 
-    // maximum fanin limitation
-    int nFaninMax = Abc_NtkGetFaninMax(pAppNtk);
-    if ( nFaninMax > 8 )
-    {
-        printf( "Nodes with more than %d fanins will not be processed.\n", 8 );
-        nFaninMax = 8;
-    }
+    // init simulator
+    pOriSmlt = new Simulator_Pro_t(this->pOriNtk, maxNFrame);
+    pOriSmlt->Input(100);
+    pOriSmlt->Simulate();
+    pAppSmlt = new Simulator_Pro_t(this->pAppNtk, maxNFrame);
+    pAppSmlt->Input(100);
+    pAppSmlt->Simulate();
 
     // start the manager
     Mfs_Man_t * pMfsMan = Mfs_ManAlloc(pPars);
     DASSERT(pMfsMan->pCare == nullptr);
     pMfsMan->pNtk = pAppNtk;
-    pMfsMan->nFaninMax = nFaninMax;
 
     // compute level
     Abc_NtkLevel(pAppNtk);
@@ -118,45 +124,27 @@ void Dcals_Man_t::LocalAppChange()
     Abc_NtkForEachNode(pAppNtk, pObjApp, i) {
         // process bar
         ++pd;
-        // // skip nodes with deep levels and too much fanins
-        // if ( pMfsMan->pPars->nDepthMax && (int)pObjApp->Level > pMfsMan->pPars->nDepthMax )
-        //     continue;
-        // if ( Abc_ObjFaninNum(pObjApp) < 2 || Abc_ObjFaninNum(pObjApp) > nFaninMax )
-        //     continue;
-
         // print node function
         if ( pMfsMan->pPars->fVeryVerbose )
             Ckt_PrintNodeFunc(pObjApp);
         // evaluate a candidate
         st = clock();
-        Hop_Obj_t * pCandNode = LocalAppChangeNode(pMfsMan, pObjApp);
+        Hop_Obj_t * pFunc = LocalAppChangeNode(pMfsMan, pObjApp);
+
         t2 += clock() - st;
         st = clock();
-        if (pCandNode != nullptr) {
+        if (pFunc != nullptr) {
             if ( pMfsMan->pPars->fVeryVerbose )
-                Ckt_PrintHopFunc(pCandNode, pMfsMan->vMfsFanins);
-
-            Abc_Ntk_t * pNewNtk = Abc_NtkDup(pAppNtk);
-            Abc_NtkLevel(pNewNtk);
-            Abc_NtkStartReverseLevels(pNewNtk, pPars->nGrowthLevel);
-            pMfsMan->pNtk = pNewNtk;
-
-            Hop_Obj_t * pTmp = LocalAppChangeNode(pMfsMan, Abc_NtkObj(pNewNtk, i));
-            Ckt_NtkMfsUpdateNetwork(pMfsMan, Abc_NtkObj(pNewNtk, i), pMfsMan->vMfsFanins, pTmp);
-
+                Ckt_PrintHopFunc(pFunc, pMfsMan->vMfsFanins);
             double er = 0;
             if (!metricType)
-                er = MeasureER(pOriNtk, pNewNtk, 102400, 100);
+                er = MeasureResubER(pOriSmlt, pAppSmlt, pObjApp, pFunc, pMfsMan->vMfsFanins, false);
             else
-                er = MeasureAEMR(pOriNtk, pNewNtk, 10240, 100);
+                DASSERT(0);
             if (er < bestEr) {
                 bestEr = er;
                 bestId = i;
             }
-
-            Abc_NtkStopReverseLevels(pNewNtk);
-            Abc_NtkDelete(pNewNtk);
-            pMfsMan->pNtk = pAppNtk;
         }
         t3 += clock() - st;
     }
@@ -179,8 +167,8 @@ void Dcals_Man_t::LocalAppChange()
         if (isApply) {
             cout << "best node " << Abc_ObjName(Abc_NtkObj(pAppNtk, bestId)) << " best error " << bestEr << endl;
             metric = bestEr;
-            Hop_Obj_t * pCandNode = LocalAppChangeNode(pMfsMan, Abc_NtkObj(pAppNtk, bestId));
-            Ckt_NtkMfsUpdateNetwork(pMfsMan, Abc_NtkObj(pAppNtk, bestId), pMfsMan->vMfsFanins, pCandNode);
+            Hop_Obj_t * pFunc = LocalAppChangeNode(pMfsMan, Abc_NtkObj(pAppNtk, bestId));
+            Ckt_NtkMfsUpdateNetwork(pMfsMan, Abc_NtkObj(pAppNtk, bestId), pMfsMan->vMfsFanins, pFunc);
         }
     }
     else {
@@ -192,6 +180,8 @@ void Dcals_Man_t::LocalAppChange()
     }
 
     // recycle memory
+    delete pOriSmlt;
+    delete pAppSmlt;
     Abc_NtkStopReverseLevels(pAppNtk);
     Mfs_ManStop(pMfsMan);
 
@@ -243,7 +233,7 @@ void Dcals_Man_t::ConstReplace()
 
         // evaluate
         if (!metricType)
-            er = MeasureER(pOriNtk, pCandNtk, 102400, 100);
+            er = MeasureER(pOriNtk, pCandNtk, maxNFrame, 100);
         else
             er = MeasureAEMR(pOriNtk, pCandNtk, 10240, 100);
         if (er < bestEr) {
@@ -258,7 +248,7 @@ void Dcals_Man_t::ConstReplace()
 
         // evaluate
         if (!metricType)
-            er = MeasureER(pOriNtk, pCandNtk, 102400, 100);
+            er = MeasureER(pOriNtk, pCandNtk, maxNFrame, 100);
         else
             er = MeasureAEMR(pOriNtk, pCandNtk, 10240, 100);
         if (er < bestEr) {
@@ -332,9 +322,25 @@ Hop_Obj_t * Dcals_Man_t::LocalAppChangeNode(Mfs_Man_t * p, Abc_Obj_t * pNode)
 
 Aig_Man_t * Dcals_Man_t::ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode)
 {
-    Aig_Obj_t * pObjAig, * pDC, * pRoot;
     // find local pi
-    Vec_Ptr_t * vLocalPI = Ckt_FindCut(pNode, cutSize);
+    Vec_Ptr_t * vCut = Ckt_FindCut(pNode, cutSize);
+    // // uniform distribution
+    // random::uniform_int_distribution <int> unf(0, maxNFrame - 1);
+    // random::mt19937 engine(seed);
+    // variate_generator <random::mt19937, random::uniform_int_distribution <int> > genId(engine, unf);
+    // // generate approximate care set
+    // set <string> patterns;
+    // for (int i = 0; i < nFrame; ++i) {
+    //     int frameId = genId();
+    //     int blockId = frameId >> 6;
+    //     int bitId = frameId % 64;
+    //     string pattern = "";
+    //     Abc_Obj_t * pObj = nullptr;
+    //     int k = 0;
+    //     Vec_PtrForEachEntry(Abc_Obj_t *, vCut, pObj, k)
+    //         pattern += pAppSmlt->GetValue(pObj, blockId, bitId) ? '1': '0';
+    //     patterns.insert(pattern);
+    // }
     // perform logic simulation
     Simulator_Pro_t smlt(pNode->pNtk, nFrame);
     smlt.Input(seed);
@@ -345,7 +351,7 @@ Aig_Man_t * Dcals_Man_t::ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode)
             string pattern = "";
             Abc_Obj_t * pObj = nullptr;
             int k = 0;
-            Vec_PtrForEachEntry(Abc_Obj_t *, vLocalPI, pObj, k)
+            Vec_PtrForEachEntry(Abc_Obj_t *, vCut, pObj, k)
                 pattern += smlt.GetValue(pObj, i, j)? '1': '0';
             patterns.insert(pattern);
         }
@@ -354,16 +360,16 @@ Aig_Man_t * Dcals_Man_t::ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode)
     // start the new manager
     Aig_Man_t * pMan = Aig_ManStart( 1000 );
     // construct the root node's AIG cone
-    pObjAig = Abc_NtkConstructAig_rec( p, pNode, pMan );
+    Aig_Obj_t * pObjAig = Abc_NtkConstructAig_rec( p, pNode, pMan );
     Aig_ObjCreateCo( pMan, pObjAig );
 
     // add approximate care set
-    pRoot = Aig_ManConst0(pMan);
+    Aig_Obj_t * pRoot = Aig_ManConst0(pMan);
     for (auto pattern: patterns) {
-        pDC = Aig_ManConst1(pMan);
+        Aig_Obj_t * pDC = Aig_ManConst1(pMan);
         int k = 0;
         Abc_Obj_t * pObj = nullptr;
-        Vec_PtrForEachEntry(Abc_Obj_t *, vLocalPI, pObj, k) {
+        Vec_PtrForEachEntry(Abc_Obj_t *, vCut, pObj, k) {
             if (pattern[k] == '1')
                 pDC = Aig_And(pMan, pDC, (Aig_Obj_t *)pObj->pCopy);
             else
@@ -373,7 +379,7 @@ Aig_Man_t * Dcals_Man_t::ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode)
     }
     Aig_ObjCreateCo(pMan, pRoot);
 
-    Vec_PtrFree(vLocalPI);
+    Vec_PtrFree(vCut);
 
     // construct the node
     pObjAig = (Aig_Obj_t *)pNode->pCopy;
