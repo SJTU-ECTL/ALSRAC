@@ -52,8 +52,11 @@ void Simulator_Pro_t::Input(unsigned seed)
     DASSERT(Abc_NtkIsAigLogic(pNtk), "network is not in aig");
     Abc_NtkForEachNode(pNtk, pObj, k) {
         Hop_Obj_t * pHopObj = static_cast <Hop_Obj_t *> (pObj->pData);
-        if (Hop_ObjFanin0(pHopObj) == nullptr && Hop_ObjFanin1(pHopObj) == nullptr && pHopObj->Type != AIG_PI) {
-            if (Hop_ObjIsConst1(pHopObj)) {
+        Hop_Obj_t * pHopObjR = Hop_Regular(pHopObj);
+        if (Hop_ObjIsConst1(pHopObjR)) {
+            DASSERT(Hop_ObjFanin0(pHopObjR) == nullptr);
+            DASSERT(Hop_ObjFanin1(pHopObjR) == nullptr);
+            if (!Hop_IsComplement(pHopObj)) {
                 for (int i = 0; i < nBlock; ++i) {
                     values[pObj->Id][i] = static_cast <uint64_t> (ULLONG_MAX);
                     tmpValues[pObj->Id][i] = static_cast <uint64_t> (ULLONG_MAX);
@@ -99,14 +102,21 @@ void Simulator_Pro_t::Input(string fileName)
     int k = 0;
     Abc_NtkForEachNode(pNtk, pObj, k) {
         Hop_Obj_t * pHopObj = static_cast <Hop_Obj_t *> (pObj->pData);
-        if (Hop_ObjFanin0(pHopObj) == nullptr && Hop_ObjFanin1(pHopObj) == nullptr && pHopObj->Type != AIG_PI) {
-            if (Hop_ObjIsConst1(pHopObj)) {
-                for (int i = 0; i < nBlock; ++i)
+        Hop_Obj_t * pHopObjR = Hop_Regular(pHopObj);
+        if (Hop_ObjIsConst1(pHopObjR)) {
+            DASSERT(Hop_ObjFanin0(pHopObjR) == nullptr);
+            DASSERT(Hop_ObjFanin1(pHopObjR) == nullptr);
+            if (!Hop_IsComplement(pHopObj)) {
+                for (int i = 0; i < nBlock; ++i) {
                     values[pObj->Id][i] = static_cast <uint64_t> (ULLONG_MAX);
+                    tmpValues[pObj->Id][i] = static_cast <uint64_t> (ULLONG_MAX);
+                }
             }
             else {
-                for (int i = 0; i < nBlock; ++i)
+                for (int i = 0; i < nBlock; ++i) {
                     values[pObj->Id][i] = 0;
+                    tmpValues[pObj->Id][i] = 0;
+                }
             }
         }
     }
@@ -146,7 +156,7 @@ void Simulator_Pro_t::UpdateAigNode(Abc_Obj_t * pObj)
     Hop_Obj_t * pRootR = Hop_Regular(pRoot);
 
     // skip constant node
-    if (pRootR->Type == AIG_CONST1)
+    if (Hop_ObjIsConst1(pRootR))
         return;
 
     // get topological order of subnetwork in aig
@@ -222,16 +232,24 @@ void Simulator_Pro_t::UpdateAigNodeResub(Abc_Obj_t * pObj, Hop_Obj_t * pResubFun
     Hop_Obj_t * pRootR = Hop_Regular(pRoot);
 
     // update constant node
-    if (Hop_ObjFanin0(pRoot) == nullptr && Hop_ObjFanin1(pRoot) == nullptr && pRoot->Type != AIG_PI) {
+    if (pResubFunc == nullptr) {
+        if (pRootR->Type == AIG_CONST1)
+            return;
+    }
+    else {
         if (Hop_ObjIsConst1(pRootR)) {
-            for (int i = 0; i < nBlock; ++i)
-                tmpValues[pObj->Id][i] = static_cast <uint64_t> (ULLONG_MAX);
-            return;
-        }
-        else {
-            for (int i = 0; i < nBlock; ++i)
-                tmpValues[pObj->Id][i] = 0;
-            return;
+            DASSERT(Hop_ObjFanin0(pRootR) == nullptr);
+            DASSERT(Hop_ObjFanin1(pRootR) == nullptr);
+            if (!Hop_IsComplement(pRoot)) {
+                for (int i = 0; i < nBlock; ++i)
+                    tmpValues[pObj->Id][i] = static_cast <uint64_t> (ULLONG_MAX);
+                return;
+            }
+            else {
+                for (int i = 0; i < nBlock; ++i)
+                    tmpValues[pObj->Id][i] = 0;
+                return;
+            }
         }
     }
 

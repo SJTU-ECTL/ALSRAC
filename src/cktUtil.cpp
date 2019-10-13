@@ -44,7 +44,7 @@ void Ckt_EvalASIC(Abc_Ntk_t * pNtk, string fileName, double maxDelay)
     cout << "area = " << area << ", " << "delay = " << delay << endl;
     Command = string("write_blif ");
     ss.str("");
-    ss << "appntk/" << fileName << "_" << area << "_" << delay << ".blif";
+    ss << "appntknew/" << fileName << "_" << area << "_" << delay << ".blif";
     string str = ss.str();
     Command += str;
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
@@ -91,7 +91,7 @@ void Ckt_EvalFPGA(Abc_Ntk_t * pNtk, string fileName, string map)
     cout << "size = " << size << ", " << "depth = " << depth << endl;
     Command = string("write_blif ");
     ostringstream ss("");
-    ss << "appntk/" << fileName << "_" << size << "_" << depth << ".blif";
+    ss << "appntknew/" << fileName << "_" << size << "_" << depth << ".blif";
     string str = ss.str();
     Command += str;
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));

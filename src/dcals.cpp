@@ -120,13 +120,11 @@ void Dcals_Man_t::LocalAppChange()
     int i = 0;
     boost::progress_display pd(Abc_NtkNodeNum(pAppNtk));
     clock_t st;
-    uint64_t t1 = 0, t2 = 0, t3 = 0;
+    uint64_t t2 = 0, t3 = 0;
     Abc_NtkForEachNode(pAppNtk, pObjApp, i) {
         // process bar
         ++pd;
-        // print node function
-        if ( pMfsMan->pPars->fVeryVerbose )
-            Ckt_PrintNodeFunc(pObjApp);
+        // Ckt_PrintNodeFunc(pObjApp);
         // evaluate a candidate
         st = clock();
         Hop_Obj_t * pFunc = LocalAppChangeNode(pMfsMan, pObjApp);
@@ -134,8 +132,7 @@ void Dcals_Man_t::LocalAppChange()
         t2 += clock() - st;
         st = clock();
         if (pFunc != nullptr) {
-            if ( pMfsMan->pPars->fVeryVerbose )
-                Ckt_PrintHopFunc(pFunc, pMfsMan->vMfsFanins);
+            // Ckt_PrintHopFunc(pFunc, pMfsMan->vMfsFanins);
             double er = 0;
             if (!metricType)
                 er = MeasureResubER(pOriSmlt, pAppSmlt, pObjApp, pFunc, pMfsMan->vMfsFanins, false);
@@ -148,14 +145,14 @@ void Dcals_Man_t::LocalAppChange()
         }
         t3 += clock() - st;
     }
-    // cout << "t1 = " << t1 << ", t2 = " << t2 << ", t3 = " << t3 << endl;
+    // cout << ", t2 = " << t2 << ", t3 = " << t3 << endl;
 
     // apply local approximate change
     if (bestId != -1) {
         pat1 = 0;
         bool isApply = false;
         if (bestEr <= metricBound) {
-            pat1 = pat2 = 0;
+            pat2 = 0;
             isApply = true;
         }
         else {
@@ -168,14 +165,17 @@ void Dcals_Man_t::LocalAppChange()
             cout << "best node " << Abc_ObjName(Abc_NtkObj(pAppNtk, bestId)) << " best error " << bestEr << endl;
             metric = bestEr;
             Hop_Obj_t * pFunc = LocalAppChangeNode(pMfsMan, Abc_NtkObj(pAppNtk, bestId));
+            // Ckt_PrintNodeFunc(Abc_NtkObj(pAppNtk, bestId));
+            // Ckt_PrintHopFunc(pFunc, pMfsMan->vMfsFanins);
             Ckt_NtkMfsUpdateNetwork(pMfsMan, Abc_NtkObj(pAppNtk, bestId), pMfsMan->vMfsFanins, pFunc);
         }
     }
     else {
+        pat2 = 0;
         ++pat1;
         if (pat1 == 5) {
             nFrame >>= 1;
-            pat1 = pat2 = 0;
+            pat1 = 0;
         }
     }
 
