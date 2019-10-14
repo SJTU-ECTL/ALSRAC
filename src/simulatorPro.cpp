@@ -128,9 +128,15 @@ void Simulator_Pro_t::Simulate()
     Abc_Obj_t * pObj = nullptr;
     int i = 0;
     Vec_Ptr_t * vNodes = Abc_NtkDfs(pNtk, 0);
+    // internal nodes
     Vec_PtrForEachEntry(Abc_Obj_t *, vNodes, pObj, i)
         UpdateAigNode(pObj);
     Vec_PtrFree(vNodes);
+    // primary outputs
+    Abc_NtkForEachPo(pNtk, pObj, i) {
+        Abc_Obj_t * pFanin = Abc_ObjFanin0(pObj);
+        values[pObj->Id].assign(values[pFanin->Id].begin(), values[pFanin->Id].end());
+    }
 }
 
 
@@ -138,12 +144,18 @@ void Simulator_Pro_t::SimulateResub(Abc_Obj_t * pOldObj, Hop_Obj_t * pResubFunc,
 {
     Abc_Obj_t * pObj = nullptr;
     int i = 0;
-    Vec_Ptr_t * vNodes = Abc_NtkDfs(pNtk, 0);
+    Vec_Ptr_t * vNodes = Ckt_NtkDfsResub(pNtk, pOldObj, vResubFanins);
+    // internal nodes
     Vec_PtrForEachEntry(Abc_Obj_t *, vNodes, pObj, i) {
         if (pObj != pOldObj)
             UpdateAigNodeResub(pObj, nullptr, nullptr);
         else
             UpdateAigNodeResub(pObj, pResubFunc, vResubFanins);
+    }
+    // primary outputs
+    Abc_NtkForEachPo(pNtk, pObj, i) {
+        Abc_Obj_t * pFanin = Abc_ObjFanin0(pObj);
+        tmpValues[pObj->Id].assign(tmpValues[pFanin->Id].begin(), tmpValues[pFanin->Id].end());
     }
     Vec_PtrFree(vNodes);
 }
@@ -349,7 +361,7 @@ multiprecision::int256_t Simulator_Pro_t::GetInput(int lsb, int msb, int frameId
 }
 
 
-multiprecision::int256_t Simulator_Pro_t::GetOutput(int lsb, int msb, int frameId) const
+multiprecision::int256_t Simulator_Pro_t::GetOutput(int lsb, int msb, int frameId, bool isTmpValue) const
 {
     DASSERT(lsb >= 0 && msb < Abc_NtkPoNum(pNtk));
     DASSERT(frameId <= nFrame);
@@ -359,9 +371,15 @@ multiprecision::int256_t Simulator_Pro_t::GetOutput(int lsb, int msb, int frameI
     int bitId = frameId % 64;
     for (int k = msb; k >= lsb; --k) {
         ret <<= 1;
-        Abc_Obj_t * pObj = Abc_ObjFanin0(Abc_NtkPo(pNtk, k));
-        if (GetValue(pObj, blockId, bitId))
-            ++ret;
+        Abc_Obj_t * pObj = Abc_NtkPo(pNtk, k);
+        if (!isTmpValue) {
+            if (GetValue(pObj, blockId, bitId))
+                ++ret;
+        }
+        else {
+            if (GetTmpValue(pObj, blockId, bitId))
+                ++ret;
+        }
     }
     return ret;
 }
@@ -386,7 +404,7 @@ void Simulator_Pro_t::PrintOutputStream(int frameId) const
     int blockId = frameId >> 6;
     int bitId = frameId % 64;
     Abc_NtkForEachPo(pNtk, pObj, i)
-        cout << GetValue(Abc_ObjFanin0(pObj), blockId, bitId);
+        cout << GetValue(pObj, blockId, bitId);
     cout << endl;
 }
 
@@ -394,16 +412,8 @@ void Simulator_Pro_t::PrintOutputStream(int frameId) const
 double MeasureAEMR(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
 {
     // check PI/PO
-    int nPo = Abc_NtkPoNum(pNtk1);
-    if (isCheck) {
-        DASSERT(nPo == Abc_NtkPoNum(pNtk2));
-        for (int i = 0; i < nPo; ++i)
-            DASSERT(!strcmp(Abc_ObjName(Abc_NtkPo(pNtk1, i)), Abc_ObjName(Abc_NtkPo(pNtk2, i))));
-        int nPi = Abc_NtkPiNum(pNtk1);
-        DASSERT(nPi == Abc_NtkPiNum(pNtk2));
-        for (int i = 0; i < nPi; ++i)
-            DASSERT(!strcmp(Abc_ObjName(Abc_NtkPi(pNtk1, i)), Abc_ObjName(Abc_NtkPi(pNtk2, i))));
-    }
+    if (isCheck)
+        DASSERT(IOChecker(pNtk1, pNtk2));
 
     // simulation
     Simulator_Pro_t smlt1(pNtk1, nFrame);
@@ -414,12 +424,36 @@ double MeasureAEMR(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned se
     smlt2.Simulate();
 
     // compute
+    return GetAEMR(&smlt1, &smlt2, false, false);
+}
+
+
+double MeasureResubAEMR(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, Abc_Obj_t * pOldObj, Hop_Obj_t * pResubFunc, Vec_Ptr_t * vResubFanins, bool isCheck)
+{
+    if (isCheck)
+        DASSERT(SmltChecker(pSmlt1, pSmlt2));
+    pSmlt2->SimulateResub(pOldObj, pResubFunc, vResubFanins);
+    return GetAEMR(pSmlt1, pSmlt2, false, true);
+}
+
+
+double GetAEMR(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck, bool isResub)
+{
+    if (isCheck)
+        DASSERT(SmltChecker(pSmlt1, pSmlt2));
     typedef multiprecision::cpp_dec_float_100 bigFlt;
     typedef multiprecision::int256_t bigInt;
     bigInt sum(0);
-    for (int k = 0; k < nFrame; ++k)
-        sum += (abs(smlt1.GetOutput(0, nPo - 1, k) - smlt2.GetOutput(0, nPo - 1, k)));
-
+    int nPo = Abc_NtkPoNum(pSmlt1->GetNetwork());
+    int nFrame = pSmlt1->GetFrameNum();
+    if (isResub) {
+        for (int k = 0; k < nFrame; ++k)
+            sum += (abs(pSmlt1->GetOutput(0, nPo - 1, k, 0) - pSmlt2->GetOutput(0, nPo - 1, k, 1)));
+    }
+    else {
+        for (int k = 0; k < nFrame; ++k)
+            sum += (abs(pSmlt1->GetOutput(0, nPo - 1, k, 0) - pSmlt2->GetOutput(0, nPo - 1, k, 0)));
+    }
     bigInt frac = (static_cast <bigInt> (nFrame)) << nPo;
     return static_cast <double> (static_cast <bigFlt>(sum) / static_cast <bigFlt>(frac));
 }
@@ -472,8 +506,8 @@ double GetER(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck, b
     for (int k = 0; k < nBlock; ++k) {
         uint64_t temp = 0;
         for (int i = 0; i < nPo; ++i)
-            temp |= (*pValues1)[Abc_ObjFanin0(Abc_NtkPo(pNtk1, i))->Id][k] ^
-                    (*pValues2)[Abc_ObjFanin0(Abc_NtkPo(pNtk2, i))->Id][k];
+            temp |= (*pValues1)[Abc_NtkPo(pNtk1, i)->Id][k] ^
+                    (*pValues2)[Abc_NtkPo(pNtk2, i)->Id][k];
         if (k == nBlock - 1) {
             temp >>= (64 - nLastBlock);
             temp <<= (64 - nLastBlock);
@@ -509,4 +543,50 @@ bool SmltChecker(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2)
     if (pSmlt1->GetFrameNum() != pSmlt2->GetFrameNum())
         return false;
     return true;
+}
+
+
+Vec_Ptr_t * Ckt_NtkDfsResub(Abc_Ntk_t * pNtk, Abc_Obj_t * pObjOld, Vec_Ptr_t * vFanins)
+{
+    Vec_Ptr_t * vNodes;
+    Abc_Obj_t * pObj;
+    int i;
+    // set the traversal ID
+    Abc_NtkIncrementTravId( pNtk );
+    // start the array of nodes
+    vNodes = Vec_PtrAlloc( 100 );
+    Abc_NtkForEachCo( pNtk, pObj, i )
+    {
+        Abc_NodeSetTravIdCurrent( pObj );
+        Ckt_NtkDfsResub_rec(Abc_ObjFanin0(pObj), vNodes, pObjOld, vFanins);
+    }
+    return vNodes;
+}
+
+
+void Ckt_NtkDfsResub_rec(Abc_Obj_t * pNode, Vec_Ptr_t * vNodes, Abc_Obj_t * pObjOld, Vec_Ptr_t * vFanins)
+{
+    Abc_Obj_t * pFanin;
+    int i;
+    assert( !Abc_ObjIsNet(pNode) );
+    // if this node is already visited, skip
+    if ( Abc_NodeIsTravIdCurrent( pNode ) )
+        return;
+    // mark the node as visited
+    Abc_NodeSetTravIdCurrent( pNode );
+    // skip the CI
+    if ( Abc_ObjIsCi(pNode) || (Abc_NtkIsStrash(pNode->pNtk) && Abc_AigNodeIsConst(pNode)) )
+        return;
+    assert( Abc_ObjIsNode( pNode ) || Abc_ObjIsBox( pNode ) );
+    // visit the transitive fanin of the node
+    if (pNode != pObjOld) {
+        Abc_ObjForEachFanin( pNode, pFanin, i )
+            Ckt_NtkDfsResub_rec(pFanin, vNodes, pObjOld, vFanins);
+    }
+    else {
+        Vec_PtrForEachEntry(Abc_Obj_t *, vFanins, pFanin, i)
+            Ckt_NtkDfsResub_rec(pFanin, vNodes, pObjOld, vFanins);
+    }
+    // add the node after the fanins have been added
+    Vec_PtrPush( vNodes, pNode );
 }

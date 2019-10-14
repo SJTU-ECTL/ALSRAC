@@ -86,10 +86,6 @@ void Dcals_Man_t::LocalAppChange()
     DASSERT(Abc_NtkHasAig(pAppNtk));
     DASSERT(pAppNtk->pExcare == nullptr);
 
-    // check metric
-    double curEr = MeasureER(pOriNtk, pAppNtk, maxNFrame, 100, true);
-    DASSERT(curEr == metric);
-
     // new seed for logic simulation
     random_device rd;
     seed = static_cast <unsigned>(rd());
@@ -119,33 +115,25 @@ void Dcals_Man_t::LocalAppChange()
     Abc_Obj_t * pObjApp = nullptr;
     int i = 0;
     boost::progress_display pd(Abc_NtkNodeNum(pAppNtk));
-    clock_t st;
-    uint64_t t2 = 0, t3 = 0;
     Abc_NtkForEachNode(pAppNtk, pObjApp, i) {
         // process bar
         ++pd;
         // Ckt_PrintNodeFunc(pObjApp);
         // evaluate a candidate
-        st = clock();
         Hop_Obj_t * pFunc = LocalAppChangeNode(pMfsMan, pObjApp);
-
-        t2 += clock() - st;
-        st = clock();
         if (pFunc != nullptr) {
             // Ckt_PrintHopFunc(pFunc, pMfsMan->vMfsFanins);
             double er = 0;
             if (!metricType)
                 er = MeasureResubER(pOriSmlt, pAppSmlt, pObjApp, pFunc, pMfsMan->vMfsFanins, false);
             else
-                DASSERT(0);
+                er = MeasureResubAEMR(pOriSmlt, pAppSmlt, pObjApp, pFunc, pMfsMan->vMfsFanins, false);
             if (er < bestEr) {
                 bestEr = er;
                 bestId = i;
             }
         }
-        t3 += clock() - st;
     }
-    // cout << ", t2 = " << t2 << ", t3 = " << t3 << endl;
 
     // apply local approximate change
     if (bestId != -1) {
@@ -184,6 +172,16 @@ void Dcals_Man_t::LocalAppChange()
     delete pAppSmlt;
     Abc_NtkStopReverseLevels(pAppNtk);
     Mfs_ManStop(pMfsMan);
+
+    // check metric
+    double curEr = 0;
+    if (!metricType)
+        curEr = MeasureER(pOriNtk, pAppNtk, maxNFrame, 100, true);
+    else {
+        curEr = MeasureAEMR(pOriNtk, pAppNtk, maxNFrame, 100, true);
+        cout << "current er = " << curEr << endl;
+    }
+    DASSERT(curEr == metric);
 
     // disturb the network
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
@@ -244,7 +242,7 @@ void Dcals_Man_t::ConstResub()
         if (!metricType)
             er = MeasureResubER(pOriSmlt, pAppSmlt, pObjApp, pFunc, vFanins, false);
         else
-            DASSERT(0);
+            er = MeasureResubAEMR(pOriSmlt, pAppSmlt, pObjApp, pFunc, vFanins, false);
         if (er < bestEr) {
             bestEr = er;
             bestId = i;
@@ -255,7 +253,7 @@ void Dcals_Man_t::ConstResub()
         if (!metricType)
             er = MeasureResubER(pOriSmlt, pAppSmlt, pObjApp, pFunc, vFanins, false);
         else
-            DASSERT(0);
+            er = MeasureResubAEMR(pOriSmlt, pAppSmlt, pObjApp, pFunc, vFanins, false);
         if (er < bestEr) {
             bestEr = er;
             bestId = i;
