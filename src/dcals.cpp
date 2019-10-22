@@ -115,11 +115,13 @@ void Dcals_Man_t::LocalAppChange()
     Abc_Obj_t * pObjApp = nullptr;
     int i = 0;
     boost::progress_display pd(Abc_NtkNodeNum(pAppNtk));
+    int t1 = 0, t2 = 0;
     Abc_NtkForEachNode(pAppNtk, pObjApp, i) {
         // process bar
         ++pd;
         // Ckt_PrintNodeFunc(pObjApp);
         // evaluate a candidate
+        clock_t st = clock();
         Hop_Obj_t * pFunc = LocalAppChangeNode(pMfsMan, pObjApp);
         if (pFunc != nullptr) {
             // Ckt_PrintHopFunc(pFunc, pMfsMan->vMfsFanins);
