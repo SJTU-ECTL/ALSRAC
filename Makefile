@@ -2,6 +2,8 @@
 DIR_INC = ./src
 DIR_ABC_LIB = ./abc
 DIR_ABC_INC = ./abc/src
+DIR_ESP_LIB = ./espresso
+DIR_ESP_INC = ./espresso/src
 DIR_SRC = ./src
 DIR_OBJ = ./obj
 SOURCE  := $(wildcard ${DIR_SRC}/*.c) $(wildcard ${DIR_SRC}/*.cpp)
@@ -10,10 +12,10 @@ TARGET  := main
 
 #compiling parameters
 CC      := g++
-LIBS    := -labc -lm -ldl -rdynamic -lreadline -ltermcap -lpthread -lstdc++ -lrt
-LDFLAGS := -L ${DIR_ABC_LIB}
+LIBS    := -labc -lm -ldl -rdynamic -lreadline -ltermcap -lpthread -lstdc++ -lrt -lespresso
+LDFLAGS := -L ${DIR_ABC_LIB} -L $(DIR_ESP_LIB)
 DEFINES := $(FLAG) -DLIN64
-INCLUDE := -I ${DIR_INC} -I ${DIR_ABC_INC}
+INCLUDE := -I ${DIR_INC} -I ${DIR_ABC_INC} -I $(DIR_ESP_INC)
 CFLAGS  := -g -Wall -O3 -std=c++11 $(DEFINES) $(INCLUDE)
 CXXFLAGS:= $(CFLAGS)
 

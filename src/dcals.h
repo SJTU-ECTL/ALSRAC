@@ -6,6 +6,7 @@
 #include <boost/random.hpp>
 #include "simulatorPro.h"
 #include "cktUtil.h"
+#include "espressoApi.h"
 
 
 class Dcals_Man_t
