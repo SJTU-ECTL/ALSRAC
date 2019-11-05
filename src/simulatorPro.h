@@ -79,7 +79,7 @@ public:
     boost::multiprecision::int256_t GetInput(int lsb, int msb, int frameId = 0) const;
     boost::multiprecision::int256_t GetOutput(int lsb, int msb, int frameId = 0, bool isTmpValue = false) const;
     void PrintInputStream(int frameId = 0) const;
-    void PrintOutputStream(int frameId = 0) const;
+    void PrintOutputStream(int frameId = 0, bool isReverse = false) const;
     void BuildCutNtks();
     void FindDisjointCut(Abc_Obj_t * pObj, std::list <Abc_Obj_t *> & djCut);
     void ExpandCut(Abc_Obj_t * pObj, std::list <Abc_Obj_t *> & djCut);
@@ -104,6 +104,8 @@ public:
 double MeasureAEMR(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame = 102400, unsigned seed = 314, bool isCheck = true);
 double MeasureResubAEMR(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, Abc_Obj_t * pOldObj, void * pResubFunc, Vec_Ptr_t * vResubFanins, bool isCheck = true);
 double GetAEMR(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck = true, bool isResub = false);
+void GetOffset(IN Simulator_Pro_t * pSmlt1, IN Simulator_Pro_t * pSmlt2, IN bool isCheck, INOUT std::vector < std::vector <int8_t> > & offsets);
+double GetAEMRFromOffset(IN std::vector < std::vector <int8_t> > & offsets);
 double MeasureER(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame = 102400, unsigned seed = 314, bool isCheck = true);
 double MeasureResubER(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, Abc_Obj_t * pOldObj, void * pResubFunc, Vec_Ptr_t * vResubFanins, bool isCheck = true);
 int GetER(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck = true, bool isResub = false);

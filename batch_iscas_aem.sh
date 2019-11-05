@@ -17,7 +17,7 @@ do
         if [[ "$name" == *.blif ]]
         then
             echo ${filename}
-            (nohup ./main -i ${file} -m 0.0000153 > log/${filename}.log &)
+            (nohup ./main -i ${file} -m 0.0019531 > log/${filename}.log &)
         fi
     fi
 done

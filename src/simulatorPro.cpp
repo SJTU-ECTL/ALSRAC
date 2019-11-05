@@ -1068,14 +1068,20 @@ void Simulator_Pro_t::PrintInputStream(int frameId) const
 }
 
 
-void Simulator_Pro_t::PrintOutputStream(int frameId) const
+void Simulator_Pro_t::PrintOutputStream(int frameId, bool isReverse) const
 {
     Abc_Obj_t * pObj = nullptr;
     int i = 0;
     int blockId = frameId >> 6;
     int bitId = frameId % 64;
-    Abc_NtkForEachPo(pNtk, pObj, i)
-        cout << GetValue(pObj, blockId, bitId);
+    if (!isReverse) {
+        Abc_NtkForEachPo(pNtk, pObj, i)
+            cout << GetValue(pObj, blockId, bitId);
+    }
+    else {
+        for (int i = Abc_NtkPoNum(pNtk) - 1; i >= 0; --i)
+            cout << GetValue(Abc_NtkPo(pNtk, i), blockId, bitId);
+    }
     cout << endl;
 }
 
@@ -1272,6 +1278,72 @@ double GetAEMR(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck,
 }
 
 
+void GetOffset(IN Simulator_Pro_t * pOriSmlt, IN Simulator_Pro_t * pAppSmlt, IN bool isCheck, INOUT vector < vector <int8_t> > & offsets)
+{
+    if (isCheck)
+        DASSERT(SmltChecker(pOriSmlt, pAppSmlt));
+    int nBlock = pOriSmlt->GetBlockNum();
+    int nFrame = pOriSmlt->GetFrameNum();
+    Abc_Ntk_t * pOriNtk = pOriSmlt->GetNetwork();
+    Abc_Ntk_t * pAppNtk = pAppSmlt->GetNetwork();
+    int nPo = Abc_NtkPoNum(pAppNtk);
+    DASSERT(offsets.empty());
+    offsets.resize(nPo);
+    for (int i = 0; i < nPo; ++i) {
+        int frameId = 0;
+        Abc_Obj_t * pOriPo = Abc_NtkPo(pOriNtk, i);
+        Abc_Obj_t * pAppPo = Abc_NtkPo(pAppNtk, i);
+        offsets[i].resize(nFrame);
+        for (int blockId = 0; blockId < nBlock; ++blockId) {
+            uint64_t oriValues = pOriSmlt->GetValues(pOriPo, blockId);
+            uint64_t appValues = pAppSmlt->GetValues(pAppPo, blockId);
+            for (int bitId = 0; bitId < 64; ++bitId) {
+                if (frameId >= nFrame)
+                    break;
+                bool oriBit = static_cast <bool> (oriValues & static_cast <uint64_t> (1));
+                bool appBit = static_cast <bool> (appValues & static_cast <uint64_t> (1));
+                oriValues >>= 1;
+                appValues >>= 1;
+                if (!oriBit && appBit)
+                    offsets[i][frameId] = 1;
+                else if (oriBit && !appBit)
+                    offsets[i][frameId] = -1;
+                else
+                    offsets[i][frameId] = 0;
+                ++frameId;
+            }
+        }
+    }
+}
+
+
+double GetAEMRFromOffset(IN vector < vector <int8_t> > & offsets)
+{
+    int nPo = offsets.size();
+    DASSERT(nPo);
+    int nFrame = offsets[0].size();
+    typedef multiprecision::int256_t bigInt;
+    typedef multiprecision::cpp_dec_float_100 bigFlt;
+    bigInt sum(0);
+    for (int j = 0; j < nFrame; ++j) {
+        bigInt weight(1);
+        bigInt em(0);
+        for (int i = 0; i < nPo; ++i) {
+            if (offsets[i][j] == 1)
+                em += weight;
+            else if (offsets[i][j] == -1)
+                em -= weight;
+            else if (offsets[i][j] != 0)
+                DASSERT(0);
+            weight <<= 1;
+        }
+        sum += abs(em);
+    }
+    bigInt frac = (static_cast <bigInt> (nFrame)) << nPo;
+    return static_cast <double> (static_cast <bigFlt>(sum) / static_cast <bigFlt>(frac));
+}
+
+
 double MeasureER(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
 {
     if (isCheck)
@@ -1399,125 +1471,3 @@ void Ckt_NtkDfsResub_rec(Abc_Obj_t * pNode, Vec_Ptr_t * vNodes, Abc_Obj_t * pObj
     // add the node after the fanins have been added
     Vec_PtrPush( vNodes, pNode );
 }
-
-
-// void BatchErrorEst(Simulator_Pro_t * pSmltRef, Simulator_Pro_t * pSmlt, Lac_Cand_t & res, int tableSize, int nWinTfiLevs)
-// {
-//     DASSERT(pSmltRef != pSmlt && pSmltRef != nullptr && pSmlt != nullptr);
-//     DASSERT(pSmltRef->GetNetwork() != pSmlt->GetNetwork());
-//     DASSERT(SmltChecker(pSmltRef, pSmlt));
-//     // get candidates
-//     extern void GenLacCands(Simulator_Pro_t * pSmlt, vector <Lac_Cand_t> & cands, int nWinTfiLevs, int tableSize);
-//     vector <Lac_Cand_t> cands;
-//     cands.reserve(1000);
-//     GenLacCands(pSmlt, cands, nWinTfiLevs, tableSize);
-//     // get cut networks
-//     pSmlt->BuildCutNtks();
-//     // base error rate
-//     int baseError = GetER(pSmltRef, pSmlt, false, false);
-//     // simulate cut networks
-//     pSmlt->SimulateCutNtks();
-//     // update boolean difference
-//     int nBlock = pSmlt->GetBlockNum();
-//     tVec isOnePoRight(nBlock);
-//     tVec isAllPoRight(nBlock, static_cast <uint64_t> (ULLONG_MAX));
-//     Abc_Ntk_t * pNtkRef = pSmltRef->GetNetwork();
-//     Abc_Ntk_t * pNtk = pSmlt->GetNetwork();
-//     int nPo = Abc_NtkPoNum(pNtk);
-//     Vec_Ptr_t * vNodes = Abc_NtkDfs(pNtk, 0);
-//     int maxId = pSmlt->GetMaxId();
-//     vector <tVec> bd(maxId + 1);
-//     vector <tVec> isERInc(maxId + 1);
-//     vector <tVec> isERDec(maxId + 1);
-//     Abc_Obj_t * pObj = nullptr;
-//     vector < list <Abc_Obj_t *> > * pDjCuts = pSmlt->GetDjCuts();
-//     int i = 0;
-//     Abc_NtkForEachObj(pNtk, pObj, i) {
-//         bd[pObj->Id].resize(nBlock);
-//         isERInc[pObj->Id].resize(nBlock);
-//         isERDec[pObj->Id].resize(nBlock);
-//         for (int k = 0; k < nBlock; ++k) {
-//             isERInc[pObj->Id][k] = 0;
-//             isERDec[pObj->Id][k] = static_cast <uint64_t> (ULLONG_MAX);
-//         }
-//     }
-//     for (int i = 0; i < nPo; ++i) {
-//         Abc_Obj_t * pPoRef = Abc_NtkPo(pNtkRef, i);
-//         Abc_Obj_t * pPo = Abc_NtkPo(pNtk, i);
-//         // cout << "bd for " << Abc_ObjName(pPo) << ":" << endl;
-//         for (int j = 0; j < nPo; ++j) {
-//             if (i == j) {
-//                 for (int k = 0; k < nBlock; ++k)
-//                     bd[Abc_NtkPo(pNtk, j)->Id][k] = static_cast <uint64_t> (ULLONG_MAX);
-//             }
-//             else {
-//                 for (int k = 0; k < nBlock; ++k)
-//                     bd[Abc_NtkPo(pNtk, j)->Id][k] = 0;
-//             }
-//             for (int k = 0; k < nBlock; ++k) {
-//                 isOnePoRight[k] = ~(pSmlt->GetValues(pPo, k) ^ pSmltRef->GetValues(pPoRef, k));
-//                 isAllPoRight[k] &= isOnePoRight[k];
-//             }
-//         }
-//         Abc_Obj_t * pNode = nullptr;
-//         int j = 0;
-//         Vec_PtrForEachEntryReverse(Abc_Obj_t *, vNodes, pNode, j) {
-//             if (Abc_NodeIsConst(pNode))
-//                 continue;
-//             for (int k = 0; k < nBlock; ++k)
-//                 bd[pNode->Id][k] = 0;
-//             int l = 0;
-//             // cout << "Cut " << Abc_ObjName(pNode) << ":";
-//             for (auto & pCut: (*pDjCuts)[pNode->Id]) {
-//                 // cout << Abc_ObjName(pCut) << ",";
-//                 for (int k = 0; k < nBlock; ++k)
-//                     bd[pNode->Id][k] |= (pSmlt->GetBdCut(pNode, l, k) & bd[pCut->Id][k]);
-//                 ++l;
-//             }
-//             // cout << endl;
-//             // cout << "bd " << Abc_ObjName(pNode) << "," << bd[pNode->Id][0] << endl;
-//             for (int k = 0; k < nBlock; ++k) {
-//                 isERInc[pNode->Id][k] |= bd[pNode->Id][k];
-//                 isERDec[pNode->Id][k] &= (isOnePoRight[k] ^ bd[pNode->Id][k]);
-//             }
-//         }
-//     }
-//
-//     // update error rate
-//     // Abc_NtkForEachPi(pNtk, pObj, i)
-//     //     cout << "Inputs:" << Abc_ObjName(pObj) << "," << pSmlt->GetValues(pObj, 0) << endl;
-//     // Abc_NtkForEachNode(pNtk, pObj, i)
-//     //     cout << "Internals:" << Abc_ObjName(pObj) << "," << pSmlt->GetValues(pObj, 0) << endl;
-//     tVec isChanged(nBlock);
-//     for (auto &cand: cands) {
-//         pSmlt->UpdateSopNodeResub(cand.pObj, const_cast <char *> (cand.func.c_str()), cand.vFanins, isChanged);
-//         // cout << "New value:" << Abc_ObjName(cand.pObj) << "," << isChanged[0] << endl;
-//         for (int i = 0; i < nBlock; ++i)
-//             isChanged[i] ^= pSmlt->GetValues(cand.pObj, i);
-//         // cout << "Ischanged:" << Abc_ObjName(cand.pObj) << "," << isChanged[0] << endl;
-//         // cout << "Iserinc:" << Abc_ObjName(cand.pObj) << "," << isERInc[cand.pObj->Id][0] << endl;
-//         int er = baseError;
-//         for (int i = 0; i < nBlock; ++i) {
-//             uint64_t temp = isAllPoRight[i] & isERInc[cand.pObj->Id][i] & isChanged[i];
-//             if (i == nBlock - 1) {
-//                 temp >>= (64 - pSmlt->GetLastBlockLen());
-//                 temp <<= (64 - pSmlt->GetLastBlockLen());
-//             }
-//             er += Ckt_CountOneNum(temp);
-//             temp = ~isAllPoRight[i] & isERDec[cand.pObj->Id][i] & isChanged[i];
-//             if (i == nBlock - 1) {
-//                 temp >>= (64 - pSmlt->GetLastBlockLen());
-//                 temp <<= (64 - pSmlt->GetLastBlockLen());
-//             }
-//             er -= Ckt_CountOneNum(temp);
-//         }
-//         cand.error = er / static_cast <double> (pSmlt->GetFrameNum());
-//         DASSERT(cand.error <= 1.0);
-//         res.UpdateBest(cand.error, cand.pObj, cand.func, cand.vFanins);
-//         // cand.Print();
-//         // cout << endl;
-//     }
-//
-//     // clean up
-//     Vec_PtrFree(vNodes);
-// }

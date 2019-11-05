@@ -103,7 +103,10 @@ void Dcals_Man_t::LocalAppChange()
     vector <Lac_Cand_t> cands;
     Lac_Cand_t bestCand;
     cands.reserve(1024);
-    GenCand(false, cands);
+    if (!metricType)
+        GenCand(false, cands);
+    else
+        GenCand(true, cands);
     BatchErrorEst(cands, bestCand);
 
     // apply local approximate change
@@ -398,10 +401,6 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
     DASSERT(Abc_NtkIsAigLogic(pOriNtk));
     DASSERT(Abc_NtkIsAigLogic(pAppNtk));
     DASSERT(SmltChecker(pOriSmlt, pAppSmlt));
-    // get base error
-    int baseErr = (!metricType)?
-        GetER(pOriSmlt, pAppSmlt, false, false):
-        GetAEMR(pOriSmlt, pAppSmlt, false, false);
     // get disjoint cuts and the corresponding networks
     pAppSmlt->BuildCutNtks();
     // simulate networks of disjoint cuts
@@ -411,19 +410,25 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
     // calculate the values after resubstitution
     vector <tVec> newValues(cands.size());
     int nBlock = pAppSmlt->GetBlockNum();
+    int nFrame = pAppSmlt->GetFrameNum();
     for (uint32_t i = 0; i < cands.size(); ++i) {
         newValues[i].resize(nBlock);
         pAppSmlt->UpdateAigNodeResub(cands[i].GetObj(), cands[i].GetFunc(), cands[i].GetFanins(), newValues[i]);
     }
     // calculate increased error
-    int i = 0;
-    Abc_Obj_t * pObj = nullptr;
-    vector <tVec> bds(pAppSmlt->GetMaxId() + 1);
-    Abc_NtkForEachObj(pAppNtk, pObj, i)
-        bds[pObj->Id].resize(nBlock);
+    int nPo = Abc_NtkPoNum(pAppNtk);
+    vector < vector <tVec> > bds(nPo);
+    for (auto & bdPo: bds) {
+        bdPo.resize(pAppSmlt->GetMaxId() + 1);
+        for (auto & bdObjPo: bdPo)
+            bdObjPo.resize(nBlock);
+    }
     if (!metricType) {
+        int baseErr = GetER(pOriSmlt, pAppSmlt, false, false);
         vector <tVec> isERInc(pAppSmlt->GetMaxId() + 1);
         vector <tVec> isERDec(pAppSmlt->GetMaxId() + 1);
+        int i = 0;
+        Abc_Obj_t * pObj = nullptr;
         Abc_NtkForEachObj(pAppNtk, pObj, i) {
             isERInc[pObj->Id].resize(nBlock);
             isERDec[pObj->Id].resize(nBlock);
@@ -444,13 +449,13 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
                 isAllPosRight[j] &= isOnePoRight[j];
             }
             // update the influence on each primary output
-            pAppSmlt->UpdateBoolDiff(pAppPo, vNodes, bds);
+            pAppSmlt->UpdateBoolDiff(pAppPo, vNodes, bds[i]);
             // update the flag of increasement/decreasement
             int j = 0;
             Vec_PtrForEachEntryReverse(Abc_Obj_t *, vNodes, pObj, j) {
                 for (int k = 0; k < nBlock; ++k) {
-                    isERInc[pObj->Id][k] |= bds[pObj->Id][k];
-                    isERDec[pObj->Id][k] &= (isOnePoRight[k] ^ bds[pObj->Id][k]);
+                    isERInc[pObj->Id][k] |= bds[i][pObj->Id][k];
+                    isERDec[pObj->Id][k] &= (isOnePoRight[k] ^ bds[i][pObj->Id][k]);
                 }
             }
         }
@@ -481,6 +486,45 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
         }
     }
     else {
+        vector < vector <int8_t> > offsets;
+        GetOffset(pOriSmlt, pAppSmlt, false, offsets);
+        int i = 0;
+        Abc_Obj_t * pAppPo = nullptr;
+        Abc_NtkForEachPo(pAppNtk, pAppPo, i)
+            // update the influence on each primary output
+            pAppSmlt->UpdateBoolDiff(pAppPo, vNodes, bds[i]);
+        // updated the influece of each candidates
+        for (uint32_t ii = 0; ii < cands.size(); ++ii) {
+            Lac_Cand_t & cand = cands[ii];
+            Abc_Obj_t * pCand = cand.GetObj();
+            tVec & isChanged = newValues[ii];
+            for (int i = 0; i < nBlock; ++i)
+                isChanged[i] ^= pAppSmlt->GetValues(pCand, i);
+            vector < vector <int8_t> > offsetsTmp(offsets);
+            for (int i = 0; i < nPo; ++i)
+                offsetsTmp[i].assign(offsets[i].begin(), offsets[i].end());
+            int frameId = 0;
+            for (int blockId = 0; blockId < nBlock; ++blockId) {
+                for (int bitId = 0; bitId < 64; ++bitId) {
+                    if (frameId >= nFrame)
+                        break;
+                    if (Ckt_GetBit(isChanged[blockId], bitId)) {
+                        for (int i = 0; i < nPo; ++i) {
+                            Abc_Obj_t * pAppPo = Abc_NtkPo(pAppNtk, i);
+                            if (Ckt_GetBit(bds[i][pCand->Id][blockId], bitId)) {
+                                if (pAppSmlt->GetValue(pAppPo, blockId, bitId))
+                                    --offsetsTmp[i][frameId];
+                                else
+                                    ++offsetsTmp[i][frameId];
+                            }
+                        }
+                    }
+                    ++frameId;
+                }
+            }
+            double er = GetAEMRFromOffset(offsetsTmp);
+            bestCand.UpdateBest(er, cand.GetObj(), cand.GetFunc(), cand.GetFanins());
+        }
     }
     // clean up
     Vec_PtrFree(vNodes);
