@@ -9,4 +9,9 @@
 #include <random>
 
 
+#define IN
+#define OUT
+#define INOUT
+
+
 #endif

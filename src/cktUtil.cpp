@@ -5,7 +5,7 @@ using namespace std;
 
 
 // evaluate
-void Ckt_EvalASIC(Abc_Ntk_t * pNtk, string fileName, double maxDelay)
+void Ckt_EvalASIC(Abc_Ntk_t * pNtk, string fileName, double maxDelay, bool isOutput)
 {
     string Command;
     string resyn2 = "strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance;";
@@ -13,10 +13,12 @@ void Ckt_EvalASIC(Abc_Ntk_t * pNtk, string fileName, double maxDelay)
 
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
     Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pNtk));
+
     Command = resyn2 + string("amap;");
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
 
     ostringstream ss;
+    ss.str("");
     ss << maxDelay;
     area = Ckt_GetArea(Abc_FrameReadNtk(pAbc));
     delay = Ckt_GetDelay(Abc_FrameReadNtk(pAbc));
@@ -41,13 +43,13 @@ void Ckt_EvalASIC(Abc_Ntk_t * pNtk, string fileName, double maxDelay)
     }
     if (delay >= maxDelay + 0.1)
         cout << "Warning: exceed required delay" << endl;
-    cout << "area = " << area << ", " << "delay = " << delay << endl;
-    Command = string("write_blif ");
-    ss.str("");
-    ss << "appntk/" << fileName << "_" << area << "_" << delay << ".blif";
-    string str = ss.str();
-    Command += str;
-    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+    cout << "area = " << area << endl;
+    cout << "delay = " << delay << endl;
+    if (isOutput) {
+        ss.str("");
+        ss << "write_blif appntk/" << fileName << "_" << area << "_" << delay << ".blif";
+        DASSERT(!Cmd_CommandExecute(pAbc, ss.str().c_str()));
+    }
 }
 
 
@@ -88,7 +90,8 @@ void Ckt_EvalFPGA(Abc_Ntk_t * pNtk, string fileName, string map)
     }
 
     // output
-    cout << "size = " << size << ", " << "depth = " << depth << endl;
+    cout << "size = " << size << endl;
+    cout << "depth = " << depth << endl;
     Command = string("write_blif ");
     ostringstream ss("");
     ss << "appntk/" << fileName << "_" << size << "_" << depth << ".blif";
@@ -421,4 +424,42 @@ void Ckt_PrintHopFunc(Hop_Obj_t * pHopObj, Vec_Ptr_t * vFanins)
     Hop_ObjPrintEqn( stdout, pHopObj, vLevels, 0 );
     cout << endl;
     Vec_VecFree( vLevels );
+}
+
+
+void Ckt_WriteBlif(Abc_Ntk_t * pNtk, string fileName)
+{
+    Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
+    Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pNtk));
+    string Command = "write_blif " + fileName;
+    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+}
+
+
+void Ckt_PrintSop(std::string sop)
+{
+    for (auto &ch: sop) {
+        if (ch == '\n')
+            cout << ";";
+        else
+            cout << ch;
+    }
+}
+
+
+void Ckt_PrintNodes(Vec_Ptr_t * vFanins)
+{
+    Abc_Obj_t * pObj = nullptr;
+    int i = 0;
+    Vec_PtrForEachEntry(Abc_Obj_t *, vFanins, pObj, i)
+        cout << Abc_ObjName(pObj) << ",";
+}
+
+
+void Ckt_PrintFanins(Abc_Obj_t * pObj)
+{
+    Abc_Obj_t * pFanin = nullptr;
+    int i = 0;
+    Abc_ObjForEachFanin(pObj, pFanin, i)
+        cout << Abc_ObjName(pFanin) << ",";
 }

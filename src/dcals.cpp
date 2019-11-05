@@ -68,10 +68,7 @@ void Dcals_Man_t::DCALS()
     }
     clock_t st = clock();
     while (metric < metricBound) {
-        if (nFrame != 0)
-            LocalAppChange();
-        else
-            ConstResub();
+        LocalAppChange();
         cout << "time = " << clock() - st << endl << endl;
     }
 }
@@ -79,8 +76,6 @@ void Dcals_Man_t::DCALS()
 
 void Dcals_Man_t::LocalAppChange()
 {
-    static int pat1, pat2;
-
     DASSERT(Abc_NtkIsLogic(pAppNtk));
     DASSERT(Abc_NtkToAig(pAppNtk));
     DASSERT(Abc_NtkHasAig(pAppNtk));
@@ -89,7 +84,11 @@ void Dcals_Man_t::LocalAppChange()
     // new seed for logic simulation
     random_device rd;
     seed = static_cast <unsigned>(rd());
-    cout << "nframe = " << nFrame << " seed = " << seed << endl;
+    cout << "nframe = " << nFrame << endl;
+    cout << "seed = " << seed << endl;
+
+    // patience parameters
+    static int pat1, pat2;
     cout << "patience = " << pat1 << "," << pat2 << endl;
 
     // init simulator
@@ -100,158 +99,57 @@ void Dcals_Man_t::LocalAppChange()
     pAppSmlt->Input(100);
     pAppSmlt->Simulate();
 
-    // start the manager
-    Mfs_Man_t * pMfsMan = Mfs_ManAlloc(pPars);
-    DASSERT(pMfsMan->pCare == nullptr);
-    pMfsMan->pNtk = pAppNtk;
-
-    // compute level
-    Abc_NtkLevel(pAppNtk);
-    Abc_NtkStartReverseLevels(pAppNtk, pPars->nGrowthLevel);
-
     // generate candidates
-    double bestEr = 1.0;
-    int bestId = -1;
-    int candType = 0;
-    Abc_Obj_t * pObjApp = nullptr;
-    int i = 0;
-    boost::progress_display pd(Abc_NtkNodeNum(pAppNtk));
-    int t1 = 0, t2 = 0;
-    Abc_NtkForEachNode(pAppNtk, pObjApp, i) {
-        // process bar
-        ++pd;
-        // skip constant nodes
-        if (Abc_NodeIsConst(pObjApp))
-            continue;
-        // Ckt_PrintNodeFunc(pObjApp);
-        // evaluate a candidate
-        clock_t st = clock();
-        Hop_Obj_t * pFunc = LocalAppChangeNode(pMfsMan, pObjApp);
-        t1 += clock() - st;
-        st = clock();
-        if (pFunc != nullptr) {
-            double er = 0;
-            if (!metricType)
-                er = MeasureResubER(pOriSmlt, pAppSmlt, pObjApp, pFunc, pMfsMan->vMfsFanins, false);
-            else
-                er = MeasureResubAEMR(pOriSmlt, pAppSmlt, pObjApp, pFunc, pMfsMan->vMfsFanins, false);
-            if (er < bestEr) {
-                bestEr = er;
-                bestId = i;
-                candType = 0;
-            }
-            // Ckt_PrintHopFunc(pFunc, pMfsMan->vMfsFanins);
-            // cout << er << endl;
-        }
-        else {
-            // evaluate candidate zero
-            Hop_Man_t * pHopMan = static_cast <Hop_Man_t *> (pAppNtk->pManFunc);
-            pFunc = Hop_ManConst0(pHopMan);
-            Vec_PtrClear(pMfsMan->vMfsFanins);
-            double er = 0;
-            if (!metricType)
-                er = MeasureResubER(pOriSmlt, pAppSmlt, pObjApp, pFunc, pMfsMan->vMfsFanins, false);
-            else
-                er = MeasureResubAEMR(pOriSmlt, pAppSmlt, pObjApp, pFunc, pMfsMan->vMfsFanins, false);
-            if (er < bestEr) {
-                bestEr = er;
-                bestId = i;
-                candType = 1;
-            }
-            // Ckt_PrintHopFunc(pFunc, pMfsMan->vMfsFanins);
-            // cout << er << endl;
-            // evaluate candidate one
-            pFunc = Hop_ManConst1(pHopMan);
-            if (!metricType)
-                er = MeasureResubER(pOriSmlt, pAppSmlt, pObjApp, pFunc, pMfsMan->vMfsFanins, false);
-            else
-                er = MeasureResubAEMR(pOriSmlt, pAppSmlt, pObjApp, pFunc, pMfsMan->vMfsFanins, false);
-            if (er < bestEr) {
-                bestEr = er;
-                bestId = i;
-                candType = 2;
-            }
-            // Ckt_PrintHopFunc(pFunc, pMfsMan->vMfsFanins);
-            // cout << er << endl;
-        }
-        t2 += clock() - st;
-    }
-    cout << "Build function t1 = " << t1 << endl;
-    cout << "Error estimation t2 = " << t2 << endl;
+    vector <Lac_Cand_t> cands;
+    Lac_Cand_t bestCand;
+    cands.reserve(1024);
+    GenCand(false, cands);
+    BatchErrorEst(cands, bestCand);
 
     // apply local approximate change
-    if (bestId != -1) {
+    bool isApply = false;
+    if (bestCand.ExistResub(1.0)) {
         pat1 = 0;
-        bool isApply = false;
-        if (bestEr <= metricBound) {
-            pat2 = 0;
+        if (bestCand.GetError() <= metricBound) {
             isApply = true;
+            pat2 = 0;
         }
         else {
             ++pat2;
-            isApply = false;
-            if (pat2 == 5)
+            if (pat2 == 5) {
+                pat2 = 0;
                 isApply = true;
-        }
-        if (isApply) {
-            cout << "best node " << Abc_ObjName(Abc_NtkObj(pAppNtk, bestId)) << " best error " << bestEr << endl;
-            metric = bestEr;
-            Hop_Man_t * pHopMan = static_cast <Hop_Man_t *> (pAppNtk->pManFunc);
-            Hop_Obj_t * pFunc = nullptr;
-            if (!candType) {
-                pFunc = LocalAppChangeNode(pMfsMan, Abc_NtkObj(pAppNtk, bestId));
             }
-            else if (candType == 1) {
-                pFunc = Hop_ManConst0(pHopMan);
-                Vec_PtrClear(pMfsMan->vMfsFanins);
-            }
-            else if (candType == 2) {
-                pFunc = Hop_ManConst1(pHopMan);
-                Vec_PtrClear(pMfsMan->vMfsFanins);
-            }
-            else
-                DASSERT(0);
-            Ckt_PrintNodeFunc(Abc_NtkObj(pAppNtk, bestId));
-            Ckt_PrintHopFunc(pFunc, pMfsMan->vMfsFanins);
-            cout << "Original level " << Abc_NtkObj(pAppNtk, bestId)->Level << endl;
-            Abc_Obj_t * ptt = nullptr;
-            int tt = 0;
-            Vec_PtrForEachEntry(Abc_Obj_t *, pMfsMan->vMfsFanins, ptt, tt)
-                cout << "New level " << ptt->Level << endl;
-            Ckt_NtkMfsUpdateNetwork(pMfsMan, Abc_NtkObj(pAppNtk, bestId), pMfsMan->vMfsFanins, pFunc);
         }
     }
     else {
-        pat2 = 0;
         ++pat1;
         if (pat1 == 5) {
-            nFrame >>= 1;
+            nFrame *= 0.9;
             pat1 = 0;
         }
+    }
+    if (isApply) {
+        metric = bestCand.GetError();
+        bestCand.Print();
+        Ckt_UpdateNetwork(bestCand.GetObj(), bestCand.GetFanins(), bestCand.GetFunc());
+        // check metric
+        double curEr = (!metricType)?
+            MeasureER(pOriNtk, pAppNtk, maxNFrame, 100, true):
+            MeasureAEMR(pOriNtk, pAppNtk, maxNFrame, 100, true);
+        DASSERT(curEr == metric);
     }
 
     // recycle memory
     delete pOriSmlt;
     delete pAppSmlt;
-    Abc_NtkStopReverseLevels(pAppNtk);
-    Mfs_ManStop(pMfsMan);
-
-    // check metric
-    double curEr = 0;
-    if (!metricType)
-        curEr = MeasureER(pOriNtk, pAppNtk, maxNFrame, 100, true);
-    else {
-        curEr = MeasureAEMR(pOriNtk, pAppNtk, maxNFrame, 100, true);
-        cout << "current er = " << curEr << endl;
-    }
-    DASSERT(curEr == metric);
 
     // disturb the network
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
     Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pAppNtk));
     string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance");
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
-    Command = string("logic; sweep; mfs");
+    Command = string("logic; sweep;");
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
     Abc_NtkDelete(pAppNtk);
     pAppNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
@@ -410,60 +308,6 @@ Aig_Man_t * Dcals_Man_t::ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode)
             pattern += pAppSmlt->GetValue(pObj, blockId, bitId) ? '1': '0';
         patterns.insert(pattern);
     }
-    // // start an espresso PLA
-    // int nVars = Vec_PtrSize(vCut);
-    // pPLA PLA = new_PLA();
-    // PLA->pla_type = FR_type;
-    // DASSERT(cube.fullset == nullptr);
-    // cube.num_binary_vars = nVars;
-    // cube.num_vars = cube.num_binary_vars + 1;
-    // cube.part_size = ALLOC(int, cube.num_vars);
-    // DASSERT(cube.fullset == nullptr);
-    // DASSERT(cube.part_size != nullptr);
-    // cube.part_size[cube.num_vars-1] = 1;
-    // cube_setup();
-    // PLA_labels(PLA);
-    // if (PLA->F == nullptr) {
-    //     PLA->F = new_cover(10);
-    //     PLA->D = new_cover(10);
-    //     PLA->R = new_cover(10);
-    // }
-    // // simplify the care set condition with espresso
-    // pcube cf = cube.temp[0];
-    // for (int i = 0; i < nFrame; ++i) {
-    //     int frameId = genId();
-    //     int blockId = frameId >> 6;
-    //     int bitId = frameId % 64;
-    //     string pattern = "";
-    //     Abc_Obj_t * pObj = nullptr;
-    //     int k = 0;
-    //     set_clear(cf, cube.size);
-    //     Vec_PtrForEachEntry(Abc_Obj_t *, vCut, pObj, k) {
-    //         bool temp = pAppSmlt->GetValue(pObj, blockId, bitId);
-    //         if (!temp)
-    //             set_insert(cf, 2*k);
-    //         else
-    //             set_insert(cf, 2*k+1);
-    //     }
-    //     set_insert(cf, 2*nVars);
-    //     PLA->F = sf_addset(PLA->F, cf);
-    // }
-    // PLA->F = espresso(PLA->F, PLA->D, PLA->R);
-
-    // vector <string> patterns;
-    // register pcube last, c;
-    // foreach_set(PLA->F, last, c) {
-    //     string newFunc("");
-    //     for(int var = 0; var < cube.num_binary_vars; var++)
-    //         newFunc += ("?01-" [GETINPUT(c, var)]);
-    //     DASSERT(cube.num_binary_vars == cube.num_vars - 1);
-    //     DASSERT(cube.output != -1);
-    //     DASSERT(cube.first_part[cube.output] == cube.last_part[cube.output]);
-    //     int outPos = cube.first_part[cube.output];
-    //     DASSERT(("01" [is_in_set(c, outPos) != 0]) == '1');
-    //     patterns.emplace_back(newFunc);
-    // }
-
     // start the new manager
     Aig_Man_t * pMan = Aig_ManStart( 1000 );
     // construct the root node's AIG cone
@@ -497,14 +341,149 @@ Aig_Man_t * Dcals_Man_t::ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode)
         Aig_ObjCreateCo(pMan, pObjAig);
     }
     // clean up
-    // free_PLA(PLA);
-    // FREE(cube.part_size);
-    // setdown_cube();
-    // sf_cleanup();
-    // sm_cleanup();
     Vec_PtrFree(vCut);
     Aig_ManCleanup(pMan);
     return pMan;
+}
+
+
+void Dcals_Man_t::GenCand(IN bool genConst,INOUT vector <Lac_Cand_t> & cands)
+{
+    DASSERT(cands.empty());
+
+    // compute level
+    Abc_NtkLevel(pAppNtk);
+    Abc_NtkStartReverseLevels(pAppNtk, pPars->nGrowthLevel);
+
+    // start mfs manager
+    Mfs_Man_t * pMfsMan = Mfs_ManAlloc(pPars);
+    DASSERT(pMfsMan->pCare == nullptr);
+    pMfsMan->pNtk = pAppNtk;
+
+    // collect candidates
+    int i = 0;
+    Abc_Obj_t * pObj = nullptr;
+    Hop_Obj_t * pFunc = nullptr;
+    Hop_Man_t * pHopMan = static_cast <Hop_Man_t *> (pAppNtk->pManFunc);
+    Abc_NtkForEachNode(pAppNtk, pObj, i) {
+        // skip constant nodes
+        if (Abc_NodeIsConst(pObj))
+            continue;
+        // interpolation
+        pFunc = LocalAppChangeNode(pMfsMan, pObj);
+        if (pFunc != nullptr)
+            cands.emplace_back(pObj, pFunc, pMfsMan->vMfsFanins);
+        if (genConst) {
+            // const 0
+            Vec_PtrClear(pMfsMan->vMfsFanins);
+            pFunc = Hop_ManConst0(pHopMan);
+            cands.emplace_back(pObj, pFunc, pMfsMan->vMfsFanins);
+            // const 1
+            pFunc = Hop_ManConst1(pHopMan);
+            cands.emplace_back(pObj, pFunc, pMfsMan->vMfsFanins);
+        }
+    }
+
+    // clean up
+    Abc_NtkStopReverseLevels(pAppNtk);
+    Mfs_ManStop(pMfsMan);
+}
+
+
+void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t & bestCand)
+{
+    DASSERT(pOriSmlt->GetNetwork() != pAppSmlt->GetNetwork());
+    DASSERT(pOriSmlt->GetNetwork() == pOriNtk);
+    DASSERT(pAppSmlt->GetNetwork() == pAppNtk);
+    DASSERT(Abc_NtkIsAigLogic(pOriNtk));
+    DASSERT(Abc_NtkIsAigLogic(pAppNtk));
+    DASSERT(SmltChecker(pOriSmlt, pAppSmlt));
+    // get base error
+    int baseErr = (!metricType)?
+        GetER(pOriSmlt, pAppSmlt, false, false):
+        GetAEMR(pOriSmlt, pAppSmlt, false, false);
+    // get disjoint cuts and the corresponding networks
+    pAppSmlt->BuildCutNtks();
+    // simulate networks of disjoint cuts
+    pAppSmlt->SimulateCutNtks();
+    // topological sort
+    Vec_Ptr_t * vNodes = Abc_NtkDfs(pAppNtk, 0);
+    // calculate the values after resubstitution
+    vector <tVec> newValues(cands.size());
+    int nBlock = pAppSmlt->GetBlockNum();
+    for (uint32_t i = 0; i < cands.size(); ++i) {
+        newValues[i].resize(nBlock);
+        pAppSmlt->UpdateAigNodeResub(cands[i].GetObj(), cands[i].GetFunc(), cands[i].GetFanins(), newValues[i]);
+    }
+    // calculate increased error
+    int i = 0;
+    Abc_Obj_t * pObj = nullptr;
+    vector <tVec> bds(pAppSmlt->GetMaxId() + 1);
+    Abc_NtkForEachObj(pAppNtk, pObj, i)
+        bds[pObj->Id].resize(nBlock);
+    if (!metricType) {
+        vector <tVec> isERInc(pAppSmlt->GetMaxId() + 1);
+        vector <tVec> isERDec(pAppSmlt->GetMaxId() + 1);
+        Abc_NtkForEachObj(pAppNtk, pObj, i) {
+            isERInc[pObj->Id].resize(nBlock);
+            isERDec[pObj->Id].resize(nBlock);
+            for (int j = 0; j < nBlock; ++j) {
+                isERInc[pObj->Id][j] = 0;
+                isERDec[pObj->Id][j] = static_cast <uint64_t> (ULLONG_MAX);
+            }
+        }
+        tVec isOnePoRight(nBlock, 0);
+        tVec isAllPosRight(nBlock, static_cast <uint64_t> (ULLONG_MAX));
+        Abc_Obj_t * pAppPo = nullptr;
+        Abc_Obj_t * pOriPo = nullptr;
+        Abc_NtkForEachPo(pAppNtk, pAppPo, i) {
+            pOriPo = Abc_NtkPo(pOriNtk, i);
+            // update the correctness of primary outputs
+            for (int j = 0; j < nBlock; ++j) {
+                isOnePoRight[j] = ~(pOriSmlt->GetValues(pOriPo, j) ^ pAppSmlt->GetValues(pAppPo, j));
+                isAllPosRight[j] &= isOnePoRight[j];
+            }
+            // update the influence on each primary output
+            pAppSmlt->UpdateBoolDiff(pAppPo, vNodes, bds);
+            // update the flag of increasement/decreasement
+            int j = 0;
+            Vec_PtrForEachEntryReverse(Abc_Obj_t *, vNodes, pObj, j) {
+                for (int k = 0; k < nBlock; ++k) {
+                    isERInc[pObj->Id][k] |= bds[pObj->Id][k];
+                    isERDec[pObj->Id][k] &= (isOnePoRight[k] ^ bds[pObj->Id][k]);
+                }
+            }
+        }
+        // updated the influece of each candidates
+        for (uint32_t ii = 0; ii < cands.size(); ++ii) {
+            Lac_Cand_t & cand = cands[ii];
+            Abc_Obj_t * pCand = cand.GetObj();
+            tVec & isChanged = newValues[ii];
+            for (int i = 0; i < nBlock; ++i)
+                isChanged[i] ^= pAppSmlt->GetValues(pCand, i);
+            int er = baseErr;
+            int movLen = 64 - pAppSmlt->GetLastBlockLen();
+            for (int i = 0; i < nBlock; ++i) {
+                uint64_t temp = isAllPosRight[i] & isERInc[pCand->Id][i] & isChanged[i];
+                if (i == nBlock - 1) {
+                    temp >>= movLen;
+                    temp <<= movLen;
+                }
+                er += Ckt_CountOneNum(temp);
+                temp = ~isAllPosRight[i] & isERDec[pCand->Id][i] & isChanged[i];
+                if (i == nBlock - 1) {
+                    temp >>= movLen;
+                    temp <<= movLen;
+                }
+                er -= Ckt_CountOneNum(temp);
+            }
+            bestCand.UpdateBest(er / static_cast <double> (pAppSmlt->GetFrameNum()), cand.GetObj(), cand.GetFunc(), cand.GetFanins());
+        }
+    }
+    else {
+    }
+    // clean up
+    Vec_PtrFree(vNodes);
 }
 
 
@@ -841,4 +820,18 @@ void Ckt_NtkMfsUpdateNetwork(Mfs_Man_t * p, Abc_Obj_t * pObj, Vec_Ptr_t * vMfsFa
     // replace the old node by the new node
     // update the level of the node
     Abc_NtkUpdate( pObj, pObjNew, p->vLevels );
+}
+
+
+void Ckt_UpdateNetwork(Abc_Obj_t * pObj, Vec_Ptr_t * vFanins, Hop_Obj_t * pFunc)
+{
+    Abc_Obj_t * pObjNew, * pFanin;
+    int k;
+    // create the new node
+    pObjNew = Abc_NtkCreateNode( pObj->pNtk );
+    pObjNew->pData = pFunc;
+    Vec_PtrForEachEntry( Abc_Obj_t *, vFanins, pFanin, k )
+        Abc_ObjAddFanin( pObjNew, pFanin );
+    // replace the old node by the new node
+    Abc_ObjReplace( pObj, pObjNew );
 }
