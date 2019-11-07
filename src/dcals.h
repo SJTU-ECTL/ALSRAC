@@ -11,17 +11,16 @@
 class Dcals_Man_t
 {
 private:
-    const int maxNFrame = 102400;
-
     Abc_Ntk_t * pOriNtk;
     Abc_Ntk_t * pAppNtk;
     Simulator_Pro_t * pOriSmlt;
     Simulator_Pro_t * pAppSmlt;
     unsigned seed;
-    int metricType;
+    Metric_t metricType;
     int mapType;
     int nFrame;
     int cutSize;
+    int nEvalFrame;
     double metric;
     double metricBound;
     double maxDelay;
@@ -31,12 +30,11 @@ private:
     Dcals_Man_t(const Dcals_Man_t &);
 
 public:
-    explicit Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound, int metricType = 0, int mapType = 0);
+    explicit Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound, Metric_t metricType, int mapType = 0);
     ~Dcals_Man_t();
     Mfs_Par_t * InitMfsPars();
     void DCALS();
     void LocalAppChange();
-    void ConstResub();
     Hop_Obj_t * LocalAppChangeNode(Mfs_Man_t * p, Abc_Obj_t * pNode);
     Aig_Man_t * ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode);
     void GenCand(IN bool genConst, INOUT std::vector <Lac_Cand_t> & cands);

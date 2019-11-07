@@ -11,6 +11,10 @@
 #include "debugAssert.h"
 
 
+enum class Metric_t{ER, AEMR, RAEM};
+enum class Map_t{SCL, LUT};
+
+
 typedef std::vector <uint64_t> tVec;
 
 
@@ -21,6 +25,7 @@ private:
     Abc_Obj_t * pObj;
     Hop_Obj_t * pFunc;
     Vec_Ptr_t * vFanins;
+    tVec estimation;
 
     Lac_Cand_t & operator = (const Lac_Cand_t &);
     Lac_Cand_t(Lac_Cand_t &&);
@@ -33,8 +38,10 @@ public:
     void Print() const;
     bool ExistResub(double metricBound) const;
     void UpdateBest(double errorNew, Abc_Obj_t * pObj, Hop_Obj_t * pFuncNew, Vec_Ptr_t * vFaninsNew);
+    void UpdateBest(tVec & estNew, Abc_Obj_t * pObjNew, Hop_Obj_t * pFuncNew, Vec_Ptr_t * vFaninsNew);
 
     inline double GetError() const {return error;}
+    inline void SetError(double errorNew) {error = errorNew;}
     inline Abc_Obj_t * GetObj() const {return pObj;}
     inline Hop_Obj_t * GetFunc() const {return pFunc;}
     inline Vec_Ptr_t * GetFanins() const {return vFanins;}

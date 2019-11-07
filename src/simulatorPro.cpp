@@ -11,6 +11,7 @@ Lac_Cand_t::Lac_Cand_t()
     this->error = 1.0;
     this->pFunc = nullptr;
     this->vFanins = nullptr;
+    estimation.clear();
 }
 
 
@@ -47,7 +48,7 @@ void Lac_Cand_t::Print() const
     DASSERT(Abc_NtkIsAigLogic(pObj->pNtk));
     Ckt_PrintNodeFunc(pObj);
     Ckt_PrintHopFunc(pFunc, vFanins);
-    cout << "new error " << error << endl;
+    // cout << "new error " << error << endl;
 }
 
 
@@ -71,6 +72,36 @@ void Lac_Cand_t::UpdateBest(double errorNew, Abc_Obj_t * pObjNew, Hop_Obj_t * pF
             vFanins = nullptr;
         }
         vFanins = Vec_PtrDup(vFaninsNew);
+    }
+}
+
+
+void Lac_Cand_t::UpdateBest(tVec & estNew, Abc_Obj_t * pObjNew, Hop_Obj_t * pFuncNew, Vec_Ptr_t * vFaninsNew)
+{
+    bool isUpdate = true;
+    if (!estimation.empty()) {
+        DASSERT(estNew.size() == estimation.size());
+        int sz = static_cast <int> (estNew.size());
+        int i = 0;
+        for (i = sz - 1; i >= 0; --i) {
+            if (estNew[i] > estimation[i]) {
+                isUpdate = false;
+                break;
+            }
+        }
+        if (i == -1)
+            isUpdate = false;
+    }
+    if (isUpdate) {
+        error = 0.0;
+        pObj = pObjNew;
+        pFunc = pFuncNew;
+        if (vFanins != nullptr) {
+            Vec_PtrFree(vFanins);
+            vFanins = nullptr;
+        }
+        vFanins = Vec_PtrDup(vFaninsNew);
+        estimation.assign(estNew.begin(), estNew.end());
     }
 }
 
@@ -1272,7 +1303,7 @@ double MeasureRAEM(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned se
         else
             sum += abs(1 - static_cast <bigFlt>(smlt2.GetOutput(0, nPo - 1, k, 0)));
     }
-    return static_cast <double> (static_cast <bigFlt>(sum) / static_cast <double>(nFrame));
+    return static_cast <double> (sum / static_cast <double>(nFrame));
 }
 
 

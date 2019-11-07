@@ -5,7 +5,7 @@ using namespace std;
 using namespace boost;
 
 
-Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound, int metricType, int mapType)
+Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound, Metric_t metricType, int mapType)
 {
     DASSERT(nFrame > 0);
     DASSERT(pNtk != nullptr);
@@ -24,6 +24,7 @@ Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metri
     this->mapType = mapType;
     this->nFrame = nFrame;
     this->cutSize = cutSize;
+    this->nEvalFrame = 102400;
     this->metric = 0;
     this->metricBound = metricBound;
     this->pPars = InitMfsPars();
@@ -45,7 +46,7 @@ Mfs_Par_t * Dcals_Man_t::InitMfsPars()
     pPars->nWinTfoLevs  =    2;
     pPars->nFanoutsMax  =   30;
     pPars->nDepthMax    =   20;
-    pPars->nWinMax      =   300;
+    pPars->nWinMax      =  300;
     pPars->nGrowthLevel =    0;
     pPars->nBTLimit     = 5000;
     pPars->fRrOnly      =    0;
@@ -92,21 +93,25 @@ void Dcals_Man_t::LocalAppChange()
     cout << "patience = " << pat1 << "," << pat2 << endl;
 
     // init simulator
-    pOriSmlt = new Simulator_Pro_t(this->pOriNtk, maxNFrame);
+    pOriSmlt = new Simulator_Pro_t(this->pOriNtk, nEvalFrame);
     pOriSmlt->Input(100);
     pOriSmlt->Simulate();
-    pAppSmlt = new Simulator_Pro_t(this->pAppNtk, maxNFrame);
+    pAppSmlt = new Simulator_Pro_t(this->pAppNtk, nEvalFrame);
     pAppSmlt->Input(100);
     pAppSmlt->Simulate();
 
     // generate candidates
     vector <Lac_Cand_t> cands;
     Lac_Cand_t bestCand;
-    cands.reserve(1024);
-    if (!metricType)
+    cands.reserve(8192);
+    if (metricType == Metric_t::ER)
         GenCand(false, cands);
-    else
+    else if (metricType == Metric_t::AEMR)
         GenCand(true, cands);
+    else if (metricType == Metric_t::RAEM)
+        GenCand(true, cands);
+    else
+        DASSERT(0);
     BatchErrorEst(cands, bestCand);
 
     // apply local approximate change
@@ -133,15 +138,23 @@ void Dcals_Man_t::LocalAppChange()
         }
     }
     if (isApply) {
-        metric = bestCand.GetError();
         bestCand.Print();
         Ckt_UpdateNetwork(bestCand.GetObj(), bestCand.GetFanins(), bestCand.GetFunc());
-        // check metric
-        double curEr = (!metricType)?
-            MeasureER(pOriNtk, pAppNtk, maxNFrame, 100, true):
-            MeasureAEMR(pOriNtk, pAppNtk, maxNFrame, 100, true);
-        cout << "RAEM = " << MeasureRAEM(pOriNtk, pAppNtk, 102400, 100, true) << endl;
-        DASSERT(curEr == metric);
+        // update and check metric
+        if (metricType == Metric_t::ER) {
+            metric = MeasureER(pOriNtk, pAppNtk, nEvalFrame, 100, true);
+            DASSERT(metric == bestCand.GetError());
+        }
+        else if (metricType == Metric_t::AEMR) {
+            metric = MeasureAEMR(pOriNtk, pAppNtk, nEvalFrame, 100, true);
+            DASSERT(metric == bestCand.GetError());
+        }
+        else if (metricType == Metric_t::RAEM) {
+            metric = MeasureRAEM(pOriNtk, pAppNtk, nEvalFrame, 100, true);
+        }
+        else
+            DASSERT(0);
+        cout << "current error = " << metric << endl;
     }
 
     // recycle memory
@@ -151,9 +164,7 @@ void Dcals_Man_t::LocalAppChange()
     // disturb the network
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
     Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pAppNtk));
-    string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance");
-    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
-    Command = string("logic; sweep;");
+    string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance; logic;");
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
     // string Command = string("sweep;");
     // DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
@@ -164,100 +175,7 @@ void Dcals_Man_t::LocalAppChange()
     ostringstream fileName("");
     fileName << pAppNtk->pName << "_" << metric;
     if (!mapType)
-        Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay);
-    else {
-        Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6 -a;");
-        Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6;");
-    }
-}
-
-
-void Dcals_Man_t::ConstResub()
-{
-    DASSERT(Abc_NtkIsLogic(pAppNtk));
-    DASSERT(Abc_NtkToAig(pAppNtk));
-    DASSERT(Abc_NtkHasAig(pAppNtk));
-
-    double bestEr = 1.0;
-    int bestId = -1;
-    bool isConst0 = false;
-    Abc_Obj_t * pObjApp = nullptr;
-    int i = 0;
-    cout << "nframe = " << nFrame << endl;
-
-    // init simulator
-    pOriSmlt = new Simulator_Pro_t(this->pOriNtk, maxNFrame);
-    pOriSmlt->Input(100);
-    pOriSmlt->Simulate();
-    pAppSmlt = new Simulator_Pro_t(this->pAppNtk, maxNFrame);
-    pAppSmlt->Input(100);
-    pAppSmlt->Simulate();
-
-    // generate candidates
-    boost::progress_display pd(Abc_NtkNodeNum(pAppNtk));
-    Hop_Man_t * pHopMan = static_cast <Hop_Man_t *> (pAppNtk->pManFunc);
-    Vec_Ptr_t * vFanins = Vec_PtrAlloc(10);
-    Abc_NtkForEachNode(pAppNtk, pObjApp, i) {
-        // process bar
-        ++pd;
-        // skip constant nodes
-        if (Abc_NodeIsConst(pObjApp))
-            continue;
-        // evaluate candidate zero
-        Hop_Obj_t * pFunc = Hop_ManConst0(pHopMan);
-        double er = 0;
-        if (!metricType)
-            er = MeasureResubER(pOriSmlt, pAppSmlt, pObjApp, pFunc, vFanins, false);
-        else
-            er = MeasureResubAEMR(pOriSmlt, pAppSmlt, pObjApp, pFunc, vFanins, false);
-        if (er < bestEr) {
-            bestEr = er;
-            bestId = i;
-            isConst0 = true;
-        }
-        // evaluate candidate one
-        pFunc = Hop_ManConst1(pHopMan);
-        if (!metricType)
-            er = MeasureResubER(pOriSmlt, pAppSmlt, pObjApp, pFunc, vFanins, false);
-        else
-            er = MeasureResubAEMR(pOriSmlt, pAppSmlt, pObjApp, pFunc, vFanins, false);
-        if (er < bestEr) {
-            bestEr = er;
-            bestId = i;
-            isConst0 = false;
-        }
-    }
-
-    // apply the constant replacement
-    if (bestId != -1) {
-        cout << "best node " << Abc_ObjName(Abc_NtkObj(pAppNtk, bestId)) << " best error " << bestEr << endl;
-        if (isConst0)
-            Abc_ObjReplace(Abc_NtkObj(pAppNtk, bestId), Ckt_GetConst(pAppNtk, 0));
-        else
-            Abc_ObjReplace(Abc_NtkObj(pAppNtk, bestId), Ckt_GetConst(pAppNtk, 1));
-        metric = bestEr;
-    }
-
-    // recycle memory
-    Vec_PtrFree(vFanins);
-    delete pOriSmlt;
-    delete pAppSmlt;
-
-    // disturb the network
-    Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
-    Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pAppNtk));
-    string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance");
-    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
-    Command = string("logic; sweep; mfs");
-    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
-    Abc_NtkDelete(pAppNtk);
-    pAppNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
-
-    // evaluate the current approximate circuit
-    ostringstream fileName("");
-    fileName << pAppNtk->pName << "_" << metric;
-    if (!mapType)
-        Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay);
+        Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay, true);
     else {
         Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6 -a;");
         Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6;");
@@ -298,7 +216,7 @@ Aig_Man_t * Dcals_Man_t::ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode)
     // find local pi
     Vec_Ptr_t * vCut = Ckt_FindCut(pNode, cutSize);
     // uniform distribution
-    random::uniform_int_distribution <int> unf(0, maxNFrame - 1);
+    random::uniform_int_distribution <int> unf(0, nEvalFrame - 1);
     random::mt19937 engine(seed);
     variate_generator <random::mt19937, random::uniform_int_distribution <int> > genId(engine, unf);
     // generate approximate care set
@@ -371,7 +289,9 @@ void Dcals_Man_t::GenCand(IN bool genConst,INOUT vector <Lac_Cand_t> & cands)
     Abc_Obj_t * pObj = nullptr;
     Hop_Obj_t * pFunc = nullptr;
     Hop_Man_t * pHopMan = static_cast <Hop_Man_t *> (pAppNtk->pManFunc);
+    boost::progress_display pd(Abc_NtkNodeNum(pAppNtk));
     Abc_NtkForEachNode(pAppNtk, pObj, i) {
+        ++pd;
         // skip constant nodes
         if (Abc_NodeIsConst(pObj))
             continue;
@@ -413,7 +333,6 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
     // calculate the values after resubstitution
     vector <tVec> newValues(cands.size());
     int nBlock = pAppSmlt->GetBlockNum();
-    int nFrame = pAppSmlt->GetFrameNum();
     for (uint32_t i = 0; i < cands.size(); ++i) {
         newValues[i].resize(nBlock);
         pAppSmlt->UpdateAigNodeResub(cands[i].GetObj(), cands[i].GetFunc(), cands[i].GetFanins(), newValues[i]);
@@ -426,7 +345,7 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
         for (auto & bdObjPo: bdPo)
             bdObjPo.resize(nBlock);
     }
-    if (!metricType) {
+    if (metricType == Metric_t::ER) {
         int baseErr = GetER(pOriSmlt, pAppSmlt, false, false);
         vector <tVec> isERInc(pAppSmlt->GetMaxId() + 1);
         vector <tVec> isERDec(pAppSmlt->GetMaxId() + 1);
@@ -488,7 +407,8 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
             bestCand.UpdateBest(er / static_cast <double> (pAppSmlt->GetFrameNum()), cand.GetObj(), cand.GetFunc(), cand.GetFanins());
         }
     }
-    else {
+    else if (metricType == Metric_t::AEMR) {
+        int nFrame = pAppSmlt->GetFrameNum();
         vector < vector <int8_t> > offsets;
         GetOffset(pOriSmlt, pAppSmlt, false, offsets);
         int i = 0;
@@ -529,6 +449,42 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
             bestCand.UpdateBest(er, cand.GetObj(), cand.GetFunc(), cand.GetFanins());
         }
     }
+    else if (metricType == Metric_t::RAEM) {
+        int i = 0;
+        Abc_Obj_t * pAppPo = nullptr;
+        // update the influence on each primary output
+        Abc_NtkForEachPo(pAppNtk, pAppPo, i)
+            pAppSmlt->UpdateBoolDiff(pAppPo, vNodes, bds[i]);
+        // update the correctness of primary outputs
+        vector <tVec> isOnePoRight(nPo);
+        Abc_NtkForEachPo(pAppNtk, pAppPo, i) {
+            Abc_Obj_t * pOriPo = Abc_NtkPo(pOriNtk, i);
+            isOnePoRight[i].resize(nBlock);
+            for (int j = 0; j < nBlock; ++j)
+                isOnePoRight[i][j] = ~(pOriSmlt->GetValues(pOriPo, j) ^ pAppSmlt->GetValues(pAppPo, j));
+        }
+        // evaluate candidates
+        progress_display pd(cands.size());
+        for (uint32_t ii = 0; ii < cands.size(); ++ii) {
+            ++pd;
+            Lac_Cand_t & cand = cands[ii];
+            Abc_Obj_t * pCand = cand.GetObj();
+            tVec incCounts(nPo, 0);
+            tVec & isChanged = newValues[ii];
+            for (int i = 0; i < nBlock; ++i)
+                isChanged[i] ^= pAppSmlt->GetValues(pCand, i);
+            for (int i = 0; i < nPo; ++i) {
+                for (int j = 0; j < nBlock; ++j) {
+                    incCounts[i] += Ckt_CountOneNum(isChanged[j] & bds[i][pCand->Id][j] & isOnePoRight[i][j]);
+                }
+                bestCand.UpdateBest(incCounts, cand.GetObj(), cand.GetFunc(), cand.GetFanins());
+            }
+        }
+        // bestCand.SetError(MeasureRAEM(pOriNtk, pAppNtk, nEvalFrame, 100, true));
+        // cout << "best error = " << bestCand.GetError() << endl;
+    }
+    else
+        DASSERT(0);
     // clean up
     Vec_PtrFree(vNodes);
 }

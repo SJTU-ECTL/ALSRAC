@@ -14,12 +14,12 @@ parser Cmdline_Parser(int argc, char * argv[])
     option.add <string> ("input", 'i', "Original Circuit file", true);
     option.add <string> ("approx", 'x', "Approximate Circuit file", false, "");
     option.add <string> ("genlib", 'l', "Standard Cell Library", false, "data/genlib/mcnc.genlib");
+    option.add <string> ("metricType", 'm', "Error metric type, er, aemr, raem", false, "er");
     option.add <int> ("select", 's', "Mode Selection, 0 = dcals, 1 = measure", false, 0, range(0, 1));
     option.add <int> ("mapType", 't', "Mapping Type, 0 = mcnc, 1 = lut", false, 0, range(0, 1));
     option.add <int> ("nFrame", 'f', "Initial Simulation Round", false, 64, range(1, INT_MAX));
     option.add <int> ("nCut", 'c', "Initial Cut Size", false, 30, range(1, INT_MAX));
-    option.add <double> ("aemr", 'm', "Average Error Magnitude Rate Constraint", false, 1.0, range(0.0, 1.0));
-    option.add <double> ("er", 'r', "Error Rate Constraint", false, 1.0, range(0.0, 1.0));
+    option.add <double> ("errorBound", 'b', "Error constraint upper bound", false, 0.002, range(0.0, 1.0));
     option.parse_check(argc, argv);
     return option;
 }
@@ -31,12 +31,12 @@ int main(int argc, char * argv[])
     string input = option.get <string> ("input");
     string approx = option.get <string> ("approx");
     string genlib = option.get <string> ("genlib");
+    string metricType = option.get <string> ("metricType");
     int select = option.get <int> ("select");
     int mapType = option.get <int> ("mapType");
     int nFrame = option.get <int> ("nFrame");
     int nCut = option.get <int> ("nCut");
-    double aemr = option.get <double> ("aemr");
-    double er = option.get <double> ("er");
+    double errorBound = option.get <double> ("errorBound");
 
     Abc_Start();
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
@@ -57,13 +57,16 @@ int main(int argc, char * argv[])
             pos1 = -1;
         Ckt_NtkRename(pNtk, input.substr(pos1 + 1, pos0 - pos1 - 1).c_str());
 
-        if (er < 1.0) {
-            Dcals_Man_t alsEng(pNtk, nFrame, nCut, er, 0, mapType);
+        if (metricType == "er") {
+            Dcals_Man_t alsEng(pNtk, nFrame, nCut, errorBound, Metric_t::ER, mapType);
             alsEng.DCALS();
         }
-        else {
-            DASSERT(aemr < 1.0);
-            Dcals_Man_t alsEng(pNtk, nFrame, nCut, aemr, 1, mapType);
+        else if (metricType == "aemr") {
+            Dcals_Man_t alsEng(pNtk, nFrame, nCut, errorBound, Metric_t::AEMR, mapType);
+            alsEng.DCALS();
+        }
+        else if (metricType == "raem") {
+            Dcals_Man_t alsEng(pNtk, nFrame, nCut, errorBound, Metric_t::RAEM, mapType);
             alsEng.DCALS();
         }
 
