@@ -140,6 +140,7 @@ void Dcals_Man_t::LocalAppChange()
         double curEr = (!metricType)?
             MeasureER(pOriNtk, pAppNtk, maxNFrame, 100, true):
             MeasureAEMR(pOriNtk, pAppNtk, maxNFrame, 100, true);
+        cout << "RAEM = " << MeasureRAEM(pOriNtk, pAppNtk, 102400, 100, true) << endl;
         DASSERT(curEr == metric);
     }
 
@@ -154,6 +155,8 @@ void Dcals_Man_t::LocalAppChange()
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
     Command = string("logic; sweep;");
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+    // string Command = string("sweep;");
+    // DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
     Abc_NtkDelete(pAppNtk);
     pAppNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
 

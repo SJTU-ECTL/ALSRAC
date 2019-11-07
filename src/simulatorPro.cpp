@@ -1247,6 +1247,35 @@ double MeasureAEMR(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned se
 }
 
 
+double MeasureRAEM(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
+{
+    // check PI/PO
+    if (isCheck)
+        DASSERT(IOChecker(pNtk1, pNtk2));
+
+    // simulation
+    Simulator_Pro_t smlt1(pNtk1, nFrame);
+    smlt1.Input(seed);
+    smlt1.Simulate();
+    Simulator_Pro_t smlt2(pNtk2, nFrame);
+    smlt2.Input(seed);
+    smlt2.Simulate();
+
+    // compute
+    typedef multiprecision::cpp_dec_float_100 bigFlt;
+    bigFlt sum(0);
+    int nPo = Abc_NtkPoNum(pNtk1);
+    for (int k = 0; k < nFrame; ++k) {
+        bigFlt acc = static_cast <bigFlt>(smlt1.GetOutput(0, nPo - 1, k, 0));
+        if (acc != 0.0)
+            sum += abs(1 - static_cast <bigFlt>(smlt2.GetOutput(0, nPo - 1, k, 0)) / acc);
+        else
+            sum += abs(1 - static_cast <bigFlt>(smlt2.GetOutput(0, nPo - 1, k, 0)));
+    }
+    return static_cast <double> (static_cast <bigFlt>(sum) / static_cast <double>(nFrame));
+}
+
+
 double MeasureResubAEMR(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, Abc_Obj_t * pOldObj, void * pResubFunc, Vec_Ptr_t * vResubFanins, bool isCheck)
 {
     if (isCheck)
@@ -1273,7 +1302,7 @@ double GetAEMR(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck,
         for (int k = 0; k < nFrame; ++k)
             sum += (abs(pSmlt1->GetOutput(0, nPo - 1, k, 0) - pSmlt2->GetOutput(0, nPo - 1, k, 0)));
     }
-    bigInt frac = (static_cast <bigInt> (nFrame)) << nPo;
+    bigInt frac = (static_cast <bigInt> (nFrame)) << nPo;;
     return static_cast <double> (static_cast <bigFlt>(sum) / static_cast <bigFlt>(frac));
 }
 
