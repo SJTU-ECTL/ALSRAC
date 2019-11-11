@@ -21,6 +21,7 @@ private:
     int nFrame;
     int cutSize;
     int nEvalFrame;
+    int nEstiFrame;
     double metric;
     double metricBound;
     double maxDelay;
