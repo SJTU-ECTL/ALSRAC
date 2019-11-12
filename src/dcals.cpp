@@ -105,6 +105,7 @@ void Dcals_Man_t::LocalAppChange()
     pAppSmlt->Simulate();
 
     // generate candidates
+    clock_t st = clock();
     vector <Lac_Cand_t> cands;
     Lac_Cand_t bestCand;
     cands.reserve(8192);
@@ -116,6 +117,8 @@ void Dcals_Man_t::LocalAppChange()
         GenCand(true, cands);
     else
         DASSERT(0);
+    cout << "cand number = " << cands.size() << endl;
+    cout << "cand time = " << clock() - st << endl;
     BatchErrorEst(cands, bestCand);
 
     // apply local approximate change
@@ -168,10 +171,10 @@ void Dcals_Man_t::LocalAppChange()
     // disturb the network
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
     Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pAppNtk));
-    // string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance; logic;");
-    // DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
-    string Command = string("sweep;");
+    string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance; logic;");
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+    // string Command = string("sweep;");
+    // DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
     Abc_NtkDelete(pAppNtk);
     pAppNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
 
@@ -181,7 +184,7 @@ void Dcals_Man_t::LocalAppChange()
     if (!mapType)
         Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay, true);
     else {
-        cout << Abc_NtkNodeNum(pAppNtk) << "," << Abc_NtkLevel(pAppNtk) << endl;
+        // cout << Abc_NtkNodeNum(pAppNtk) << "," << Abc_NtkLevel(pAppNtk) << endl;
         Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6 -a;");
         Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6;");
     }
@@ -344,13 +347,10 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
     }
     // calculate increased error
     int nPo = Abc_NtkPoNum(pAppNtk);
-    vector < vector <tVec> > bds(nPo);
-    for (auto & bdPo: bds) {
-        bdPo.resize(pAppSmlt->GetMaxId() + 1);
-        for (auto & bdObjPo: bdPo)
-            bdObjPo.resize(nBlock);
-    }
     if (metricType == Metric_t::ER) {
+        vector <tVec> bd(pAppSmlt->GetMaxId() + 1);
+        for (auto & bdObj: bd)
+            bdObj.resize(nBlock);
         int baseErr = GetER(pOriSmlt, pAppSmlt, false, false);
         vector <tVec> isERInc(pAppSmlt->GetMaxId() + 1);
         vector <tVec> isERDec(pAppSmlt->GetMaxId() + 1);
@@ -376,13 +376,13 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
                 isAllPosRight[j] &= isOnePoRight[j];
             }
             // update the influence on each primary output
-            pAppSmlt->UpdateBoolDiff(pAppPo, vNodes, bds[i]);
+            pAppSmlt->UpdateBoolDiff(pAppPo, vNodes, bd);
             // update the flag of increasement/decreasement
             int j = 0;
             Vec_PtrForEachEntryReverse(Abc_Obj_t *, vNodes, pObj, j) {
                 for (int k = 0; k < nBlock; ++k) {
-                    isERInc[pObj->Id][k] |= bds[i][pObj->Id][k];
-                    isERDec[pObj->Id][k] &= (isOnePoRight[k] ^ bds[i][pObj->Id][k]);
+                    isERInc[pObj->Id][k] |= bd[pObj->Id][k];
+                    isERDec[pObj->Id][k] &= (isOnePoRight[k] ^ bd[pObj->Id][k]);
                 }
             }
         }
@@ -413,6 +413,12 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
         }
     }
     else if (metricType == Metric_t::AEMR || metricType == Metric_t::RAEM) {
+        vector < vector <tVec> > bds(nPo);
+        for (auto & bdPo: bds) {
+            bdPo.resize(pAppSmlt->GetMaxId() + 1);
+            for (auto & bdObjPo: bdPo)
+                bdObjPo.resize(nBlock);
+        }
         int nFrame = pAppSmlt->GetFrameNum();
         vector < vector <int8_t> > offsets;
         GetOffset(pOriSmlt, pAppSmlt, false, offsets);
@@ -456,38 +462,6 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
             bestCand.UpdateBest(er, cand.GetObj(), cand.GetFunc(), cand.GetFanins());
         }
     }
-    // else if (metricType == Metric_t::RAEM) {
-    //     int i = 0;
-    //     Abc_Obj_t * pAppPo = nullptr;
-    //     // update the influence on each primary output
-    //     Abc_NtkForEachPo(pAppNtk, pAppPo, i)
-    //         pAppSmlt->UpdateBoolDiff(pAppPo, vNodes, bds[i]);
-    //     // update the correctness of primary outputs
-    //     vector <tVec> isOnePoRight(nPo);
-    //     Abc_NtkForEachPo(pAppNtk, pAppPo, i) {
-    //         Abc_Obj_t * pOriPo = Abc_NtkPo(pOriNtk, i);
-    //         isOnePoRight[i].resize(nBlock);
-    //         for (int j = 0; j < nBlock; ++j)
-    //             isOnePoRight[i][j] = ~(pOriSmlt->GetValues(pOriPo, j) ^ pAppSmlt->GetValues(pAppPo, j));
-    //     }
-    //     // evaluate candidates
-    //     progress_display pd(cands.size());
-    //     for (uint32_t ii = 0; ii < cands.size(); ++ii) {
-    //         ++pd;
-    //         Lac_Cand_t & cand = cands[ii];
-    //         Abc_Obj_t * pCand = cand.GetObj();
-    //         tVec incCounts(nPo, 0);
-    //         tVec & isChanged = newValues[ii];
-    //         for (int i = 0; i < nBlock; ++i)
-    //             isChanged[i] ^= pAppSmlt->GetValues(pCand, i);
-    //         for (int i = 0; i < nPo; ++i) {
-    //             for (int j = 0; j < nBlock; ++j) {
-    //                 incCounts[i] += Ckt_CountOneNum(isChanged[j] & bds[i][pCand->Id][j] & isOnePoRight[i][j]);
-    //             }
-    //             bestCand.UpdateBest(incCounts, cand.GetObj(), cand.GetFunc(), cand.GetFanins());
-    //         }
-    //     }
-    // }
     else
         DASSERT(0);
     // clean up
