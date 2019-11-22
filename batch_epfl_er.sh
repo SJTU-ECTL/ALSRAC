@@ -2,11 +2,11 @@
 
 make rebuild
 
-rm -rf lognew/
-mkdir lognew
+rm -rf log/
+mkdir log
 
-rm -rf appntknew/
-mkdir appntknew
+rm -rf appntk/
+mkdir appntk
 
 for file in data/epfl/size/random/*
 do
@@ -17,7 +17,7 @@ do
         if [[ "$name" == *.blif ]]
         then
             echo ${filename}
-            (nohup ./main -i ${file} -r 0.01 -t 1 > lognew/${filename}.log &)
+            (nohup ./main -i ${file} -b 0.01 -t 1 -o appntk/ > log/${filename}.log &)
         fi
     fi
 done

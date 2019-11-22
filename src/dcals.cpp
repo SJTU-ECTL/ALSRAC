@@ -148,16 +148,14 @@ void Dcals_Man_t::LocalAppChange()
     if (isApply) {
         cout << "Apply candidate:" << endl;
         bestCand.Print();
-        Ckt_WriteBlif(pAppNtk, "ori.blif");
         Ckt_UpdateNetwork(bestCand.GetObj(), bestCand.GetFanins(), bestCand.GetFunc());
-        Ckt_WriteBlif(pAppNtk, "new.blif");
 
         // update and check metric
         if (metricType == Metric_t::ER) {
             metric = MeasureER(pOriNtk, pAppNtk, nEvalFrame, seed, true);
             cout << "estimated error = " << bestCand.GetError() << endl;
             cout << "current error = " << metric << endl;
-            DASSERT(metric <= bestCand.GetError());
+            // DASSERT(metric <= bestCand.GetError());
         }
         else if (metricType == Metric_t::AEMR) {
             metric = MeasureAEMR(pOriNtk, pAppNtk, nEvalFrame, seed, true);
@@ -188,7 +186,6 @@ void Dcals_Man_t::LocalAppChange()
     if (!mapType)
         Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay, true);
     else {
-        // cout << Abc_NtkNodeNum(pAppNtk) << "," << Abc_NtkLevel(pAppNtk) << endl;
         Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6 -a;");
         Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6;");
     }
@@ -337,7 +334,8 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
     DASSERT(SmltChecker(pOriSmlt, pAppSmlt));
     // get disjoint cuts and the corresponding networks
     clock_t st = clock();
-    pAppSmlt->BuildCutNtks();
+    // pAppSmlt->BuildCutNtks();
+    pAppSmlt->BuildAppCutNtks();
     cout << "build cut time = " << clock() - st << endl;
     // simulate networks of disjoint cuts
     st = clock();

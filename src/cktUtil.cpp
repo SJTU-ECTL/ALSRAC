@@ -94,7 +94,7 @@ void Ckt_EvalFPGA(Abc_Ntk_t * pNtk, string fileName, string map)
     cout << "depth = " << depth << endl;
     Command = string("write_blif ");
     ostringstream ss("");
-    ss << "appntk/" << fileName << "_" << size << "_" << depth << ".blif";
+    ss << fileName << "_" << size << "_" << depth << ".blif";
     string str = ss.str();
     Command += str;
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
