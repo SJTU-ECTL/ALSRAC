@@ -2,22 +2,29 @@
 
 make rebuild
 
+errorBound=(0.001 0.003 0.005 0.008 0.01 0.03 0.05)
 rm -rf log/
-mkdir log
+mkdir log/
+rm -rf appNtk/
+mkdir appNtk/
 
-rm -rf appntk/
-mkdir appntk
-
-for file in data/su/*
+for error in ${errorBound[*]}
 do
-    if test -f $file
-    then
-        name=`basename $file`
-        filename="${name%%.*}"
-        if [[ "$name" == *.blif ]]
+    logPath=log/${error}/
+    appNtkPath=appNtk/${error}/
+    mkdir ${logPath}
+    mkdir ${appNtkPath}
+    for file in data/su/*
+    do
+        if test -f $file
         then
-            echo ${filename}
-            (nohup ./main -i ${file} -r 0.05 > log/${filename}.log &)
+            name=`basename $file`
+            filename="${name%%.*}"
+            if [[ "$name" == *.blif ]]
+            then
+                echo ${filename} ${error}
+                (nohup ./main -i ${file} -b ${error} -o ${appNtkPath} > ${logPath}/${filename}.log &)
+            fi
         fi
-    fi
+    done
 done

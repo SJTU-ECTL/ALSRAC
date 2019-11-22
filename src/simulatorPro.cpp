@@ -1175,6 +1175,28 @@ void Simulator_Pro_t::BuildCutNtks()
 }
 
 
+void Simulator_Pro_t::BuildAppCutNtks()
+{
+    DASSERT(cutNtks.empty());
+    DASSERT(djCuts.empty());
+    cutNtks.resize(maxId + 1);
+    djCuts.resize(maxId + 1);
+    // collect cut networks
+    Abc_Obj_t * pObj = nullptr;
+    int i = 0;
+    Abc_NtkForEachNode(pNtk, pObj, i) {
+        if (Abc_NodeIsConst(pObj))
+            continue;
+        Abc_Obj_t * pFanout = nullptr;
+        int j = 0;
+        Abc_ObjForEachFanout(pObj, pFanout, j) {
+            djCuts[pObj->Id].emplace_back(pFanout);
+            cutNtks[pObj->Id].emplace_back(pFanout);
+        }
+    }
+}
+
+
 void Simulator_Pro_t::FindDisjointCut(Abc_Obj_t * pObj, list <Abc_Obj_t *> & djCut)
 {
     djCut.clear();
@@ -1253,6 +1275,28 @@ void Simulator_Pro_t::UpdateBoolDiff(IN Abc_Obj_t * pPo, IN Vec_Ptr_t * vNodes, 
         for (auto & pCut: djCuts[pObj->Id]) {
             for (int j = 0; j < nBlock; ++j)
                 bds[pObj->Id][j] |= bdCuts[pObj->Id][k][j] & bds[pCut->Id][j];
+            ++k;
+        }
+    }
+}
+
+
+void Simulator_Pro_t::UpdateBoolDiff(IN Vec_Ptr_t * vNodes, INOUT vector <tVec> & bd)
+{
+    Abc_Obj_t * pObj = nullptr;
+    int i = 0;
+    Abc_NtkForEachPo(pNtk, pObj, i) {
+        for (int j = 0; j < nBlock; ++j)
+            bd[pObj->Id][j] = static_cast <uint64_t> (ULLONG_MAX);
+    }
+    DASSERT(nBlock > 0);
+    Vec_PtrForEachEntryReverse(Abc_Obj_t *, vNodes, pObj, i) {
+        if (Abc_NodeIsConst(pObj))
+            continue;
+        int k = 0;
+        for (auto & pCut: djCuts[pObj->Id]) {
+            for (int j = 0; j < nBlock; ++j)
+                bd[pObj->Id][j] |= bdCuts[pObj->Id][k][j] & bd[pCut->Id][j];
             ++k;
         }
     }

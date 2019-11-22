@@ -47,7 +47,7 @@ void Ckt_EvalASIC(Abc_Ntk_t * pNtk, string fileName, double maxDelay, bool isOut
     cout << "delay = " << delay << endl;
     if (isOutput) {
         ss.str("");
-        ss << "write_blif appntk/" << fileName << "_" << area << "_" << delay << ".blif";
+        cout << ss.str() << endl;
         DASSERT(!Cmd_CommandExecute(pAbc, ss.str().c_str()));
     }
 }

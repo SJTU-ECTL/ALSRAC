@@ -88,10 +88,12 @@ public:
     void PrintInputStream(int frameId = 0) const;
     void PrintOutputStream(int frameId = 0, bool isReverse = false) const;
     void BuildCutNtks();
+    void BuildAppCutNtks();
     void FindDisjointCut(Abc_Obj_t * pObj, std::list <Abc_Obj_t *> & djCut);
     void ExpandCut(Abc_Obj_t * pObj, std::list <Abc_Obj_t *> & djCut);
     Abc_Obj_t * ExpandWhich(std::list <Abc_Obj_t *> & djCut);
     void UpdateBoolDiff(IN Abc_Obj_t * pPo, IN Vec_Ptr_t * vNodes, INOUT std::vector <tVec> & bds);
+    void UpdateBoolDiff(IN Vec_Ptr_t * vNodes, INOUT std::vector <tVec> & bds);
 
     inline Abc_Ntk_t * GetNetwork() const {return pNtk;}
     inline int GetFrameNum() const {return nFrame;}

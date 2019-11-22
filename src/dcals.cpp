@@ -5,7 +5,7 @@ using namespace std;
 using namespace boost;
 
 
-Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound, Metric_t metricType, int mapType)
+Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound, Metric_t metricType, int mapType, string outPath)
 {
     DASSERT(nFrame > 0);
     DASSERT(pNtk != nullptr);
@@ -32,6 +32,7 @@ Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metri
     this->metric = 0;
     this->metricBound = metricBound;
     this->pPars = InitMfsPars();
+    this->outPath = outPath;
 }
 
 
@@ -98,10 +99,10 @@ void Dcals_Man_t::LocalAppChange()
 
     // init simulator
     pOriSmlt = new Simulator_Pro_t(this->pOriNtk, nEstiFrame);
-    pOriSmlt->Input(100);
+    pOriSmlt->Input(seed);
     pOriSmlt->Simulate();
     pAppSmlt = new Simulator_Pro_t(this->pAppNtk, nEstiFrame);
-    pAppSmlt->Input(100);
+    pAppSmlt->Input(seed);
     pAppSmlt->Simulate();
 
     // generate candidates
@@ -145,23 +146,28 @@ void Dcals_Man_t::LocalAppChange()
         }
     }
     if (isApply) {
+        cout << "Apply candidate:" << endl;
         bestCand.Print();
+        Ckt_WriteBlif(pAppNtk, "ori.blif");
         Ckt_UpdateNetwork(bestCand.GetObj(), bestCand.GetFanins(), bestCand.GetFunc());
+        Ckt_WriteBlif(pAppNtk, "new.blif");
+
         // update and check metric
         if (metricType == Metric_t::ER) {
-            metric = MeasureER(pOriNtk, pAppNtk, nEvalFrame, 100, true);
-            DASSERT(metric == bestCand.GetError());
+            metric = MeasureER(pOriNtk, pAppNtk, nEvalFrame, seed, true);
+            cout << "estimated error = " << bestCand.GetError() << endl;
+            cout << "current error = " << metric << endl;
+            DASSERT(metric <= bestCand.GetError());
         }
         else if (metricType == Metric_t::AEMR) {
-            metric = MeasureAEMR(pOriNtk, pAppNtk, nEvalFrame, 100, true);
+            metric = MeasureAEMR(pOriNtk, pAppNtk, nEvalFrame, seed, true);
             DASSERT(metric == bestCand.GetError());
         }
         else if (metricType == Metric_t::RAEM) {
-            metric = MeasureRAEM(pOriNtk, pAppNtk, nEvalFrame, 100, true);
+            metric = MeasureRAEM(pOriNtk, pAppNtk, nEvalFrame, seed, true);
         }
         else
             DASSERT(0);
-        cout << "current error = " << metric << endl;
     }
 
     // recycle memory
@@ -173,14 +179,12 @@ void Dcals_Man_t::LocalAppChange()
     Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pAppNtk));
     string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance; logic;");
     DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
-    // string Command = string("sweep;");
-    // DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
     Abc_NtkDelete(pAppNtk);
     pAppNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
 
     // evaluate the current approximate circuit
     ostringstream fileName("");
-    fileName << pAppNtk->pName << "_" << metric;
+    fileName << outPath << pAppNtk->pName << "_" << metric;
     if (!mapType)
         Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay, true);
     else {
@@ -297,9 +301,7 @@ void Dcals_Man_t::GenCand(IN bool genConst,INOUT vector <Lac_Cand_t> & cands)
     Abc_Obj_t * pObj = nullptr;
     Hop_Obj_t * pFunc = nullptr;
     Hop_Man_t * pHopMan = static_cast <Hop_Man_t *> (pAppNtk->pManFunc);
-    // boost::progress_display pd(Abc_NtkNodeNum(pAppNtk));
     Abc_NtkForEachNode(pAppNtk, pObj, i) {
-        // ++pd;
         // skip constant nodes
         if (Abc_NodeIsConst(pObj))
             continue;
@@ -326,6 +328,7 @@ void Dcals_Man_t::GenCand(IN bool genConst,INOUT vector <Lac_Cand_t> & cands)
 
 void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t & bestCand)
 {
+    // check
     DASSERT(pOriSmlt->GetNetwork() != pAppSmlt->GetNetwork());
     DASSERT(pOriSmlt->GetNetwork() == pOriNtk);
     DASSERT(pAppSmlt->GetNetwork() == pAppNtk);
@@ -333,60 +336,47 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
     DASSERT(Abc_NtkIsAigLogic(pAppNtk));
     DASSERT(SmltChecker(pOriSmlt, pAppSmlt));
     // get disjoint cuts and the corresponding networks
+    clock_t st = clock();
     pAppSmlt->BuildCutNtks();
+    cout << "build cut time = " << clock() - st << endl;
     // simulate networks of disjoint cuts
+    st = clock();
     pAppSmlt->SimulateCutNtks();
-    // topological sort
-    Vec_Ptr_t * vNodes = Abc_NtkDfs(pAppNtk, 0);
+    cout << "simulate cut time = " << clock() - st << endl;
     // calculate the values after resubstitution
+    st = clock();
     vector <tVec> newValues(cands.size());
     int nBlock = pAppSmlt->GetBlockNum();
     for (uint32_t i = 0; i < cands.size(); ++i) {
         newValues[i].resize(nBlock);
         pAppSmlt->UpdateAigNodeResub(cands[i].GetObj(), cands[i].GetFunc(), cands[i].GetFanins(), newValues[i]);
     }
-    // calculate increased error
+    cout << "compute new value time = " << clock() - st << endl;
+    // topological sort
+    Vec_Ptr_t * vNodes = Abc_NtkDfs(pAppNtk, 0);
+    // for different metric types, estimate error upper bound
     int nPo = Abc_NtkPoNum(pAppNtk);
     if (metricType == Metric_t::ER) {
-        vector <tVec> bd(pAppSmlt->GetMaxId() + 1);
-        for (auto & bdObj: bd)
-            bdObj.resize(nBlock);
+        // init boolean difference
+        vector <tVec> bd(pAppSmlt->GetMaxId() + 1, tVec(nBlock, 0));
+        // compute current error
         int baseErr = GetER(pOriSmlt, pAppSmlt, false, false);
-        vector <tVec> isERInc(pAppSmlt->GetMaxId() + 1);
-        vector <tVec> isERDec(pAppSmlt->GetMaxId() + 1);
-        int i = 0;
-        Abc_Obj_t * pObj = nullptr;
-        Abc_NtkForEachObj(pAppNtk, pObj, i) {
-            isERInc[pObj->Id].resize(nBlock);
-            isERDec[pObj->Id].resize(nBlock);
-            for (int j = 0; j < nBlock; ++j) {
-                isERInc[pObj->Id][j] = 0;
-                isERDec[pObj->Id][j] = static_cast <uint64_t> (ULLONG_MAX);
-            }
-        }
-        tVec isOnePoRight(nBlock, 0);
+        // compute po erroneous information
         tVec isAllPosRight(nBlock, static_cast <uint64_t> (ULLONG_MAX));
         Abc_Obj_t * pAppPo = nullptr;
         Abc_Obj_t * pOriPo = nullptr;
+        int i = 0;
         Abc_NtkForEachPo(pAppNtk, pAppPo, i) {
             pOriPo = Abc_NtkPo(pOriNtk, i);
-            // update the correctness of primary outputs
-            for (int j = 0; j < nBlock; ++j) {
-                isOnePoRight[j] = ~(pOriSmlt->GetValues(pOriPo, j) ^ pAppSmlt->GetValues(pAppPo, j));
-                isAllPosRight[j] &= isOnePoRight[j];
-            }
-            // update the influence on each primary output
-            pAppSmlt->UpdateBoolDiff(pAppPo, vNodes, bd);
-            // update the flag of increasement/decreasement
-            int j = 0;
-            Vec_PtrForEachEntryReverse(Abc_Obj_t *, vNodes, pObj, j) {
-                for (int k = 0; k < nBlock; ++k) {
-                    isERInc[pObj->Id][k] |= bd[pObj->Id][k];
-                    isERDec[pObj->Id][k] &= (isOnePoRight[k] ^ bd[pObj->Id][k]);
-                }
-            }
+            for (int j = 0; j < nBlock; ++j)
+                isAllPosRight[j] &= (~(pOriSmlt->GetValues(pOriPo, j) ^ pAppSmlt->GetValues(pAppPo, j)));
         }
+        // compute boolean difference
+        st = clock();
+        pAppSmlt->UpdateBoolDiff(vNodes, bd);
+        cout << "boolean difference time = " << clock() - st << endl;
         // updated the influece of each candidates
+        st = clock();
         for (uint32_t ii = 0; ii < cands.size(); ++ii) {
             Lac_Cand_t & cand = cands[ii];
             Abc_Obj_t * pCand = cand.GetObj();
@@ -396,21 +386,17 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
             int er = baseErr;
             int movLen = 64 - pAppSmlt->GetLastBlockLen();
             for (int i = 0; i < nBlock; ++i) {
-                uint64_t temp = isAllPosRight[i] & isERInc[pCand->Id][i] & isChanged[i];
+                // uint64_t temp = isAllPosRight[i] & isERInc[pCand->Id][i] & isChanged[i];
+                uint64_t temp = isAllPosRight[i] & bd[pCand->Id][i] & isChanged[i];
                 if (i == nBlock - 1) {
                     temp >>= movLen;
                     temp <<= movLen;
                 }
                 er += Ckt_CountOneNum(temp);
-                temp = ~isAllPosRight[i] & isERDec[pCand->Id][i] & isChanged[i];
-                if (i == nBlock - 1) {
-                    temp >>= movLen;
-                    temp <<= movLen;
-                }
-                er -= Ckt_CountOneNum(temp);
             }
             bestCand.UpdateBest(er / static_cast <double> (pAppSmlt->GetFrameNum()), cand.GetObj(), cand.GetFunc(), cand.GetFanins());
         }
+        cout << "evaluate candidate time = " << clock() - st << endl;
     }
     else if (metricType == Metric_t::AEMR || metricType == Metric_t::RAEM) {
         vector < vector <tVec> > bds(nPo);
@@ -816,4 +802,52 @@ void Ckt_UpdateNetwork(Abc_Obj_t * pObj, Vec_Ptr_t * vFanins, Hop_Obj_t * pFunc)
         Abc_ObjAddFanin( pObjNew, pFanin );
     // replace the old node by the new node
     Abc_ObjReplace( pObj, pObjNew );
+}
+
+
+bool IsSimpPo(Abc_Obj_t * pObj)
+{
+    DASSERT(Abc_ObjIsPo(pObj));
+    Abc_Obj_t * pDriver = Abc_ObjFanin0(pObj);
+    Abc_Obj_t * pFanin = nullptr;
+    int i = 0;
+    Abc_ObjForEachFanin(pDriver, pFanin, i) {
+        if (!Abc_ObjIsPi(pFanin))
+            return false;
+    }
+    return true;
+}
+
+
+Abc_Obj_t * GetFirstPoFanout(Abc_Obj_t * pObj)
+{
+    DASSERT(Abc_ObjIsNode(pObj));
+    Abc_Obj_t * pFanout = nullptr;
+    int i = 0;
+    Abc_ObjForEachFanout(pObj, pFanout, i) {
+        if (Abc_ObjIsPo(pFanout))
+            return pFanout;
+    }
+    return nullptr;
+}
+
+
+Vec_Ptr_t * GetTFICone(Abc_Ntk_t * pNtk, Abc_Obj_t * pObj)
+{
+    DASSERT(pObj->pNtk == pNtk);
+    // set the traversal ID
+    Abc_NtkIncrementTravId( pNtk );
+    // start the array of nodes
+    Vec_Ptr_t * vNodes = Vec_PtrAlloc( 100 );
+    // collect
+    if ( Abc_NtkIsStrash(pNtk) && Abc_AigNodeIsConst(pObj) )
+        DASSERT(0);
+    if ( Abc_ObjIsCo(pObj) )
+    {
+        Abc_NodeSetTravIdCurrent(pObj);
+        Abc_NtkDfs_rec( Abc_ObjFanin0Ntk(Abc_ObjFanin0(pObj)), vNodes );
+    }
+    else if ( Abc_ObjIsNode(pObj) || Abc_ObjIsCi(pObj) )
+        Abc_NtkDfs_rec( pObj, vNodes );
+    return vNodes;
 }
