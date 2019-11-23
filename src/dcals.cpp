@@ -329,17 +329,20 @@ void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
 {
     cands.clear();
     Abc_NtkLevel(pAppNtk);
+    Abc_NtkStartReverseLevels(pAppNtk, pPars->nGrowthLevel);
     Abc_Obj_t * pPivot = nullptr;
     int ii = 0;
+    const int nCandLimit = 5;
     Abc_NtkForEachNode(pAppNtk, pPivot, ii) {
         // skip nodes with less than two inputs
         if (Abc_ObjFaninNum(pPivot) < 1)
             continue;
         // compute divisors
-        Vec_Ptr_t * vDivs  = ComputeDivisors(pPivot, 100);
+        Vec_Ptr_t * vDivs = Ckt_ComputeDivisors(pPivot, Abc_ObjRequiredLevel(pPivot) - 1, pPars->nWinMax, pPars->nFanoutsMax);
 
         // enumerate resubstitution
         int nFanins = Abc_ObjFaninNum(pPivot);
+        int cnt = 0;
         for (int i = 0; i < nFanins; ++i) {
             // init temp divisors
             Vec_Ptr_t * vFanins = Vec_PtrAlloc(10);
@@ -349,7 +352,8 @@ void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
             }
             // try removing the i-th fanin
             {
-                Hop_Obj_t * pFunc = BuildFunc(pPivot, vFanins);
+                BuildFuncEspresso(pPivot, vFanins);
+                Hop_Obj_t * pFunc = BuildFuncEspresso(pPivot, vFanins);
                 if (pFunc != nullptr)
                     cands.emplace_back(pPivot, pFunc, vFanins);
             }
@@ -364,6 +368,9 @@ void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
                 Hop_Obj_t * pFunc = BuildFunc(pPivot, vFanins);
                 if (pFunc != nullptr) {
                     cands.emplace_back(pPivot, pFunc, vFanins);
+                    ++cnt;
+                    if (cnt > nCandLimit)
+                        break;
                 }
             }
             // clean up
@@ -372,6 +379,7 @@ void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
         // clean up
         Vec_PtrFree(vDivs);
     }
+    Abc_NtkStopReverseLevels(pAppNtk);
 }
 
 
@@ -440,6 +448,118 @@ Hop_Obj_t * Dcals_Man_t::BuildFunc(IN Abc_Obj_t * pPivot, IN Vec_Ptr_t * vFanins
         return pFunc;
     else
         return nullptr;
+}
+
+
+Hop_Obj_t * Dcals_Man_t::BuildFuncEspresso(IN Abc_Obj_t * pPivot, IN Vec_Ptr_t * vFanins)
+{
+    DASSERT(pAppNtk == pPivot->pNtk);
+    Abc_Obj_t * pFanin = nullptr;
+    int k = 0;
+    Vec_PtrForEachEntry(Abc_Obj_t *, vFanins, pFanin, k)
+        DASSERT(pAppNtk == pFanin->pNtk);
+
+    // check the existence of resubstitution and build truth table
+    typedef unordered_map <string, bool> table_t;
+    table_t truthTable;
+    DASSERT(nFrame <= pAppSmlt->GetFrameNum());
+    for (int i = 0; i < nFrame; ++i) {
+        int blockId = i >> 6;
+        int bitId = i % 64;
+        string minterm("");
+        Vec_PtrForEachEntry(Abc_Obj_t *, vFanins, pFanin, k)
+            minterm += pAppSmlt->GetValue(pFanin, blockId, bitId) ? '1' : '0';
+        bool val = pAppSmlt->GetValue(pPivot, blockId, bitId);
+        table_t::const_iterator got = truthTable.find(minterm);
+        if (got == truthTable.end())
+            truthTable[minterm] = val;
+        else {
+            if (got->second != val) {
+                return nullptr;
+            }
+        }
+    }
+
+    // construct function with espresso
+    int nVars = Vec_PtrSize(vFanins);
+    pPLA PLA = new_PLA();
+    PLA->pla_type = FR_type;
+
+    DASSERT(cube.fullset == nullptr);
+    cube.num_binary_vars = nVars;
+    cube.num_vars = cube.num_binary_vars + 1;
+    cube.part_size = ALLOC(int, cube.num_vars);
+
+    DASSERT(cube.fullset == nullptr);
+    DASSERT(cube.part_size != nullptr);
+    cube.part_size[cube.num_vars-1] = 1;
+    cube_setup();
+    PLA_labels(PLA);
+
+    if (PLA->F == nullptr) {
+        PLA->F = new_cover(10);
+        PLA->D = new_cover(10);
+        PLA->R = new_cover(10);
+    }
+
+    pcube cf = cube.temp[0];
+    for (table_t::const_iterator iter = truthTable.begin(); iter != truthTable.end(); ++iter) {
+        set_clear(cf, cube.size);
+        const string & minterm = iter->first;
+        for (int i = 0; i < nVars; ++i) {
+            if (minterm[i] == '0')
+                set_insert(cf, 2*i);
+            else if (minterm[i] == '1')
+                set_insert(cf, 2*i+1);
+            else
+                DASSERT(0);
+        }
+        set_insert(cf,2*nVars);
+        if (iter->second)
+            PLA->F = sf_addset(PLA->F, cf);
+        else
+            PLA->R = sf_addset(PLA->R, cf);
+    }
+
+    pcover X;
+    free_cover(PLA->D);
+    X = d1merge(sf_join(PLA->F, PLA->R), cube.num_vars - 1);
+    PLA->D = complement(cube1list(X));
+    free_cover(X);
+
+    PLA->F = espresso(PLA->F, PLA->D, PLA->R);
+
+    // convert to hop
+    Hop_Man_t * pHopMan = static_cast <Hop_Man_t *> (pAppNtk->pManFunc);
+    Hop_Obj_t * pFunc = Hop_ManConst0(pHopMan);
+    register pcube last, c;
+    foreach_set(PLA->F, last, c) {
+        Hop_Obj_t * pAnd = Hop_ManConst1(pHopMan);
+        for (int var = 0; var < cube.num_binary_vars; var++) {
+            if ("?01-" [GETINPUT(c, var)] == '1')
+                pAnd = Hop_And( pHopMan, pAnd , Hop_IthVar(pHopMan, var) );
+            else if ("?01-" [GETINPUT(c, var)] == '0')
+                pAnd = Hop_And( pHopMan, pAnd , Hop_Not(Hop_IthVar(pHopMan, var)) );
+        }
+        DASSERT(cube.num_binary_vars == cube.num_vars - 1);
+        DASSERT(cube.output != -1);
+        int llast = cube.last_part[cube.output];
+        DASSERT(cube.first_part[cube.output] == llast);
+        DASSERT("01" [is_in_set(c, llast) != 0] == '1');
+        pFunc = Hop_Or( pHopMan, pFunc, pAnd );
+    }
+    // Ckt_PrintNodeFunc(pPivot);
+    // Ckt_PrintHopFunc(pFunc, vFanins);
+    // cout << endl;
+
+    // clean up
+    free_PLA(PLA);
+    FREE(cube.part_size);
+    setdown_cube();
+    sf_cleanup();
+    sm_cleanup();
+
+    return pFunc;
 }
 
 
@@ -1339,4 +1459,103 @@ unsigned Ckt_TruthIsop5_rec( unsigned uOn, unsigned uOnDc, int nVars, Kit_Sop_t 
 //    assert( (uOn & ~uRes2) == 0 );
 //    assert( (uRes2 & ~uOnDc) == 0 );
     return uRes2;
+}
+
+
+Vec_Ptr_t * Ckt_ComputeDivisors(Abc_Obj_t * pNode, int nLevDivMax, int nWinMax, int nFanoutsMax)
+{
+    Vec_Ptr_t * vCone, * vDivs;
+    Abc_Obj_t * pObj, * pFanout, * pFanin;
+    int k, f, m;
+    int nDivsPlus = 0, nTrueSupp;
+
+    // mark the TFI with the current trav ID
+    Abc_NtkIncrementTravId( pNode->pNtk );
+    vCone = Abc_MfsWinMarkTfi( pNode );
+
+    // count the number of PIs
+    nTrueSupp = 0;
+    Vec_PtrForEachEntry( Abc_Obj_t *, vCone, pObj, k )
+        nTrueSupp += Abc_ObjIsCi(pObj);
+//    printf( "%d(%d) ", Vec_PtrSize(p->vSupp), m );
+
+    // mark with the current trav ID those nodes that should not be divisors:
+    // (1) the node and its TFO
+    // (2) the MFFC of the node
+    // (3) the node's fanins (these are treated as a special case)
+    Abc_NtkIncrementTravId( pNode->pNtk );
+    Abc_MfsWinSweepLeafTfo_rec( pNode, nLevDivMax );
+//    Abc_MfsWinVisitMffc( pNode );
+    Abc_ObjForEachFanin( pNode, pObj, k )
+        Abc_NodeSetTravIdCurrent( pObj );
+
+    // at this point the nodes are marked with two trav IDs:
+    // nodes to be collected as divisors are marked with previous trav ID
+    // nodes to be avoided as divisors are marked with current trav ID
+
+    // start collecting the divisors
+    vDivs = Vec_PtrAlloc( nWinMax );
+    Vec_PtrForEachEntry( Abc_Obj_t *, vCone, pObj, k )
+    {
+        if ( !Abc_NodeIsTravIdPrevious(pObj) )
+            continue;
+        if ( (int)pObj->Level > nLevDivMax )
+            continue;
+        Vec_PtrPush( vDivs, pObj );
+        if ( Vec_PtrSize(vDivs) >= nWinMax )
+            break;
+    }
+    Vec_PtrFree( vCone );
+
+    // explore the fanouts of already collected divisors
+    if ( Vec_PtrSize(vDivs) < nWinMax )
+    Vec_PtrForEachEntry( Abc_Obj_t *, vDivs, pObj, k )
+    {
+        // consider fanouts of this node
+        Abc_ObjForEachFanout( pObj, pFanout, f )
+        {
+            // stop if there are too many fanouts
+            if ( nFanoutsMax && f > nFanoutsMax )
+                break;
+            // skip nodes that are already added
+            if ( Abc_NodeIsTravIdPrevious(pFanout) )
+                continue;
+            // skip nodes in the TFO or in the MFFC of node
+            if ( Abc_NodeIsTravIdCurrent(pFanout) )
+                continue;
+            // skip COs
+            if ( !Abc_ObjIsNode(pFanout) )
+                continue;
+            // skip nodes with large level
+            if ( (int)pFanout->Level > nLevDivMax )
+                continue;
+            // skip nodes whose fanins are not divisors  -- here we skip more than we need to skip!!! (revise later)  August 7, 2009
+            Abc_ObjForEachFanin( pFanout, pFanin, m )
+                if ( !Abc_NodeIsTravIdPrevious(pFanin) )
+                    break;
+            if ( m < Abc_ObjFaninNum(pFanout) )
+                continue;
+            // make sure this divisor in not among the nodes
+//            Vec_PtrForEachEntry( Abc_Obj_t *, p->vNodes, pFanin, m )
+//                assert( pFanout != pFanin );
+            // add the node to the divisors
+            Vec_PtrPush( vDivs, pFanout );
+            // Vec_PtrPushUnique( p->vNodes, pFanout );
+            Abc_NodeSetTravIdPrevious( pFanout );
+            nDivsPlus++;
+            if ( Vec_PtrSize(vDivs) >= nWinMax )
+                break;
+        }
+        if ( Vec_PtrSize(vDivs) >= nWinMax )
+            break;
+    }
+
+    // sort the divisors by level in the increasing order
+    Vec_PtrSort( vDivs, (int (*)(void))Abc_NodeCompareLevelsIncrease );
+
+    // add the fanins of the node
+    Abc_ObjForEachFanin( pNode, pFanin, k )
+        Vec_PtrPush( vDivs, pFanin );
+
+    return vDivs;
 }

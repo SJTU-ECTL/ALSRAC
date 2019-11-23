@@ -422,10 +422,11 @@ void Ckt_PrintHopFunc(Hop_Obj_t * pHopObj, Vec_Ptr_t * vFanins)
     // write the formula
     cout << "F = ";
     Hop_ObjPrintEqn( stdout, pHopObj, vLevels, 0 );
-    cout << " (";
-    Vec_PtrForEachEntry(Abc_Obj_t *, vFanins, pFanin, k)
-        cout << Abc_ObjName(pFanin) << ",";
-    cout << ")" << endl;
+    cout << endl;
+    // cout << "(";
+    // Vec_PtrForEachEntry(Abc_Obj_t *, vFanins, pFanin, k)
+    //     cout << Abc_ObjName(pFanin) << ",";
+    // cout << ")" << endl;
     Vec_VecFree( vLevels );
 }
 

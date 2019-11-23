@@ -6,6 +6,7 @@
 #include <boost/random.hpp>
 #include "simulatorPro.h"
 #include "cktUtil.h"
+#include "espressoApi.h"
 
 
 class Dcals_Man_t
@@ -42,6 +43,7 @@ public:
     void GenCand(IN bool genConst, INOUT std::vector <Lac_Cand_t> & cands);
     void GenCand(INOUT std::vector <Lac_Cand_t> & cands);
     Hop_Obj_t * BuildFunc(IN Abc_Obj_t * pPivot, IN Vec_Ptr_t * vFanins);
+    Hop_Obj_t * BuildFuncEspresso(IN Abc_Obj_t * pPivot, IN Vec_Ptr_t * vFanins);
     void BatchErrorEst(IN std::vector <Lac_Cand_t> & cands, OUT Lac_Cand_t & bestCand);
 };
 
@@ -65,11 +67,14 @@ Kit_Graph_t * Ckt_TruthToGraph(unsigned * pTruth, int nVars, Vec_Int_t * vMemory
 int Ckt_TruthIsop(unsigned * puTruth, int nVars, Vec_Int_t * vMemory, int fTryBoth);
 unsigned * Ckt_TruthIsop_rec(unsigned * puOn, unsigned * puOnDc, int nVars, Kit_Sop_t * pcRes, Vec_Int_t * vStore);
 unsigned Ckt_TruthIsop5_rec( unsigned uOn, unsigned uOnDc, int nVars, Kit_Sop_t * pcRes, Vec_Int_t * vStore );
+Vec_Ptr_t * Ckt_ComputeDivisors(Abc_Obj_t * pNode, int nLevDivMax, int nWinMax, int nFanoutsMax);
 
 
 extern "C" {
 void Abc_NtkDfs_rec( Abc_Obj_t * pNode, Vec_Ptr_t * vNodes );
 Hop_Obj_t * Kit_GraphToHop( Hop_Man_t * pMan, Kit_Graph_t * pGraph );
+Vec_Ptr_t * Abc_MfsWinMarkTfi( Abc_Obj_t * pNode );
+void Abc_MfsWinSweepLeafTfo_rec( Abc_Obj_t * pObj, int nLevelLimit );
 }
 
 
