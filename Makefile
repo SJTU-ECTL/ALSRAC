@@ -12,7 +12,7 @@ TARGET  := main
 
 #compiling parameters
 CC      := g++
-LIBS    := -labc -lm -ldl -rdynamic -lreadline -ltermcap -lpthread -lstdc++ -lrt -lespresso
+LIBS    := -labc -lm -ldl -rdynamic -lreadline -ltermcap -lpthread -lstdc++ -lrt
 LDFLAGS := -L ${DIR_ABC_LIB} -L $(DIR_ESP_LIB)
 DEFINES := $(FLAG) -DLIN64
 INCLUDE := -I ${DIR_INC} -I ${DIR_ABC_INC} -I $(DIR_ESP_INC)

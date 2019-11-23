@@ -12,6 +12,7 @@
 #include "base/io/ioAbc.h"
 #include "base/abc/abc.h"
 #include "bool/bdc/bdc.h"
+#include "bool/kit/kit.h"
 #include "misc/util/abc_global.h"
 #include "misc/util/util_hack.h"
 #include "map/mio/mio.h"

@@ -40,6 +40,8 @@ public:
     Hop_Obj_t * LocalAppChangeNode(Mfs_Man_t * p, Abc_Obj_t * pNode);
     Aig_Man_t * ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode);
     void GenCand(IN bool genConst, INOUT std::vector <Lac_Cand_t> & cands);
+    void GenCand(INOUT std::vector <Lac_Cand_t> & cands);
+    Hop_Obj_t * BuildFunc(IN Abc_Obj_t * pPivot, IN Vec_Ptr_t * vFanins);
     void BatchErrorEst(IN std::vector <Lac_Cand_t> & cands, OUT Lac_Cand_t & bestCand);
 };
 
@@ -56,8 +58,19 @@ void Ckt_UpdateNetwork(Abc_Obj_t * pObj, Vec_Ptr_t * vFanins, Hop_Obj_t * pFunc)
 bool IsSimpPo(Abc_Obj_t * pObj);
 Abc_Obj_t * GetFirstPoFanout(Abc_Obj_t * pObj);
 Vec_Ptr_t * GetTFICone(Abc_Ntk_t * pNtk, Abc_Obj_t * pObj);
+Vec_Ptr_t * ComputeDivisors(Abc_Obj_t * pNode, int nWinTfiLevs);
+void ComputeDivisors_rec(Abc_Obj_t * pNode, Vec_Ptr_t * vDivs, int minLevel);
+Hop_Obj_t * Ckt_NtkMfsInterplate(Mfs_Man_t * p, int * pCands, int nCands);
+Kit_Graph_t * Ckt_TruthToGraph(unsigned * pTruth, int nVars, Vec_Int_t * vMemory);
+int Ckt_TruthIsop(unsigned * puTruth, int nVars, Vec_Int_t * vMemory, int fTryBoth);
+unsigned * Ckt_TruthIsop_rec(unsigned * puOn, unsigned * puOnDc, int nVars, Kit_Sop_t * pcRes, Vec_Int_t * vStore);
+unsigned Ckt_TruthIsop5_rec( unsigned uOn, unsigned uOnDc, int nVars, Kit_Sop_t * pcRes, Vec_Int_t * vStore );
 
-extern "C" {void Abc_NtkDfs_rec( Abc_Obj_t * pNode, Vec_Ptr_t * vNodes );}
+
+extern "C" {
+void Abc_NtkDfs_rec( Abc_Obj_t * pNode, Vec_Ptr_t * vNodes );
+Hop_Obj_t * Kit_GraphToHop( Hop_Man_t * pMan, Kit_Graph_t * pGraph );
+}
 
 
 #endif

@@ -47,7 +47,7 @@ void Ckt_EvalASIC(Abc_Ntk_t * pNtk, string fileName, double maxDelay, bool isOut
     cout << "delay = " << delay << endl;
     if (isOutput) {
         ss.str("");
-        cout << ss.str() << endl;
+        ss << "write_blif " << fileName << "_" << area << "_" << delay << ".blif";
         DASSERT(!Cmd_CommandExecute(pAbc, ss.str().c_str()));
     }
 }
@@ -422,7 +422,10 @@ void Ckt_PrintHopFunc(Hop_Obj_t * pHopObj, Vec_Ptr_t * vFanins)
     // write the formula
     cout << "F = ";
     Hop_ObjPrintEqn( stdout, pHopObj, vLevels, 0 );
-    cout << endl;
+    cout << " (";
+    Vec_PtrForEachEntry(Abc_Obj_t *, vFanins, pFanin, k)
+        cout << Abc_ObjName(pFanin) << ",";
+    cout << ")" << endl;
     Vec_VecFree( vLevels );
 }
 
