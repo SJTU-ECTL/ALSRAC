@@ -12,7 +12,7 @@
 class Dcals_Man_t
 {
 private:
-    const int forbidRound = 10;
+    const int forbidRound = 1;
 
     Abc_Ntk_t * pOriNtk;
     Abc_Ntk_t * pAppNtk;
@@ -60,7 +60,7 @@ Hop_Obj_t * Ckt_NtkMfsResubNode(Mfs_Man_t * p, Abc_Obj_t * pNode);
 Hop_Obj_t * Ckt_NtkMfsSolveSatResub(Mfs_Man_t * p, Abc_Obj_t * pNode, int iFanin, int fOnlyRemove);
 int Ckt_NtkMfsTryResubOnce(Mfs_Man_t * p, int * pCands, int nCands);
 void Ckt_NtkMfsUpdateNetwork(Mfs_Man_t * p, Abc_Obj_t * pObj, Vec_Ptr_t * vMfsFanins, Hop_Obj_t * pFunc);
-void Ckt_UpdateNetwork(Abc_Obj_t * pObj, Vec_Ptr_t * vFanins, Hop_Obj_t * pFunc);
+Abc_Obj_t * Ckt_UpdateNetwork(Abc_Obj_t * pObj, Vec_Ptr_t * vFanins, Hop_Obj_t * pFunc);
 bool IsSimpPo(Abc_Obj_t * pObj);
 Abc_Obj_t * GetFirstPoFanout(Abc_Obj_t * pObj);
 Vec_Ptr_t * GetTFICone(Abc_Ntk_t * pNtk, Abc_Obj_t * pObj);

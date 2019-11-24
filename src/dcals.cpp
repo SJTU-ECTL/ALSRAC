@@ -173,12 +173,13 @@ void Dcals_Man_t::LocalAppChange()
         bestCand.Print();
         if (!forbidList.empty())
             forbidList.pop_front();
-        if ( Hop_DagSize(bestCand.GetFunc()) == Hop_DagSize( static_cast <Hop_Obj_t *> (bestCand.GetObj()->pData) ) )
+        if (Hop_DagSize(bestCand.GetFunc()) == Hop_DagSize( static_cast <Hop_Obj_t *> (bestCand.GetObj()->pData) ))
             forbidList.push_back(string(Abc_ObjName(bestCand.GetObj())));
-        Ckt_UpdateNetwork(bestCand.GetObj(), bestCand.GetFanins(), bestCand.GetFunc());
+        Abc_Obj_t * pObjNew = Ckt_UpdateNetwork(bestCand.GetObj(), bestCand.GetFanins(), bestCand.GetFunc());
+        forbidList.push_back(string(Abc_ObjName(pObjNew)));
         metric = realEr;
-        cout << "current error = " << metric << endl;
     }
+    cout << "current error = " << metric << endl;
 
     // recycle memory
     delete pOriSmlt;
@@ -186,7 +187,7 @@ void Dcals_Man_t::LocalAppChange()
 
     // disturb the network
     Abc_NtkSweep(pAppNtk, 0);
-    if (roundId % 10 == 0) {
+    if (roundId % 10 == 0 || metric > metricBound * 0.6) {
         Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
         Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pAppNtk));
         string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance; logic;");
@@ -196,13 +197,15 @@ void Dcals_Man_t::LocalAppChange()
     }
 
     // evaluate the current approximate circuit
-    ostringstream fileName("");
-    fileName << outPath << pAppNtk->pName << "_" << metric;
-    if (!mapType)
-        Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay, true);
-    else {
-        Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6 -a;");
-        Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6;");
+    if (metric > metricBound * 0.6) {
+        ostringstream fileName("");
+        fileName << outPath << pAppNtk->pName << "_" << metric;
+        if (!mapType)
+            Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay, true);
+        else {
+            Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6 -a;");
+            Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6;");
+        }
     }
 }
 
@@ -345,7 +348,7 @@ void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
     Abc_NtkStartReverseLevels(pAppNtk, pPars->nGrowthLevel);
     Abc_Obj_t * pPivot = nullptr;
     int ii = 0;
-    const int nCandLimit = 2;
+    const int nCandLimit = 5;
     Abc_NtkForEachNode(pAppNtk, pPivot, ii) {
         // skip nodes with less than two inputs
         if (Abc_ObjFaninNum(pPivot) < 1)
@@ -1052,7 +1055,7 @@ void Ckt_NtkMfsUpdateNetwork(Mfs_Man_t * p, Abc_Obj_t * pObj, Vec_Ptr_t * vMfsFa
 }
 
 
-void Ckt_UpdateNetwork(Abc_Obj_t * pObj, Vec_Ptr_t * vFanins, Hop_Obj_t * pFunc)
+Abc_Obj_t * Ckt_UpdateNetwork(Abc_Obj_t * pObj, Vec_Ptr_t * vFanins, Hop_Obj_t * pFunc)
 {
     Abc_Obj_t * pObjNew, * pFanin;
     int k;
@@ -1063,6 +1066,7 @@ void Ckt_UpdateNetwork(Abc_Obj_t * pObj, Vec_Ptr_t * vFanins, Hop_Obj_t * pFunc)
         Abc_ObjAddFanin( pObjNew, pFanin );
     // replace the old node by the new node
     Abc_ObjReplace( pObj, pObjNew );
+    return pObjNew;
 }
 
 
