@@ -12,6 +12,8 @@
 class Dcals_Man_t
 {
 private:
+    const int forbidRound = 10;
+
     Abc_Ntk_t * pOriNtk;
     Abc_Ntk_t * pAppNtk;
     Simulator_Pro_t * pOriSmlt;
@@ -19,6 +21,7 @@ private:
     unsigned seed;
     Metric_t metricType;
     int mapType;
+    int roundId;
     int nFrame;
     int cutSize;
     int nEvalFrame;
@@ -28,6 +31,7 @@ private:
     double maxDelay;
     Mfs_Par_t * pPars;
     std::string outPath;
+    std::deque <std::string> forbidList;
 
     Dcals_Man_t & operator = (const Dcals_Man_t &);
     Dcals_Man_t(const Dcals_Man_t &);

@@ -20,8 +20,10 @@ Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metri
     this->pAppNtk = Abc_NtkDup(this->pOriNtk);
     this->pOriSmlt = nullptr;
     this->pAppSmlt = nullptr;
+    this->seed = 0;
     this->metricType = metricType;
     this->mapType = mapType;
+    this->roundId = 0;
     this->nFrame = nFrame;
     this->cutSize = cutSize;
     this->nEvalFrame = 102400;
@@ -33,6 +35,9 @@ Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metri
     this->metricBound = metricBound;
     this->pPars = InitMfsPars();
     this->outPath = outPath;
+    this->forbidList.clear();
+    for (int i = 0; i < forbidRound; ++i)
+        this->forbidList.push_back("");
 }
 
 
@@ -75,6 +80,8 @@ void Dcals_Man_t::DCALS()
 
     clock_t st = clock();
     while (metric < metricBound) {
+        ++roundId;
+        cout << "--------------- round " << roundId << " ---------------" << endl;
         LocalAppChange();
         cout << "time = " << clock() - st << endl << endl;
     }
@@ -126,9 +133,23 @@ void Dcals_Man_t::LocalAppChange()
 
     // apply local approximate change
     bool isApply = false;
+    double realEr = 0;
     if (bestCand.ExistResub(1.0)) {
+        // update and check error
+        if (metricType == Metric_t::ER)
+            realEr = MeasureER(pOriNtk, pAppNtk, nEvalFrame, seed, true);
+        else if (metricType == Metric_t::AEMR)
+            realEr = MeasureAEMR(pOriNtk, pAppNtk, nEvalFrame, seed, true);
+        else if (metricType == Metric_t::RAEM)
+            realEr = MeasureRAEM(pOriNtk, pAppNtk, nEvalFrame, seed, true);
+        else
+            DASSERT(0);
+        cout << "estimated error = " << bestCand.GetError() << endl;
+        // DASSERT(realEr <= bestCand.GetError());
+
+        // update patience
         pat1 = 0;
-        if (bestCand.GetError() <= metricBound) {
+        if (realEr <= metricBound) {
             isApply = true;
             pat2 = 0;
         }
@@ -150,24 +171,13 @@ void Dcals_Man_t::LocalAppChange()
     if (isApply) {
         cout << "Apply candidate:" << endl;
         bestCand.Print();
+        if (!forbidList.empty())
+            forbidList.pop_front();
+        if ( Hop_DagSize(bestCand.GetFunc()) == Hop_DagSize( static_cast <Hop_Obj_t *> (bestCand.GetObj()->pData) ) )
+            forbidList.push_back(string(Abc_ObjName(bestCand.GetObj())));
         Ckt_UpdateNetwork(bestCand.GetObj(), bestCand.GetFanins(), bestCand.GetFunc());
-
-        // update and check metric
-        if (metricType == Metric_t::ER) {
-            metric = MeasureER(pOriNtk, pAppNtk, nEvalFrame, seed, true);
-            cout << "estimated error = " << bestCand.GetError() << endl;
-            cout << "current error = " << metric << endl;
-            // DASSERT(metric <= bestCand.GetError());
-        }
-        else if (metricType == Metric_t::AEMR) {
-            metric = MeasureAEMR(pOriNtk, pAppNtk, nEvalFrame, seed, true);
-            DASSERT(metric == bestCand.GetError());
-        }
-        else if (metricType == Metric_t::RAEM) {
-            metric = MeasureRAEM(pOriNtk, pAppNtk, nEvalFrame, seed, true);
-        }
-        else
-            DASSERT(0);
+        metric = realEr;
+        cout << "current error = " << metric << endl;
     }
 
     // recycle memory
@@ -175,12 +185,15 @@ void Dcals_Man_t::LocalAppChange()
     delete pAppSmlt;
 
     // disturb the network
-    Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
-    Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pAppNtk));
-    string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance; logic;");
-    DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
-    Abc_NtkDelete(pAppNtk);
-    pAppNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
+    Abc_NtkSweep(pAppNtk, 0);
+    if (roundId % 10 == 0) {
+        Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
+        Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pAppNtk));
+        string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance; logic;");
+        DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+        Abc_NtkDelete(pAppNtk);
+        pAppNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
+    }
 
     // evaluate the current approximate circuit
     ostringstream fileName("");
@@ -332,11 +345,15 @@ void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
     Abc_NtkStartReverseLevels(pAppNtk, pPars->nGrowthLevel);
     Abc_Obj_t * pPivot = nullptr;
     int ii = 0;
-    const int nCandLimit = 5;
+    const int nCandLimit = 2;
     Abc_NtkForEachNode(pAppNtk, pPivot, ii) {
         // skip nodes with less than two inputs
         if (Abc_ObjFaninNum(pPivot) < 1)
             continue;
+        // avoid resubstitution loop
+        auto pos = find(forbidList.begin(), forbidList.end(), string(Abc_ObjName(pPivot)));
+        bool skipResub = (pos != forbidList.end())? true: false;
+        // bool skipResub = false;
         // compute divisors
         Vec_Ptr_t * vDivs = Ckt_ComputeDivisors(pPivot, Abc_ObjRequiredLevel(pPivot) - 1, pPars->nWinMax, pPars->nFanoutsMax);
 
@@ -352,25 +369,26 @@ void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
             }
             // try removing the i-th fanin
             {
-                BuildFuncEspresso(pPivot, vFanins);
                 Hop_Obj_t * pFunc = BuildFuncEspresso(pPivot, vFanins);
                 if (pFunc != nullptr)
                     cands.emplace_back(pPivot, pFunc, vFanins);
             }
             // try replacing the i-th fanin with another divisor
-            Vec_PtrPush(vFanins, nullptr);
-            Abc_Obj_t * pDiv = nullptr;
-            int j = 0;
-            Vec_PtrForEachEntry(Abc_Obj_t *, vDivs, pDiv, j) {
-                if (pDiv == Abc_ObjFanin(pPivot, i))
-                    continue;
-                Vec_PtrWriteEntry(vFanins, nFanins - 1, pDiv);
-                Hop_Obj_t * pFunc = BuildFunc(pPivot, vFanins);
-                if (pFunc != nullptr) {
-                    cands.emplace_back(pPivot, pFunc, vFanins);
-                    ++cnt;
-                    if (cnt > nCandLimit)
-                        break;
+            if (!skipResub) {
+                Vec_PtrPush(vFanins, nullptr);
+                Abc_Obj_t * pDiv = nullptr;
+                int j = 0;
+                Vec_PtrForEachEntry(Abc_Obj_t *, vDivs, pDiv, j) {
+                    if (pDiv == Abc_ObjFanin(pPivot, i))
+                        continue;
+                    Vec_PtrWriteEntry(vFanins, nFanins - 1, pDiv);
+                    Hop_Obj_t * pFunc = BuildFuncEspresso(pPivot, vFanins);
+                    if (pFunc != nullptr) {
+                        cands.emplace_back(pPivot, pFunc, vFanins);
+                        ++cnt;
+                        if (cnt > nCandLimit)
+                            break;
+                    }
                 }
             }
             // clean up
@@ -559,7 +577,11 @@ Hop_Obj_t * Dcals_Man_t::BuildFuncEspresso(IN Abc_Obj_t * pPivot, IN Vec_Ptr_t *
     sf_cleanup();
     sm_cleanup();
 
-    return pFunc;
+    // filter functions
+    if ( Hop_DagSize(pFunc) <= Hop_DagSize( static_cast <Hop_Obj_t *> (pPivot->pData) ) )
+        return pFunc;
+    else
+        return nullptr;
 }
 
 

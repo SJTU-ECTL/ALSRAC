@@ -23,7 +23,7 @@ do
             if [[ "$name" == *.blif ]]
             then
                 echo ${filename} ${error}
-                (nohup ./main -i ${file} -b ${error} -o ${appntkPath} > ${logPath}/${filename}.log &)
+                (nohup ./main -i ${file} -b ${error} -o ${appntkPath} -f 32 > ${logPath}/${filename}.log &)
             fi
         fi
     done
