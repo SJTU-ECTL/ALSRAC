@@ -80,10 +80,10 @@ void Dcals_Man_t::DCALS()
 
     clock_t st = clock();
     while (metric < metricBound) {
-        ++roundId;
         cout << "--------------- round " << roundId << " ---------------" << endl;
         LocalAppChange();
         cout << "time = " << clock() - st << endl << endl;
+        ++roundId;
     }
 }
 
@@ -187,7 +187,7 @@ void Dcals_Man_t::LocalAppChange()
 
     // disturb the network
     Abc_NtkSweep(pAppNtk, 0);
-    if (roundId % 10 == 0 || metric > metricBound * 0.6) {
+    if (roundId % 10 == 0 || metric > metricBound * 0.3) {
         Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
         Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pAppNtk));
         string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance; logic;");
@@ -197,7 +197,7 @@ void Dcals_Man_t::LocalAppChange()
     }
 
     // evaluate the current approximate circuit
-    if (metric > metricBound * 0.6) {
+    if (metric > metricBound * 0.3) {
         ostringstream fileName("");
         fileName << outPath << pAppNtk->pName << "_" << metric;
         if (!mapType)
@@ -599,8 +599,8 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
     DASSERT(SmltChecker(pOriSmlt, pAppSmlt));
     // get disjoint cuts and the corresponding networks
     // clock_t st = clock();
-    pAppSmlt->BuildCutNtks();
-    // pAppSmlt->BuildAppCutNtks();
+    // pAppSmlt->BuildCutNtks();
+    pAppSmlt->BuildAppCutNtks();
     // cout << "build cut time = " << clock() - st << endl;
     // simulate networks of disjoint cuts
     // st = clock();
