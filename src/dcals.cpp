@@ -122,7 +122,8 @@ void Dcals_Man_t::LocalAppChange()
         // GenCand(false, cands);
         GenCand(cands);
     else if (metricType == Metric_t::AEMR)
-        GenCand(true, cands);
+        // GenCand(true, cands);
+        GenCand(cands);
     else if (metricType == Metric_t::RAEM)
         GenCand(true, cands);
     else
@@ -187,7 +188,8 @@ void Dcals_Man_t::LocalAppChange()
 
     // disturb the network
     Abc_NtkSweep(pAppNtk, 0);
-    if (roundId % 10 == 0 || metric > metricBound * 0.3) {
+    const double isReport = 0.01;
+    if (roundId % 10 == 0 || metric > metricBound * isReport) {
         Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
         Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pAppNtk));
         string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance; logic;");
@@ -197,7 +199,7 @@ void Dcals_Man_t::LocalAppChange()
     }
 
     // evaluate the current approximate circuit
-    if (metric > metricBound * 0.3) {
+    if (metric > metricBound * isReport) {
         ostringstream fileName("");
         fileName << outPath << pAppNtk->pName << "_" << metric;
         if (!mapType)
@@ -350,7 +352,7 @@ void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
     int ii = 0;
     const int nCandLimit = 5;
     Abc_NtkForEachNode(pAppNtk, pPivot, ii) {
-        // skip nodes with less than two inputs
+        // skip nodes with less than one inputs
         if (Abc_ObjFaninNum(pPivot) < 1)
             continue;
         // avoid resubstitution loop
@@ -399,6 +401,20 @@ void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
         }
         // clean up
         Vec_PtrFree(vDivs);
+    }
+    if (metricType == Metric_t::AEMR) {
+        Abc_NtkForEachNode(pAppNtk, pPivot, ii) {
+            // skip nodes with less than one inputs
+            if (Abc_ObjFaninNum(pPivot) < 1)
+                continue;
+            Vec_Ptr_t * vFanins = Vec_PtrAlloc(1);
+            Vec_PtrClear(vFanins);
+            Hop_Obj_t * pFunc = Hop_ManConst0((Hop_Man_t *)(pAppNtk->pManFunc));
+            cands.emplace_back(pPivot, pFunc, vFanins);
+            pFunc = Hop_ManConst1((Hop_Man_t *)(pAppNtk->pManFunc));
+            cands.emplace_back(pPivot, pFunc, vFanins);
+            Vec_PtrFree(vFanins);
+        }
     }
     Abc_NtkStopReverseLevels(pAppNtk);
 }
@@ -905,7 +921,7 @@ clk = Abc_Clock();
         pFunc = Ckt_NtkMfsInterplate( p, pCands, nCands );
         if ( pFunc == nullptr )
             return nullptr;
-        Ckt_PrintHopFunc(pFunc, p->vMfsFanins);
+        // Ckt_PrintHopFunc(pFunc, p->vMfsFanins);
         // update the network
         // Ckt_NtkMfsUpdateNetwork( p, pNode, p->vMfsFanins, pFunc );
 p->timeInt += Abc_Clock() - clk;
@@ -982,7 +998,7 @@ clk = Abc_Clock();
                 return nullptr;
             // update the divisors
             Vec_PtrPush( p->vMfsFanins, Vec_PtrEntry(p->vDivs, iVar) );
-            Ckt_PrintHopFunc(pFunc, p->vMfsFanins);
+            // Ckt_PrintHopFunc(pFunc, p->vMfsFanins);
 p->timeInt += Abc_Clock() - clk;
             p->nResubs++;
             return pFunc;
@@ -1200,14 +1216,14 @@ Hop_Obj_t * Ckt_NtkMfsInterplate( Mfs_Man_t * p, int * pCands, int nCands )
     pGraph = Kit_TruthToGraph( puTruth, nFanins, p->vMem );
     pFunc = Kit_GraphToHop( (Hop_Man_t *)p->pNtk->pManFunc, pGraph );
     Kit_GraphFree( pGraph );
-    if (pFunc != nullptr) {
-        cout << "nFanins " << nFanins << " ";
-        cout << "truthtable ";
-        int nWordsAll = Kit_TruthWordNum(nFanins);
-        for (int i = 0; i < nWordsAll; ++i)
-            cout << puTruth[i] << " ";
-        cout << endl;
-    }
+    // if (pFunc != nullptr) {
+    //     cout << "nFanins " << nFanins << " ";
+    //     cout << "truthtable ";
+    //     int nWordsAll = Kit_TruthWordNum(nFanins);
+    //     for (int i = 0; i < nWordsAll; ++i)
+    //         cout << puTruth[i] << " ";
+    //     cout << endl;
+    // }
     return pFunc;
 }
 
