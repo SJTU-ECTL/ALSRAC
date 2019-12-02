@@ -125,7 +125,8 @@ void Dcals_Man_t::LocalAppChange()
         // GenCand(true, cands);
         GenCand(cands);
     else if (metricType == Metric_t::RAEM)
-        GenCand(true, cands);
+        // GenCand(true, cands);
+        GenCand(cands);
     else
         DASSERT(0);
     cout << "cand number = " << cands.size() << endl;
@@ -187,9 +188,8 @@ void Dcals_Man_t::LocalAppChange()
     delete pAppSmlt;
 
     // disturb the network
-    Abc_NtkSweep(pAppNtk, 0);
-    const double isReport = 0.01;
-    if (roundId % 10 == 0 || metric > metricBound * isReport) {
+    if (roundId % 10 == 0) {
+        Abc_NtkSweep(pAppNtk, 0);
         Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
         Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pAppNtk));
         string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance; logic;");
@@ -199,14 +199,14 @@ void Dcals_Man_t::LocalAppChange()
     }
 
     // evaluate the current approximate circuit
-    if (metric > metricBound * isReport) {
+    if (roundId % 10 == 0 || metric > 0.01 * metricBound) {
         ostringstream fileName("");
         fileName << outPath << pAppNtk->pName << "_" << metric;
         if (!mapType)
             Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay, true);
         else {
             Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6 -a;");
-            Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6;");
+            // Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6;");
         }
     }
 }
@@ -350,7 +350,7 @@ void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
     Abc_NtkStartReverseLevels(pAppNtk, pPars->nGrowthLevel);
     Abc_Obj_t * pPivot = nullptr;
     int ii = 0;
-    const int nCandLimit = 5;
+    const int nCandLimit = 1;
     Abc_NtkForEachNode(pAppNtk, pPivot, ii) {
         // skip nodes with less than one inputs
         if (Abc_ObjFaninNum(pPivot) < 1)

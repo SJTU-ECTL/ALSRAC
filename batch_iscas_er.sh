@@ -20,7 +20,7 @@ do
         then
             name=`basename $file`
             filename="${name%%.*}"
-            if [[ "$name" == *.blif ]]
+            if [[ "$name" == alu4.blif ]]
             then
                 echo ${filename} ${error}
                 (nohup ./main -i ${file} -b ${error} -o ${appntkPath} -f 32 > ${logPath}/${filename}.log &)
