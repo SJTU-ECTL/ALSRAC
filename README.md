@@ -19,6 +19,7 @@ git clone git@github.com:berkeley-abc/abc.git
 
 Build a static library `libabc.a`.
 ```
+cd abc/
 make libabc.a
 ```
 
@@ -30,7 +31,8 @@ git clone git@github.com:dbzxysmc/espresso.git
 
 Build a static library `libespresso.a`.
 ```
-make libespresso.a
+cd espresso/
+make lib
 ```
 
 ### Build ALSRAC
