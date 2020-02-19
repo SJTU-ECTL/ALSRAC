@@ -118,17 +118,7 @@ void Dcals_Man_t::LocalAppChange()
     vector <Lac_Cand_t> cands;
     Lac_Cand_t bestCand;
     cands.reserve(8192);
-    if (metricType == Metric_t::ER)
-        // GenCand(false, cands);
-        GenCand(cands);
-    else if (metricType == Metric_t::AEMR)
-        // GenCand(true, cands);
-        GenCand(cands);
-    else if (metricType == Metric_t::RAEM)
-        // GenCand(true, cands);
-        GenCand(cands);
-    else
-        DASSERT(0);
+    GenCand(cands);
     cout << "cand number = " << cands.size() << endl;
     cout << "cand time = " << clock() - st << endl;
     BatchErrorEst(cands, bestCand);
@@ -187,26 +177,38 @@ void Dcals_Man_t::LocalAppChange()
     delete pOriSmlt;
     delete pAppSmlt;
 
-    // disturb the network
-    if (roundId % 10 == 0) {
+    if (metricType == Metric_t::RAEM) {
+        // evaluate the current approximate circuit
         Abc_NtkSweep(pAppNtk, 0);
-        Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
-        Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pAppNtk));
-        string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance; logic;");
-        DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
-        Abc_NtkDelete(pAppNtk);
-        pAppNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
-    }
-
-    // evaluate the current approximate circuit
-    if (roundId % 10 == 0 || metric > 0.01 * metricBound) {
+        int size = Abc_NtkNodeNum(pAppNtk);
+        int depth = Abc_NtkLevel(pAppNtk);
+        cout << "size = " << size << endl;
+        cout << "depth = " << depth << endl;
         ostringstream fileName("");
-        fileName << outPath << pAppNtk->pName << "_" << metric;
-        if (!mapType)
-            Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay, true);
-        else {
-            Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6 -a;");
-            // Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6;");
+        fileName << outPath << pAppNtk->pName << "_" << metric << "_" << size << "_" << depth << ".blif";
+        Ckt_WriteBlif(pAppNtk, fileName.str());
+    }
+    else {
+        // disturb the network
+        if (roundId % 10 == 0) {
+            Abc_NtkSweep(pAppNtk, 0);
+            Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
+            Abc_FrameReplaceCurrentNetwork(pAbc, Abc_NtkDup(pAppNtk));
+            string Command = string("strash; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance; logic;");
+            DASSERT(!Cmd_CommandExecute(pAbc, Command.c_str()));
+            Abc_NtkDelete(pAppNtk);
+            pAppNtk = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
+        }
+        // evaluate the current approximate circuit
+        if (roundId % 10 == 0 || metric > 0.01 * metricBound) {
+            ostringstream fileName("");
+            fileName << outPath << pAppNtk->pName << "_" << metric;
+            if (!mapType)
+                Ckt_EvalASIC(pAppNtk, fileName.str(), maxDelay, true);
+            else {
+                Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6 -a;");
+                // Ckt_EvalFPGA(pAppNtk, fileName.str(), "strash; if -K 6;");
+            }
         }
     }
 }
@@ -351,58 +353,60 @@ void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
     Abc_Obj_t * pPivot = nullptr;
     int ii = 0;
     const int nCandLimit = 1;
-    Abc_NtkForEachNode(pAppNtk, pPivot, ii) {
-        // skip nodes with less than one inputs
-        if (Abc_ObjFaninNum(pPivot) < 1)
-            continue;
-        // avoid resubstitution loop
-        auto pos = find(forbidList.begin(), forbidList.end(), string(Abc_ObjName(pPivot)));
-        bool skipResub = (pos != forbidList.end())? true: false;
-        // bool skipResub = false;
-        // compute divisors
-        Vec_Ptr_t * vDivs = Ckt_ComputeDivisors(pPivot, Abc_ObjRequiredLevel(pPivot) - 1, pPars->nWinMax, pPars->nFanoutsMax);
+    if (metricType == Metric_t::ER || metricType == Metric_t::AEMR) {
+        Abc_NtkForEachNode(pAppNtk, pPivot, ii) {
+            // skip nodes with less than one inputs
+            if (Abc_ObjFaninNum(pPivot) < 1)
+                continue;
+            // avoid resubstitution loop
+            auto pos = find(forbidList.begin(), forbidList.end(), string(Abc_ObjName(pPivot)));
+            bool skipResub = (pos != forbidList.end())? true: false;
+            // bool skipResub = false;
+            // compute divisors
+            Vec_Ptr_t * vDivs = Ckt_ComputeDivisors(pPivot, Abc_ObjRequiredLevel(pPivot) - 1, pPars->nWinMax, pPars->nFanoutsMax);
 
-        // enumerate resubstitution
-        int nFanins = Abc_ObjFaninNum(pPivot);
-        int cnt = 0;
-        for (int i = 0; i < nFanins; ++i) {
-            // init temp divisors
-            Vec_Ptr_t * vFanins = Vec_PtrAlloc(10);
-            for (int j = 0; j < nFanins; ++j) {
-                if (i != j)
-                    Vec_PtrPush(vFanins, Abc_ObjFanin(pPivot, j));
-            }
-            // try removing the i-th fanin
-            {
-                Hop_Obj_t * pFunc = BuildFuncEspresso(pPivot, vFanins);
-                if (pFunc != nullptr)
-                    cands.emplace_back(pPivot, pFunc, vFanins);
-            }
-            // try replacing the i-th fanin with another divisor
-            if (!skipResub) {
-                Vec_PtrPush(vFanins, nullptr);
-                Abc_Obj_t * pDiv = nullptr;
-                int j = 0;
-                Vec_PtrForEachEntry(Abc_Obj_t *, vDivs, pDiv, j) {
-                    if (pDiv == Abc_ObjFanin(pPivot, i))
-                        continue;
-                    Vec_PtrWriteEntry(vFanins, nFanins - 1, pDiv);
+            // enumerate resubstitution
+            int nFanins = Abc_ObjFaninNum(pPivot);
+            int cnt = 0;
+            for (int i = 0; i < nFanins; ++i) {
+                // init temp divisors
+                Vec_Ptr_t * vFanins = Vec_PtrAlloc(10);
+                for (int j = 0; j < nFanins; ++j) {
+                    if (i != j)
+                        Vec_PtrPush(vFanins, Abc_ObjFanin(pPivot, j));
+                }
+                // try removing the i-th fanin
+                {
                     Hop_Obj_t * pFunc = BuildFuncEspresso(pPivot, vFanins);
-                    if (pFunc != nullptr) {
+                    if (pFunc != nullptr)
                         cands.emplace_back(pPivot, pFunc, vFanins);
-                        ++cnt;
-                        if (cnt > nCandLimit)
-                            break;
+                }
+                // try replacing the i-th fanin with another divisor
+                if (!skipResub) {
+                    Vec_PtrPush(vFanins, nullptr);
+                    Abc_Obj_t * pDiv = nullptr;
+                    int j = 0;
+                    Vec_PtrForEachEntry(Abc_Obj_t *, vDivs, pDiv, j) {
+                        if (pDiv == Abc_ObjFanin(pPivot, i))
+                            continue;
+                        Vec_PtrWriteEntry(vFanins, nFanins - 1, pDiv);
+                        Hop_Obj_t * pFunc = BuildFuncEspresso(pPivot, vFanins);
+                        if (pFunc != nullptr) {
+                            cands.emplace_back(pPivot, pFunc, vFanins);
+                            ++cnt;
+                            if (cnt > nCandLimit)
+                                break;
+                        }
                     }
                 }
+                // clean up
+                Vec_PtrFree(vFanins);
             }
             // clean up
-            Vec_PtrFree(vFanins);
+            Vec_PtrFree(vDivs);
         }
-        // clean up
-        Vec_PtrFree(vDivs);
     }
-    if (metricType == Metric_t::AEMR) {
+    if (metricType == Metric_t::AEMR || metricType == Metric_t::RAEM) {
         Abc_NtkForEachNode(pAppNtk, pPivot, ii) {
             // skip nodes with less than one inputs
             if (Abc_ObjFaninNum(pPivot) < 1)

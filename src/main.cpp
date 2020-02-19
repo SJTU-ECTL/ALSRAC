@@ -92,9 +92,9 @@ int main(int argc, char * argv[])
         DASSERT(Abc_NtkToAig(pNtk2));
         random_device rd;
         unsigned seed = static_cast <unsigned>(rd());
-        seed = 100;
-        cout << "error rate = " << MeasureER(pNtk1, pNtk2, nFrame, seed) << endl;
-        cout << "average error magnitude rate = " << MeasureAEMR(pNtk1, pNtk2, nFrame, seed) << endl;
+        cout << "ER = " << MeasureER(pNtk1, pNtk2, nFrame, seed) << endl;
+        cout << "NMED = " << MeasureAEMR(pNtk1, pNtk2, nFrame, seed) << endl;
+        cout << "MRED = " << MeasureRAEM(pNtk1, pNtk2, nFrame, seed) << endl;
         Abc_NtkDelete(pNtk1);
         Abc_NtkDelete(pNtk2);
     }
