@@ -1,13 +1,15 @@
 # ALSRAC: Approximate Logic Synthesis by Resubstitution with Approximate Care Set
 
 ## Requirements
+Currently, ALSRAC only supports 64-bit machines, since the logic simulator uses 64-bit parallel simulation.
+
 To compile [ABC](https://github.com/berkeley-abc/abc), you need:
-- gcc
-- make
+- gcc (>=7.4.0)
+- make (>=4.1)
 - libreadline
 
 To compile the whole project, you also need:
-- libboost
+- libboost (>=1.71)
 - ctags
 
 ## Getting Started
@@ -21,6 +23,7 @@ Build a static library `libabc.a`.
 ```
 cd abc/
 make libabc.a
+cd ..
 ```
 
 ### Clone & Build ESPRESSO
@@ -33,6 +36,7 @@ Build a static library `libespresso.a`.
 ```
 cd espresso/
 make lib
+cd ..
 ```
 
 ### Build ALSRAC
