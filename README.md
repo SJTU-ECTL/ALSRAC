@@ -1,5 +1,8 @@
 # ALSRAC: Approximate Logic Synthesis by Resubstitution with Approximate Care Set
 
+## Reference
+http://umji.sjtu.edu.cn/~wkqian/papers/Meng_Qian_Mishchenko_ALSRAC_Approximate_Logic_Synthesis_by_Resubstitution_with_Approximate_Care_Set.pdf
+
 ## Requirements
 Currently, ALSRAC only supports 64-bit machines, since the logic simulator uses 64-bit parallel simulation.
 
