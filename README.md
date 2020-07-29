@@ -53,11 +53,11 @@ Use `./main -h` to get help.
 
 The benchmarks are in the `BLIF` format in the folder `data/`.
 
-The standard cell libraries are in the `GENLIB` format in the folder `data/genlib/`.
+The standard cell libraries are in the folder `data/library/`.
 
 Example:
 ```
-./main -i data/su/c880.blif -l data/genlib/mcnc.genlib -m er -o appntk/ -t 0 -f 64 -b 0.05
+./main -i data/su/c880.blif -l data/library/mcnc.genlib -m er -o appntk/ -t 0 -f 64 -b 0.05
 ```
 
 In this case, approximate circuits are saved into `appntk/` .

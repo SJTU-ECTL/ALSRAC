@@ -13,7 +13,7 @@ parser Cmdline_Parser(int argc, char * argv[])
     parser option;
     option.add <string> ("input", 'i', "Original Circuit file", true);
     option.add <string> ("approx", 'x', "Approximate Circuit file", false, "");
-    option.add <string> ("genlib", 'l', "Standard Cell Library", false, "data/genlib/mcnc.genlib");
+    option.add <string> ("library", 'l', "Standard Cell Library", false, "data/library/mcnc.genlib");
     option.add <string> ("metricType", 'm', "Error metric type, er, aemr, raem", false, "er");
     option.add <string> ("select", 's', "Mode Selection, dcals, measure, test", false, "dcals");
     option.add <string> ("output", 'o', "Output path of circuits", false, "appntk/");
@@ -31,7 +31,7 @@ int main(int argc, char * argv[])
     parser option = Cmdline_Parser(argc, argv);
     string input = option.get <string> ("input");
     string approx = option.get <string> ("approx");
-    string genlib = option.get <string> ("genlib");
+    string library = option.get <string> ("library");
     string metricType = option.get <string> ("metricType");
     string select = option.get <string> ("select");
     string output = option.get <string> ("output");
@@ -43,7 +43,7 @@ int main(int argc, char * argv[])
     Abc_Start();
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
     ostringstream command("");
-    command << "read_genlib -v " << genlib;
+    command << "read " << library;
     DASSERT(!Cmd_CommandExecute(pAbc, command.str().c_str()));
 
     if (select == "dcals") {
