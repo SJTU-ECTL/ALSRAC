@@ -78,6 +78,10 @@ void Dcals_Man_t::DCALS()
         << ", depth = " << Abc_NtkLevel(pOriNtk) << endl;
     }
 
+    // constant propagation
+    Abc_NtkSweep(pAppNtk, 0);
+
+    // main loop
     clock_t st = clock();
     while (metric < metricBound) {
         cout << "--------------- round " << roundId << " ---------------" << endl;
