@@ -16,7 +16,7 @@ LIBS    := -labc -lm -ldl -rdynamic -lreadline -ltermcap -lpthread -lstdc++ -lrt
 LDFLAGS := -L ${DIR_ABC_LIB} -L $(DIR_ESP_LIB)
 DEFINES := $(FLAG) -DLIN64
 INCLUDE := -I ${DIR_INC} -I ${DIR_ABC_INC} -I $(DIR_ESP_INC)
-CFLAGS  := -g -Wall -O3 -std=c++11 $(DEFINES) $(INCLUDE)
+CFLAGS  := -g -Wall -O3 -std=c++17 $(DEFINES) $(INCLUDE)
 CXXFLAGS:= $(CFLAGS)
 
 #commands
