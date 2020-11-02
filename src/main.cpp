@@ -1,3 +1,4 @@
+#include <filesystem>
 #include "headers.h"
 #include "cmdline.h"
 #include "dcals.h"
@@ -5,6 +6,7 @@
 
 
 using namespace std;
+using namespace std::filesystem;
 using namespace cmdline;
 
 
@@ -40,6 +42,13 @@ int main(int argc, char * argv[])
     int nCut = option.get <int> ("nCut");
     double errorBound = option.get <double> ("errorBound");
 
+    // create output path
+    path outPath(output);
+    if (!exists(outPath))
+        create_directories(outPath);
+    if (output[output.length() - 1] != '/')
+        output += "/";
+
     Abc_Start();
     Abc_Frame_t * pAbc = Abc_FrameGetGlobalFrame();
     ostringstream command("");
@@ -63,11 +72,11 @@ int main(int argc, char * argv[])
             alsEng.DCALS();
         }
         else if (metricType == "aemr") {
-            Dcals_Man_t alsEng(pNtk, nFrame, nCut, errorBound, Metric_t::AEMR, mapType);
+            Dcals_Man_t alsEng(pNtk, nFrame, nCut, errorBound, Metric_t::AEMR, mapType, output);
             alsEng.DCALS();
         }
         else if (metricType == "raem") {
-            Dcals_Man_t alsEng(pNtk, nFrame, nCut, errorBound, Metric_t::RAEM, mapType);
+            Dcals_Man_t alsEng(pNtk, nFrame, nCut, errorBound, Metric_t::RAEM, mapType, output);
             alsEng.DCALS();
         }
 
