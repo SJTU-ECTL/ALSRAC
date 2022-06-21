@@ -15,11 +15,13 @@ To compile the whole project, you also need:
 - libboost (>=1.71)
 - ctags
 
+Additionally, you can use the docker image at https://hub.docker.com/r/changmeng/als_min
+
 ## Getting Started
 ### Clone & Build ABC
 Clone `ABC` into `abc/`.
 ```
-git clone git@github.com:berkeley-abc/abc.git
+git clone git@github.com:dbzxysmc/abc.git
 ```
 
 Build a static library `libabc.a`.
