@@ -1601,7 +1601,8 @@ Vec_Ptr_t * Ckt_ComputeDivisors(Abc_Obj_t * pNode, int nLevDivMax, int nWinMax, 
     }
 
     // sort the divisors by level in the increasing order
-    Vec_PtrSort( vDivs, (int (*)(void))Abc_NodeCompareLevelsIncrease );
+    // Vec_PtrSort( vDivs, (int (*)(void))Abc_NodeCompareLevelsIncrease );
+    Vec_PtrSort( vDivs, (int (*)(const void *, const void *))Abc_NodeCompareLevelsIncrease );
 
     // add the fanins of the node
     Abc_ObjForEachFanin( pNode, pFanin, k )
