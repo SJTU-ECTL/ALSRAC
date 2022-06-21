@@ -7,7 +7,7 @@
 Currently, ALSRAC only supports 64-bit machines, since the logic simulator uses 64-bit parallel simulation.
 
 To compile [ABC](https://github.com/berkeley-abc/abc), you need:
-- gcc (>=7.4.0)
+- gcc (>=10.3.0)
 - make (>=4.1)
 - libreadline
 
