@@ -16,9 +16,11 @@ do
         filename="${name%%.*}"
         if [[ "$name" == *.blif ]]
         then
-            echo ${filename}
-            # (nohup ./main -i ${file} -m 0.048828125 > log/${filename}.log &)
-            (nohup ./main -i ${file} -m raem -b 0.001953125 -t 1 > log/${filename}.log &)
+            if [[ "$name" != "hyp_size_2018.blif" ]]
+            then
+                echo ${filename}
+                (nohup ./main -i ${file} -m raem -b 0.001953125 -t 1 > log/${filename}.log &)
+            fi
         fi
     fi
 done
