@@ -16,8 +16,8 @@ parser Cmdline_Parser(int argc, char * argv[])
     option.add <string> ("input", 'i', "Original Circuit file", true);
     option.add <string> ("approx", 'x', "Approximate Circuit file", false, "");
     option.add <string> ("library", 'l', "Standard Cell Library", false, "data/library/mcnc.genlib");
-    option.add <string> ("metricType", 'm', "Error metric type, er, aemr, raem", false, "er");
-    option.add <string> ("select", 's', "Mode Selection, dcals, measure, test", false, "dcals");
+    option.add <string> ("metricType", 'm', "Error metric type, ER, NMED, MRED", false, "ER");
+    option.add <string> ("select", 's', "Mode Selection, als, measure, test", false, "als");
     option.add <string> ("output", 'o', "Output path of circuits", false, "appntk/");
     option.add <int> ("mapType", 't', "Mapping Type, 0 = mcnc, 1 = lut", false, 0, range(0, 1));
     option.add <int> ("nFrame", 'f', "Initial Simulation Round", false, 64, range(1, INT_MAX));
@@ -55,7 +55,7 @@ int main(int argc, char * argv[])
     command << "read " << library;
     DASSERT(!Cmd_CommandExecute(pAbc, command.str().c_str()));
 
-    if (select == "dcals") {
+    if (select == "als") {
         command.str("");
         command << "read_blif " << input;
         DASSERT(!Cmd_CommandExecute(pAbc, command.str().c_str()));
@@ -67,16 +67,16 @@ int main(int argc, char * argv[])
             pos1 = -1;
         Ckt_NtkRename(pNtk, input.substr(pos1 + 1, pos0 - pos1 - 1).c_str());
 
-        if (metricType == "er") {
+        if (metricType == "ER") {
             Dcals_Man_t alsEng(pNtk, nFrame, nCut, errorBound, Metric_t::ER, mapType, output);
             alsEng.DCALS();
         }
-        else if (metricType == "aemr") {
-            Dcals_Man_t alsEng(pNtk, nFrame, nCut, errorBound, Metric_t::AEMR, mapType, output);
+        else if (metricType == "NMED") {
+            Dcals_Man_t alsEng(pNtk, nFrame, nCut, errorBound, Metric_t::NMED, mapType, output);
             alsEng.DCALS();
         }
-        else if (metricType == "raem") {
-            Dcals_Man_t alsEng(pNtk, nFrame, nCut, errorBound, Metric_t::RAEM, mapType, output);
+        else if (metricType == "MRED") {
+            Dcals_Man_t alsEng(pNtk, nFrame, nCut, errorBound, Metric_t::MRED, mapType, output);
             alsEng.DCALS();
         }
 
@@ -101,9 +101,10 @@ int main(int argc, char * argv[])
         DASSERT(Abc_NtkToAig(pNtk2));
         random_device rd;
         unsigned seed = static_cast <unsigned>(rd());
-        cout << "ER = " << MeasureER(pNtk1, pNtk2, nFrame, seed) << endl;
-        cout << "NMED = " << MeasureAEMR(pNtk1, pNtk2, nFrame, seed) << endl;
-        cout << "MRED = " << MeasureRAEM(pNtk1, pNtk2, nFrame, seed) << endl;
+        // cout << "ER = " << MeasureER(pNtk1, pNtk2, nFrame, seed) << endl;
+        cout << "MSE = " << MeasureMSE(pNtk1, pNtk2, nFrame, seed) << endl;
+        // cout << "NMED = " << MeasureNMED(pNtk1, pNtk2, nFrame, seed) << endl;
+        // cout << "MRED = " << MeasureMRED(pNtk1, pNtk2, nFrame, seed) << endl;
         Abc_NtkDelete(pNtk1);
         Abc_NtkDelete(pNtk2);
     }

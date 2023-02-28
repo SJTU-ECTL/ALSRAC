@@ -27,7 +27,7 @@ Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metri
     this->nFrame = nFrame;
     this->cutSize = cutSize;
     this->nEvalFrame = 102400;
-    if (metricType == Metric_t::RAEM)
+    if (metricType == Metric_t::MRED)
         this->nEstiFrame = 1024;
     else
         this->nEstiFrame = 102400;
@@ -134,10 +134,10 @@ void Dcals_Man_t::LocalAppChange()
         // update and check error
         if (metricType == Metric_t::ER)
             realEr = MeasureER(pOriNtk, pAppNtk, nEvalFrame, seed, true);
-        else if (metricType == Metric_t::AEMR)
-            realEr = MeasureAEMR(pOriNtk, pAppNtk, nEvalFrame, seed, true);
-        else if (metricType == Metric_t::RAEM)
-            realEr = MeasureRAEM(pOriNtk, pAppNtk, nEvalFrame, seed, true);
+        else if (metricType == Metric_t::NMED)
+            realEr = MeasureNMED(pOriNtk, pAppNtk, nEvalFrame, seed, true);
+        else if (metricType == Metric_t::MRED)
+            realEr = MeasureMRED(pOriNtk, pAppNtk, nEvalFrame, seed, true);
         else
             DASSERT(0);
         cout << "estimated error = " << bestCand.GetError() << endl;
@@ -181,7 +181,7 @@ void Dcals_Man_t::LocalAppChange()
     delete pOriSmlt;
     delete pAppSmlt;
 
-    if (metricType == Metric_t::RAEM) {
+    if (metricType == Metric_t::MRED) {
         // evaluate the current approximate circuit
         Abc_NtkSweep(pAppNtk, 0);
         int size = Abc_NtkNodeNum(pAppNtk);
@@ -357,7 +357,7 @@ void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
     Abc_Obj_t * pPivot = nullptr;
     int ii = 0;
     const int nCandLimit = 1;
-    if (metricType == Metric_t::ER || metricType == Metric_t::AEMR) {
+    if (metricType == Metric_t::ER || metricType == Metric_t::NMED) {
         Abc_NtkForEachNode(pAppNtk, pPivot, ii) {
             // skip nodes with less than one inputs
             if (Abc_ObjFaninNum(pPivot) < 1)
@@ -410,7 +410,7 @@ void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
             Vec_PtrFree(vDivs);
         }
     }
-    if (metricType == Metric_t::AEMR || metricType == Metric_t::RAEM) {
+    if (metricType == Metric_t::NMED || metricType == Metric_t::MRED) {
         Abc_NtkForEachNode(pAppNtk, pPivot, ii) {
             // skip nodes with less than one inputs
             if (Abc_ObjFaninNum(pPivot) < 1)
@@ -685,7 +685,7 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
         }
         // cout << "evaluate candidate time = " << clock() - st << endl;
     }
-    else if (metricType == Metric_t::AEMR || metricType == Metric_t::RAEM) {
+    else if (metricType == Metric_t::NMED || metricType == Metric_t::MRED) {
         vector < vector <tVec> > bds(nPo);
         for (auto & bdPo: bds) {
             bdPo.resize(pAppSmlt->GetMaxId() + 1);
@@ -731,7 +731,7 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
                     ++frameId;
                 }
             }
-            double er = GetAEMRFromOffset(offsetsTmp);
+            double er = GetNMEDFromOffset(offsetsTmp);
             bestCand.UpdateBest(er, cand.GetObj(), cand.GetFunc(), cand.GetFanins());
         }
     }

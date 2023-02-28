@@ -11,7 +11,7 @@
 #include "debugAssert.h"
 
 
-enum class Metric_t{ER, AEMR, RAEM};
+enum class Metric_t{ER, NMED, MRED};
 enum class Map_t{SCL, LUT};
 
 
@@ -110,12 +110,14 @@ public:
 };
 
 
-double MeasureAEMR(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame = 102400, unsigned seed = 314, bool isCheck = true);
-double MeasureRAEM(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck = true);
-double MeasureResubAEMR(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, Abc_Obj_t * pOldObj, void * pResubFunc, Vec_Ptr_t * vResubFanins, bool isCheck = true);
-double GetAEMR(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck = true, bool isResub = false);
+double MeasureMSE(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame = 102400, unsigned seed = 314, bool isCheck = true);
+double GetMSE(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck = true, bool isResub = false);
+double MeasureNMED(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame = 102400, unsigned seed = 314, bool isCheck = true);
+double MeasureMRED(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck = true);
+double MeasureResubNMED(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, Abc_Obj_t * pOldObj, void * pResubFunc, Vec_Ptr_t * vResubFanins, bool isCheck = true);
+double GetNMED(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck = true, bool isResub = false);
 void GetOffset(IN Simulator_Pro_t * pSmlt1, IN Simulator_Pro_t * pSmlt2, IN bool isCheck, INOUT std::vector < std::vector <int8_t> > & offsets);
-double GetAEMRFromOffset(IN std::vector < std::vector <int8_t> > & offsets);
+double GetNMEDFromOffset(IN std::vector < std::vector <int8_t> > & offsets);
 double MeasureER(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame = 102400, unsigned seed = 314, bool isCheck = true);
 double MeasureResubER(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, Abc_Obj_t * pOldObj, void * pResubFunc, Vec_Ptr_t * vResubFanins, bool isCheck = true);
 int GetER(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck = true, bool isResub = false);

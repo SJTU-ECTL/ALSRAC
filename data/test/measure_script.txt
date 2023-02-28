@@ -1,0 +1,7 @@
+Example:
+./alsrac.out -s measure -i data/test/mult16_exact.blif -x data/test/mult16_MED_651.25.blif -f 10000000 
+
+-s measure: enable the mode error measurement
+-i <exact circuit>: path to exact circuit
+-x <approximate circuit>: path to approximate circuit
+-f <number of Monte Carlo simulation>: number of Monte Carlo simulation used to obtain the error

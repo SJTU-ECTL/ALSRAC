@@ -1,0 +1,139 @@
+# Benchmark "(null)" written by ABC on Tue Feb 28 22:53:34 2023
+.model absdiff
+.inputs a[0] a[1] a[2] a[3] a[4] a[5] a[6] a[7] b[0] b[1] b[2] b[3] b[4] \
+ b[5] b[6] b[7]
+.outputs o[0] o[1] o[2] o[3] o[4] o[5] o[6] o[7]
+.names a[2] new_new_n25__
+0 1
+.names b[3] new_new_n26__
+0 1
+.names b[4] new_new_n27__
+0 1
+.names b[5] new_new_n28__
+0 1
+.names b[6] new_new_n29__
+0 1
+.names b[7] new_new_n30__
+0 1
+.names a[4] new_new_n27__ new_new_n31__
+11 0
+.names a[4] new_new_n27__ new_new_n32__
+00 1
+.names new_new_n32__ new_new_n33__
+0 1
+.names new_new_n31__ new_new_n33__ new_new_n34__
+11 0
+.names a[5] new_new_n28__ new_new_n35__
+11 0
+.names new_new_n35__ new_new_n36__
+0 1
+.names a[5] new_new_n28__ new_new_n37__
+00 1
+.names new_new_n37__ new_new_n38__
+0 1
+.names new_new_n35__ new_new_n38__ new_new_n39__
+11 0
+.names new_new_n34__ new_new_n39__ new_new_n40__
+00 0
+.names a[3] new_new_n26__ new_new_n41__
+11 0
+.names a[3] new_new_n26__ new_new_n42__
+00 1
+.names new_new_n25__ b[2] new_new_n43__
+11 1
+.names new_new_n41__ new_new_n42__ new_new_n43__ new_new_n44__
+-00 1
+0-- 1
+.names new_new_n44__ new_new_n45__
+0 1
+.names new_new_n35__ new_new_n31__ new_new_n37__ new_new_n40__ \
+ new_new_n45__ new_new_n46__
+-00-- 1
+0---- 1
+---00 1
+.names new_new_n46__ new_new_n47__
+0 1
+.names a[7] new_new_n30__ new_new_n48__
+11 0
+.names a[7] new_new_n30__ new_new_n49__
+00 1
+.names new_new_n48__ a[7] new_new_n30__ new_new_n50__
+-00 1
+0-- 1
+.names a[6] new_new_n29__ new_new_n51__
+11 0
+.names a[6] new_new_n29__ new_new_n52__
+00 1
+.names new_new_n51__ a[6] new_new_n29__ new_new_n53__
+-00 1
+0-- 1
+.names new_new_n50__ new_new_n53__ new_new_n54__
+00 0
+.names new_new_n48__ new_new_n49__ new_new_n51__ new_new_n47__ \
+ new_new_n54__ new_new_n55__
+-00-- 1
+0---- 1
+---00 1
+.names new_new_n55__ o[1]
+0 1
+.names new_new_n41__ a[3] new_new_n26__ new_new_n57__
+-00 1
+0-- 1
+.names a[2] new_new_n55__ new_new_n43__ o[1] new_new_n58__
+--00 1
+00-- 1
+.names new_new_n57__ new_new_n58__ o[3]
+11 1
+00 1
+.names new_new_n41__ new_new_n25__ new_new_n42__ new_new_n60__
+-00 1
+0-- 1
+.names new_new_n60__ new_new_n61__
+0 1
+.names new_new_n55__ new_new_n61__ new_new_n44__ o[1] new_new_n62__
+--00 1
+00-- 1
+.names new_new_n34__ new_new_n62__ o[4]
+10 1
+01 1
+.names new_new_n32__ new_new_n31__ new_new_n61__ new_new_n64__
+0-0 1
+00- 1
+.names a[4] new_new_n27__ new_new_n33__ new_new_n44__ new_new_n65__
+--11 0
+11-- 0
+.names new_new_n55__ new_new_n64__ o[1] new_new_n65__ new_new_n66__
+--00 1
+00-- 1
+.names new_new_n39__ new_new_n66__ o[5]
+11 1
+00 1
+.names new_new_n38__ new_new_n33__ new_new_n36__ new_new_n40__ \
+ new_new_n60__ new_new_n68__
+-00-- 1
+0---- 1
+---00 1
+.names o[1] new_new_n68__ new_new_n46__ new_new_n55__ new_new_n69__
+--11 0
+11-- 0
+.names new_new_n53__ new_new_n69__ o[6]
+10 1
+01 1
+.names new_new_n51__ new_new_n52__ new_new_n68__ new_new_n71__
+-00 1
+0-- 1
+.names new_new_n55__ new_new_n71__ new_new_n72__
+00 1
+.names new_new_n52__ o[1] new_new_n47__ new_new_n51__ new_new_n73__
+00-0 1
+000- 1
+.names new_new_n50__ new_new_n72__ new_new_n73__ new_new_n74__
+-00 1
+0-- 1
+.names new_new_n74__ o[7]
+0 1
+.names o[0]
+ 1
+.names o[2]
+ 0
+.end

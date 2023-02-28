@@ -1303,7 +1303,7 @@ void Simulator_Pro_t::UpdateBoolDiff(IN Vec_Ptr_t * vNodes, INOUT vector <tVec> 
 }
 
 
-double MeasureAEMR(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
+double MeasureMSE(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
 {
     // check PI/PO
     if (isCheck)
@@ -1318,11 +1318,52 @@ double MeasureAEMR(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned se
     smlt2.Simulate();
 
     // compute
-    return GetAEMR(&smlt1, &smlt2, false, false);
+    return GetMSE(&smlt1, &smlt2, false, false);
 }
 
 
-double MeasureRAEM(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
+double GetMSE(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck, bool isResub)
+{
+    if (isCheck)
+        DASSERT(SmltChecker(pSmlt1, pSmlt2));
+    typedef multiprecision::cpp_dec_float_100 bigFlt;
+    typedef multiprecision::int256_t bigInt;
+    bigInt sum(0);
+    int nPo = Abc_NtkPoNum(pSmlt1->GetNetwork());
+    int nFrame = pSmlt1->GetFrameNum();
+    if (isResub) {
+        assert(0);
+    }
+    else {
+        for (int k = 0; k < nFrame; ++k) {
+            auto tmp = (pSmlt1->GetOutput(0, nPo - 1, k, 0) - pSmlt2->GetOutput(0, nPo - 1, k, 0));
+            sum += (tmp * tmp);
+        }
+    }
+    return static_cast <double> (static_cast <bigFlt>(sum) / static_cast <bigFlt>(nFrame));
+}
+
+
+double MeasureNMED(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
+{
+    // check PI/PO
+    if (isCheck)
+        DASSERT(IOChecker(pNtk1, pNtk2));
+
+    // simulation
+    Simulator_Pro_t smlt1(pNtk1, nFrame);
+    smlt1.Input(seed);
+    smlt1.Simulate();
+    Simulator_Pro_t smlt2(pNtk2, nFrame);
+    smlt2.Input(seed);
+    smlt2.Simulate();
+
+    // compute
+    return GetNMED(&smlt1, &smlt2, false, false);
+}
+
+
+double MeasureMRED(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
 {
     // check PI/PO
     if (isCheck)
@@ -1351,16 +1392,16 @@ double MeasureRAEM(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned se
 }
 
 
-double MeasureResubAEMR(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, Abc_Obj_t * pOldObj, void * pResubFunc, Vec_Ptr_t * vResubFanins, bool isCheck)
+double MeasureResubNMED(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, Abc_Obj_t * pOldObj, void * pResubFunc, Vec_Ptr_t * vResubFanins, bool isCheck)
 {
     if (isCheck)
         DASSERT(SmltChecker(pSmlt1, pSmlt2));
     pSmlt2->SimulateResub(pOldObj, pResubFunc, vResubFanins);
-    return GetAEMR(pSmlt1, pSmlt2, false, true);
+    return GetNMED(pSmlt1, pSmlt2, false, true);
 }
 
 
-double GetAEMR(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck, bool isResub)
+double GetNMED(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck, bool isResub)
 {
     if (isCheck)
         DASSERT(SmltChecker(pSmlt1, pSmlt2));
@@ -1421,7 +1462,7 @@ void GetOffset(IN Simulator_Pro_t * pOriSmlt, IN Simulator_Pro_t * pAppSmlt, IN 
 }
 
 
-double GetAEMRFromOffset(IN vector < vector <int8_t> > & offsets)
+double GetNMEDFromOffset(IN vector < vector <int8_t> > & offsets)
 {
     int nPo = offsets.size();
     DASSERT(nPo);
