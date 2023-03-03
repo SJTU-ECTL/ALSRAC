@@ -1303,11 +1303,10 @@ void Simulator_Pro_t::UpdateBoolDiff(IN Vec_Ptr_t * vNodes, INOUT vector <tVec> 
 }
 
 
-double MeasureMSE(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
+multiprecision::cpp_dec_float_100 MeasureMSE(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isSign)
 {
     // check PI/PO
-    if (isCheck)
-        DASSERT(IOChecker(pNtk1, pNtk2));
+    DASSERT(IOChecker(pNtk1, pNtk2));
 
     // simulation
     Simulator_Pro_t smlt1(pNtk1, nFrame);
@@ -1318,29 +1317,27 @@ double MeasureMSE(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned see
     smlt2.Simulate();
 
     // compute
-    return GetMSE(&smlt1, &smlt2, false, false);
+    return GetMSE(&smlt1, &smlt2, isSign);
 }
 
 
-double GetMSE(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck, bool isResub)
+multiprecision::cpp_dec_float_100 GetMSE(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isSign)
 {
-    if (isCheck)
-        DASSERT(SmltChecker(pSmlt1, pSmlt2));
-    typedef multiprecision::cpp_dec_float_100 bigFlt;
-    typedef multiprecision::int256_t bigInt;
-    bigInt sum(0);
     int nPo = Abc_NtkPoNum(pSmlt1->GetNetwork());
     int nFrame = pSmlt1->GetFrameNum();
-    if (isResub) {
-        assert(0);
+    typedef multiprecision::cpp_dec_float_100 bigFlt;
+    typedef multiprecision::int256_t bigInt;
+    bigFlt mse(0.0);
+    bigFlt oneDivNFrame = static_cast<bigFlt>(1.0) / static_cast<bigFlt>(nFrame);
+    for (int k = 0; k < nFrame; ++k) {
+        auto tmp = (pSmlt1->GetOutput(0, nPo - 1, k, 0) - pSmlt2->GetOutput(0, nPo - 1, k, 0));
+        auto halfVal = (bigInt(1) << (nPo - 1));
+        if (isSign && tmp >= halfVal)
+            tmp = -((halfVal << 1) - tmp);
+        mse += static_cast<bigFlt>(tmp) * static_cast<bigFlt>(tmp) * oneDivNFrame;
+        // cout << k << "\t" << tmp << "\t" << mse << endl;
     }
-    else {
-        for (int k = 0; k < nFrame; ++k) {
-            auto tmp = (pSmlt1->GetOutput(0, nPo - 1, k, 0) - pSmlt2->GetOutput(0, nPo - 1, k, 0));
-            sum += (tmp * tmp);
-        }
-    }
-    return static_cast <double> (static_cast <bigFlt>(sum) / static_cast <bigFlt>(nFrame));
+    return mse;
 }
 
 

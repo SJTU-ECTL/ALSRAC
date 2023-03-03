@@ -101,8 +101,9 @@ int main(int argc, char * argv[])
         DASSERT(Abc_NtkToAig(pNtk2));
         random_device rd;
         unsigned seed = static_cast <unsigned>(rd());
+        const bool isSign = true;
         // cout << "ER = " << MeasureER(pNtk1, pNtk2, nFrame, seed) << endl;
-        cout << "MSE = " << MeasureMSE(pNtk1, pNtk2, nFrame, seed) << endl;
+        cout << "MSE = " << MeasureMSE(pNtk1, pNtk2, nFrame, seed, isSign) << endl;
         // cout << "NMED = " << MeasureNMED(pNtk1, pNtk2, nFrame, seed) << endl;
         // cout << "MRED = " << MeasureMRED(pNtk1, pNtk2, nFrame, seed) << endl;
         Abc_NtkDelete(pNtk1);
