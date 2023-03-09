@@ -1,0 +1,625 @@
+# Benchmark "sign_mult_9x8" written by ABC on Thu Mar  9 20:33:22 2023
+.model sign_mult_9x8
+.inputs in[0] in[1] in[2] in[3] in[4] in[5] in[6] in[7] in[8] w[0] w[1] \
+ w[2] w[3] w[4] w[5] w[6] w[7]
+.outputs out[0] out[1] out[2] out[3] out[4] out[5] out[6] out[7] out[8] \
+ out[9] out[10] out[11] out[12] out[13] out[14] out[15] out[16]
+.names in[4] new_mult_13/n219_ new_mult_13/n222_
+10 1
+01 1
+.names in[3] new_mult_13/n219_ new_mult_13/n267_
+10 1
+01 1
+.names new_mult_13/n222_ new_mult_13/n220_ new_mult_13/n267_ \
+ new_mult_13/n223_ new_mult_13/n100_
+--00 1
+00-- 1
+.names in[2] new_mult_13/n219_ new_mult_13/n266_
+10 1
+01 1
+.names new_mult_13/n267_ new_mult_13/n220_ new_mult_13/n266_ \
+ new_mult_13/n223_ new_mult_13/n101_
+--00 1
+00-- 1
+.names in[1] new_mult_13/n219_ new_mult_13/n265_
+10 1
+01 1
+.names new_mult_13/n266_ new_mult_13/n220_ new_mult_13/n265_ \
+ new_mult_13/n223_ new_mult_13/n102_
+--00 1
+00-- 1
+.names new_mult_13/n265_ new_mult_13/n220_ in[0] new_mult_13/n223_ \
+ new_mult_13/n103_
+--00 1
+00-- 1
+.names in[7] new_mult_13/n216_ new_mult_13/n257_
+10 1
+01 1
+.names w[7] w[6] new_mult_13/n264_
+10 1
+01 1
+.names in[8] new_mult_13/n216_ new_mult_13/n258_
+10 1
+01 1
+.names new_mult_13/n257_ new_mult_13/n250_ new_mult_13/n248_ \
+ new_mult_13/n258_ new_mult_13/n16_
+--00 1
+00-- 1
+.names in[7] new_mult_13/n217_ new_mult_13/n246_
+10 1
+01 1
+.names w[5] w[4] new_mult_13/n263_
+10 1
+01 1
+.names in[8] new_mult_13/n217_ new_mult_13/n247_
+10 1
+01 1
+.names new_mult_13/n246_ new_mult_13/n239_ new_mult_13/n237_ \
+ new_mult_13/n247_ new_mult_13/n22_
+--00 1
+00-- 1
+.names in[7] new_mult_13/n218_ new_mult_13/n261_
+10 1
+01 1
+.names w[3] w[2] new_mult_13/n262_
+10 1
+01 1
+.names in[8] new_mult_13/n218_ new_mult_13/n236_
+10 1
+01 1
+.names new_mult_13/n261_ new_mult_13/n229_ new_mult_13/n227_ \
+ new_mult_13/n236_ new_mult_13/n32_
+--00 1
+00-- 1
+.names in[6] new_mult_13/n218_ new_mult_13/n235_
+10 1
+01 1
+.names new_mult_13/n235_ new_mult_13/n229_ new_mult_13/n227_ \
+ new_mult_13/n261_ new_mult_13/n260_
+--00 1
+00-- 1
+.names in[8] new_mult_13/n219_ new_mult_13/n226_
+10 1
+01 1
+.names new_mult_13/n223_ new_mult_13/n220_ new_mult_13/n226_ \
+ new_mult_13/n259_
+-00 1
+0-0 1
+.names new_mult_13/n260_ new_mult_13/n259_ new_mult_13/n38_
+01 0
+.names new_mult_13/n259_ new_mult_13/n260_ new_mult_13/n39_
+10 1
+01 1
+.names new_mult_13/n216_ in[0] new_mult_13/n248_ new_mult_13/n216_ \
+ new_mult_13/n250_ new_mult_13/n64_
+---00 1
+000-- 1
+.names new_mult_13/n217_ in[0] new_mult_13/n237_ new_mult_13/n217_ \
+ new_mult_13/n239_ new_mult_13/n65_
+---00 1
+000-- 1
+.names new_mult_13/n218_ in[0] new_mult_13/n227_ new_mult_13/n218_ \
+ new_mult_13/n229_ new_mult_13/n66_
+---00 1
+000-- 1
+.names in[0] new_mult_13/n219_ new_mult_13/n223_ new_mult_13/n67_
+--0 1
+00- 1
+.names new_mult_13/n250_ new_mult_13/n248_ new_mult_13/n258_ \
+ new_mult_13/n68_
+--1 1
+11- 1
+.names in[6] new_mult_13/n216_ new_mult_13/n256_
+10 1
+01 1
+.names new_mult_13/n256_ new_mult_13/n250_ new_mult_13/n248_ \
+ new_mult_13/n257_ new_mult_13/n69_
+--00 1
+00-- 1
+.names in[5] new_mult_13/n216_ new_mult_13/n255_
+10 1
+01 1
+.names new_mult_13/n255_ new_mult_13/n250_ new_mult_13/n248_ \
+ new_mult_13/n256_ new_mult_13/n70_
+--00 1
+00-- 1
+.names in[4] new_mult_13/n216_ new_mult_13/n254_
+10 1
+01 1
+.names new_mult_13/n254_ new_mult_13/n250_ new_mult_13/n248_ \
+ new_mult_13/n255_ new_mult_13/n71_
+--00 1
+00-- 1
+.names in[3] new_mult_13/n216_ new_mult_13/n253_
+10 1
+01 1
+.names new_mult_13/n253_ new_mult_13/n250_ new_mult_13/n248_ \
+ new_mult_13/n254_ new_mult_13/n72_
+--00 1
+00-- 1
+.names in[2] new_mult_13/n216_ new_mult_13/n252_
+10 1
+01 1
+.names new_mult_13/n252_ new_mult_13/n250_ new_mult_13/n248_ \
+ new_mult_13/n253_ new_mult_13/n73_
+--00 1
+00-- 1
+.names in[1] new_mult_13/n216_ new_mult_13/n251_
+10 1
+01 1
+.names new_mult_13/n251_ new_mult_13/n250_ new_mult_13/n248_ \
+ new_mult_13/n252_ new_mult_13/n74_
+--00 1
+00-- 1
+.names new_mult_13/n215_ w[7] new_mult_13/n249_
+10 1
+01 1
+.names new_mult_13/n249_ new_mult_13/n250_ new_mult_13/n248_ \
+ new_mult_13/n251_ new_mult_13/n75_
+--00 1
+00-- 1
+.names new_mult_13/n248_ new_mult_13/n215_ new_mult_13/n76_
+00 1
+.names new_mult_13/n239_ new_mult_13/n237_ new_mult_13/n247_ \
+ new_mult_13/n77_
+--1 1
+11- 1
+.names in[6] new_mult_13/n217_ new_mult_13/n245_
+10 1
+01 1
+.names new_mult_13/n245_ new_mult_13/n239_ new_mult_13/n237_ \
+ new_mult_13/n246_ new_mult_13/n78_
+--00 1
+00-- 1
+.names in[5] new_mult_13/n217_ new_mult_13/n244_
+10 1
+01 1
+.names new_mult_13/n244_ new_mult_13/n239_ new_mult_13/n237_ \
+ new_mult_13/n245_ new_mult_13/n79_
+--00 1
+00-- 1
+.names in[4] new_mult_13/n217_ new_mult_13/n243_
+10 1
+01 1
+.names new_mult_13/n243_ new_mult_13/n239_ new_mult_13/n237_ \
+ new_mult_13/n244_ new_mult_13/n80_
+--00 1
+00-- 1
+.names in[3] new_mult_13/n217_ new_mult_13/n242_
+10 1
+01 1
+.names new_mult_13/n242_ new_mult_13/n239_ new_mult_13/n237_ \
+ new_mult_13/n243_ new_mult_13/n81_
+--00 1
+00-- 1
+.names in[2] new_mult_13/n217_ new_mult_13/n241_
+10 1
+01 1
+.names new_mult_13/n241_ new_mult_13/n239_ new_mult_13/n237_ \
+ new_mult_13/n242_ new_mult_13/n82_
+--00 1
+00-- 1
+.names in[1] new_mult_13/n217_ new_mult_13/n240_
+10 1
+01 1
+.names new_mult_13/n240_ new_mult_13/n239_ new_mult_13/n237_ \
+ new_mult_13/n241_ new_mult_13/n83_
+--00 1
+00-- 1
+.names new_mult_13/n215_ w[5] new_mult_13/n238_
+10 1
+01 1
+.names new_mult_13/n238_ new_mult_13/n239_ new_mult_13/n237_ \
+ new_mult_13/n240_ new_mult_13/n84_
+--00 1
+00-- 1
+.names new_mult_13/n237_ new_mult_13/n215_ new_mult_13/n85_
+00 1
+.names new_mult_13/n229_ new_mult_13/n227_ new_mult_13/n236_ \
+ new_mult_13/n86_
+--1 1
+11- 1
+.names in[5] new_mult_13/n218_ new_mult_13/n234_
+10 1
+01 1
+.names new_mult_13/n234_ new_mult_13/n229_ new_mult_13/n227_ \
+ new_mult_13/n235_ new_mult_13/n88_
+--00 1
+00-- 1
+.names in[4] new_mult_13/n218_ new_mult_13/n233_
+10 1
+01 1
+.names new_mult_13/n233_ new_mult_13/n229_ new_mult_13/n227_ \
+ new_mult_13/n234_ new_mult_13/n89_
+--00 1
+00-- 1
+.names in[3] new_mult_13/n218_ new_mult_13/n232_
+10 1
+01 1
+.names new_mult_13/n232_ new_mult_13/n229_ new_mult_13/n227_ \
+ new_mult_13/n233_ new_mult_13/n90_
+--00 1
+00-- 1
+.names in[2] new_mult_13/n218_ new_mult_13/n231_
+10 1
+01 1
+.names new_mult_13/n231_ new_mult_13/n229_ new_mult_13/n227_ \
+ new_mult_13/n232_ new_mult_13/n91_
+--00 1
+00-- 1
+.names in[1] new_mult_13/n218_ new_mult_13/n230_
+10 1
+01 1
+.names new_mult_13/n230_ new_mult_13/n229_ new_mult_13/n227_ \
+ new_mult_13/n231_ new_mult_13/n92_
+--00 1
+00-- 1
+.names new_mult_13/n215_ w[3] new_mult_13/n228_
+10 1
+01 1
+.names new_mult_13/n228_ new_mult_13/n229_ new_mult_13/n227_ \
+ new_mult_13/n230_ new_mult_13/n93_
+--00 1
+00-- 1
+.names new_mult_13/n227_ new_mult_13/n215_ new_mult_13/n94_
+00 1
+.names in[7] new_mult_13/n219_ new_mult_13/n225_
+10 1
+01 1
+.names new_mult_13/n226_ new_mult_13/n220_ new_mult_13/n225_ \
+ new_mult_13/n223_ new_mult_13/n96_
+--00 1
+00-- 1
+.names in[6] new_mult_13/n219_ new_mult_13/n224_
+10 1
+01 1
+.names new_mult_13/n225_ new_mult_13/n220_ new_mult_13/n224_ \
+ new_mult_13/n223_ new_mult_13/n97_
+--00 1
+00-- 1
+.names in[5] new_mult_13/n219_ new_mult_13/n221_
+10 1
+01 1
+.names new_mult_13/n224_ new_mult_13/n220_ new_mult_13/n221_ \
+ new_mult_13/n223_ new_mult_13/n98_
+--00 1
+00-- 1
+.names new_mult_13/n221_ new_mult_13/n220_ new_mult_13/n222_ \
+ new_mult_13/n223_ new_mult_13/n99_
+--00 1
+00-- 1
+.names new_mult_13/n215_ new_mult_13/n220_ out[0]
+00 1
+.names w[7] new_mult_13/n216_
+0 1
+.names w[0] new_mult_13/n220_
+0 1
+.names w[1] new_mult_13/n219_
+0 1
+.names w[5] new_mult_13/n217_
+0 1
+.names w[3] new_mult_13/n218_
+0 1
+.names in[0] new_mult_13/n215_
+0 1
+.names w[1] new_mult_13/n220_ new_mult_13/n223_
+11 0
+.names w[2] new_mult_13/n219_ new_mult_13/n227_
+10 1
+01 1
+.names w[4] new_mult_13/n218_ new_mult_13/n237_
+10 1
+01 1
+.names w[6] new_mult_13/n217_ new_mult_13/n248_
+10 1
+01 1
+.names new_mult_13/n248_ new_mult_13/n264_ new_mult_13/n250_
+11 0
+.names new_mult_13/n237_ new_mult_13/n263_ new_mult_13/n239_
+11 0
+.names new_mult_13/n227_ new_mult_13/n262_ new_mult_13/n229_
+11 0
+.names new_mult_13/n22_ new_mult_13/n213_
+0 1
+.names new_mult_13/n1_ out[16]
+0 1
+.names new_mult_13/n16_ new_mult_13/n214_
+0 1
+.names new_mult_13/n32_ new_mult_13/n212_
+0 1
+.names new_mult_13/n101_ new_mult_13/n93_ new_mult_13/n62_
+11 1
+.names new_mult_13/n101_ new_mult_13/n93_ new_mult_13/n63_
+10 1
+01 1
+.names new_mult_13/n85_ new_mult_13/n100_ new_mult_13/n92_ new_mult_13/n60_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n85_ new_mult_13/n100_ new_mult_13/n92_ new_mult_13/n61_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n99_ new_mult_13/n91_ new_mult_13/n58_
+11 1
+.names new_mult_13/n99_ new_mult_13/n91_ new_mult_13/n59_
+10 1
+01 1
+.names new_mult_13/n84_ new_mult_13/n65_ new_mult_13/n59_ new_mult_13/n56_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n84_ new_mult_13/n65_ new_mult_13/n59_ new_mult_13/n57_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n76_ new_mult_13/n98_ new_mult_13/n83_ new_mult_13/n54_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n76_ new_mult_13/n98_ new_mult_13/n83_ new_mult_13/n55_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n90_ new_mult_13/n58_ new_mult_13/n55_ new_mult_13/n52_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n90_ new_mult_13/n58_ new_mult_13/n55_ new_mult_13/n53_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n97_ new_mult_13/n75_ new_mult_13/n50_
+11 1
+.names new_mult_13/n97_ new_mult_13/n75_ new_mult_13/n51_
+10 1
+01 1
+.names new_mult_13/n89_ new_mult_13/n64_ new_mult_13/n82_ new_mult_13/n48_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n89_ new_mult_13/n64_ new_mult_13/n82_ new_mult_13/n49_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n51_ new_mult_13/n54_ new_mult_13/n49_ new_mult_13/n46_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n51_ new_mult_13/n54_ new_mult_13/n49_ new_mult_13/n47_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n96_ new_mult_13/n88_ new_mult_13/n44_
+11 1
+.names new_mult_13/n96_ new_mult_13/n88_ new_mult_13/n45_
+10 1
+01 1
+.names new_mult_13/n81_ new_mult_13/n74_ new_mult_13/n50_ new_mult_13/n42_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n81_ new_mult_13/n74_ new_mult_13/n50_ new_mult_13/n43_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n45_ new_mult_13/n48_ new_mult_13/n43_ new_mult_13/n40_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n45_ new_mult_13/n48_ new_mult_13/n43_ new_mult_13/n41_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n80_ new_mult_13/n73_ new_mult_13/n44_ new_mult_13/n36_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n80_ new_mult_13/n73_ new_mult_13/n44_ new_mult_13/n37_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n42_ new_mult_13/n39_ new_mult_13/n37_ new_mult_13/n34_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n42_ new_mult_13/n39_ new_mult_13/n37_ new_mult_13/n35_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n79_ new_mult_13/n72_ new_mult_13/n38_ new_mult_13/n30_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n79_ new_mult_13/n72_ new_mult_13/n38_ new_mult_13/n31_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n212_ new_mult_13/n36_ new_mult_13/n31_ new_mult_13/n28_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n212_ new_mult_13/n36_ new_mult_13/n31_ new_mult_13/n29_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n86_ new_mult_13/n78_ new_mult_13/n32_ new_mult_13/n26_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n86_ new_mult_13/n78_ new_mult_13/n32_ new_mult_13/n27_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n71_ new_mult_13/n30_ new_mult_13/n27_ new_mult_13/n24_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n71_ new_mult_13/n30_ new_mult_13/n27_ new_mult_13/n25_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n70_ new_mult_13/n213_ new_mult_13/n26_ new_mult_13/n20_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n70_ new_mult_13/n213_ new_mult_13/n26_ new_mult_13/n21_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n77_ new_mult_13/n69_ new_mult_13/n22_ new_mult_13/n18_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n77_ new_mult_13/n69_ new_mult_13/n22_ new_mult_13/n19_
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n67_ new_mult_13/n103_ new_mult_13/n15_
+11 1
+.names new_mult_13/n67_ new_mult_13/n103_ out[1]
+10 1
+01 1
+.names new_mult_13/n94_ new_mult_13/n102_ new_mult_13/n15_ new_mult_13/n14_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n94_ new_mult_13/n102_ new_mult_13/n15_ out[2]
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n66_ new_mult_13/n63_ new_mult_13/n14_ new_mult_13/n13_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n66_ new_mult_13/n63_ new_mult_13/n14_ out[3]
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n62_ new_mult_13/n61_ new_mult_13/n13_ new_mult_13/n12_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n62_ new_mult_13/n61_ new_mult_13/n13_ out[4]
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n60_ new_mult_13/n57_ new_mult_13/n12_ new_mult_13/n11_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n60_ new_mult_13/n57_ new_mult_13/n12_ out[5]
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n56_ new_mult_13/n53_ new_mult_13/n11_ new_mult_13/n10_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n56_ new_mult_13/n53_ new_mult_13/n11_ out[6]
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n52_ new_mult_13/n47_ new_mult_13/n10_ new_mult_13/n9_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n52_ new_mult_13/n47_ new_mult_13/n10_ out[7]
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n46_ new_mult_13/n41_ new_mult_13/n9_ new_mult_13/n8_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n46_ new_mult_13/n41_ new_mult_13/n9_ out[8]
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n40_ new_mult_13/n35_ new_mult_13/n8_ new_mult_13/n7_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n40_ new_mult_13/n35_ new_mult_13/n8_ out[9]
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n34_ new_mult_13/n29_ new_mult_13/n7_ new_mult_13/n6_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n34_ new_mult_13/n29_ new_mult_13/n7_ out[10]
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n28_ new_mult_13/n25_ new_mult_13/n6_ new_mult_13/n5_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n28_ new_mult_13/n25_ new_mult_13/n6_ out[11]
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n21_ new_mult_13/n24_ new_mult_13/n5_ new_mult_13/n4_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n21_ new_mult_13/n24_ new_mult_13/n5_ out[12]
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n19_ new_mult_13/n20_ new_mult_13/n4_ new_mult_13/n3_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n19_ new_mult_13/n20_ new_mult_13/n4_ out[13]
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n214_ new_mult_13/n18_ new_mult_13/n3_ new_mult_13/n2_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n214_ new_mult_13/n18_ new_mult_13/n3_ out[14]
+100 1
+010 1
+111 1
+001 1
+.names new_mult_13/n68_ new_mult_13/n16_ new_mult_13/n2_ new_mult_13/n1_
+1-1 1
+-11 1
+11- 1
+.names new_mult_13/n68_ new_mult_13/n16_ new_mult_13/n2_ out[15]
+100 1
+010 1
+111 1
+001 1
+.end

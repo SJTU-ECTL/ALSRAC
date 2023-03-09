@@ -265,6 +265,76 @@ void Simulator_Pro_t::Input(string fileName)
 }
 
 
+void Simulator_Pro_t::InputEnum()
+{
+    assert(Abc_NtkPiNum(pNtk) < 20);
+    assert(1 << Abc_NtkPiNum(pNtk) == nFrame);
+    // primary inputs
+    Abc_Obj_t * pObj = nullptr;
+    int k = 0;
+    Abc_NtkForEachPi(pNtk, pObj, k) {
+        bool phase = 1;
+        for (int iFrame = 0; iFrame < nFrame; ++iFrame) {
+            int blockId = iFrame >> 6;
+            int bitId = iFrame % 64;
+            if (iFrame % (1 << k) == 0)
+                phase = !phase;
+            if (phase) {
+                Ckt_SetBit(values[pObj->Id][blockId], bitId);
+                Ckt_SetBit(tmpValues[pObj->Id][blockId], bitId);
+            }
+            else {
+                Ckt_ResetBit(values[pObj->Id][blockId], bitId);
+                Ckt_SetBit(tmpValues[pObj->Id][blockId], bitId);
+            }
+        }
+    }
+
+    // constant nodes
+    if (Abc_NtkIsAigLogic(pNtk)) {
+        Abc_NtkForEachNode(pNtk, pObj, k) {
+            Hop_Obj_t * pHopObj = static_cast <Hop_Obj_t *> (pObj->pData);
+            Hop_Obj_t * pHopObjR = Hop_Regular(pHopObj);
+            if (Hop_ObjIsConst1(pHopObjR)) {
+                DASSERT(Hop_ObjFanin0(pHopObjR) == nullptr);
+                DASSERT(Hop_ObjFanin1(pHopObjR) == nullptr);
+                if (!Hop_IsComplement(pHopObj)) {
+                    for (int i = 0; i < nBlock; ++i) {
+                        values[pObj->Id][i] = static_cast <uint64_t> (ULLONG_MAX);
+                        tmpValues[pObj->Id][i] = static_cast <uint64_t> (ULLONG_MAX);
+                    }
+                }
+                else {
+                    for (int i = 0; i < nBlock; ++i) {
+                        values[pObj->Id][i] = 0;
+                        tmpValues[pObj->Id][i] = 0;
+                    }
+                }
+            }
+        }
+    }
+    else if (Abc_NtkIsSopLogic(pNtk)) {
+        Abc_NtkForEachNode(pNtk, pObj, k) {
+            if (Abc_NodeIsConst1(pObj)) {
+                for (int i = 0; i < nBlock; ++i) {
+                    values[pObj->Id][i] = static_cast <uint64_t> (ULLONG_MAX);
+                    tmpValues[pObj->Id][i] = static_cast <uint64_t> (ULLONG_MAX);
+                }
+            }
+            else if (Abc_NodeIsConst0(pObj)) {
+                for (int i = 0; i < nBlock; ++i) {
+                    values[pObj->Id][i] = 0;
+                    tmpValues[pObj->Id][i] = 0;
+                }
+            }
+        }
+    }
+    else {
+        DASSERT(0, "network must be in aig or sop logic");
+    }
+}
+
+
 void Simulator_Pro_t::Simulate()
 {
     Abc_Obj_t * pObj = nullptr;
@@ -1303,17 +1373,23 @@ void Simulator_Pro_t::UpdateBoolDiff(IN Vec_Ptr_t * vNodes, INOUT vector <tVec> 
 }
 
 
-multiprecision::cpp_dec_float_100 MeasureMSE(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isSign)
+multiprecision::cpp_dec_float_100 MeasureMSE(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isSign, bool useEnum)
 {
     // check PI/PO
     DASSERT(IOChecker(pNtk1, pNtk2));
 
     // simulation
     Simulator_Pro_t smlt1(pNtk1, nFrame);
-    smlt1.Input(seed);
+    if (useEnum)
+        smlt1.InputEnum();
+    else
+        smlt1.Input(seed);
     smlt1.Simulate();
     Simulator_Pro_t smlt2(pNtk2, nFrame);
-    smlt2.Input(seed);
+    if (useEnum)
+        smlt2.InputEnum();
+    else
+        smlt2.Input(seed);
     smlt2.Simulate();
 
     // compute

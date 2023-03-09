@@ -72,6 +72,7 @@ public:
     ~Simulator_Pro_t();
     void Input(unsigned seed = 314);
     void Input(std::string fileName);
+    void InputEnum();
     void Simulate();
     void SimulateCutNtks();
     void SimulateResub(Abc_Obj_t * pOldObj, void * pResubFunc, Vec_Ptr_t * vResubFanins);
@@ -110,7 +111,7 @@ public:
 };
 
 
-boost::multiprecision::cpp_dec_float_100 MeasureMSE(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame = 102400, unsigned seed = 314, bool isSign = false);
+boost::multiprecision::cpp_dec_float_100 MeasureMSE(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame = 102400, unsigned seed = 314, bool isSign = false, bool useEnum = false);
 boost::multiprecision::cpp_dec_float_100 GetMSE(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isSign = false);
 double MeasureNMED(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame = 102400, unsigned seed = 314, bool isCheck = true);
 double MeasureMRED(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck = true);

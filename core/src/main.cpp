@@ -22,6 +22,8 @@ parser Cmdline_Parser(int argc, char * argv[])
     option.add <int> ("mapType", 't', "Mapping Type, 0 = mcnc, 1 = lut", false, 0, range(0, 1));
     option.add <int> ("nFrame", 'f', "Initial Simulation Round", false, 64, range(1, INT_MAX));
     option.add <int> ("nCut", 'c', "Initial Cut Size", false, 30, range(1, INT_MAX));
+    option.add <int> ("isSign", '\0', "Whether the outputs represent a signed number or unsigned number (ONLY FOR MEASURE MODE): 0, unsigned number; 1, signed number", false, 0, range(0, 1));
+    option.add <int> ("useEnum", '\0', "Whether enumerating all input patterns or not (ONLY FOR MEASURE MODE)", false, 0, range(0, 1));
     option.add <double> ("errorBound", 'b', "Error constraint upper bound", false, 0.002, range(0.0, 1.0));
     option.parse_check(argc, argv);
     return option;
@@ -40,6 +42,8 @@ int main(int argc, char * argv[])
     int mapType = option.get <int> ("mapType");
     int nFrame = option.get <int> ("nFrame");
     int nCut = option.get <int> ("nCut");
+    int isSign = option.get <int> ("isSign");
+    int useEnum = option.get <int> ("useEnum");
     double errorBound = option.get <double> ("errorBound");
 
     // create output path
@@ -99,11 +103,18 @@ int main(int argc, char * argv[])
             cout << "depth = " << Abc_NtkLevel(pNtk2) << endl;
         }
         DASSERT(Abc_NtkToAig(pNtk2));
+
+        if (useEnum) {
+            assert(IOChecker(pNtk1, pNtk2));
+            assert(Abc_NtkPiNum(pNtk1) < 20);
+            nFrame = 1 << Abc_NtkPiNum(pNtk1);
+            cout << "nFrame for enumeration = " << nFrame << endl;
+        }
+
         random_device rd;
         unsigned seed = static_cast <unsigned>(rd());
-        const bool isSign = true;
         // cout << "ER = " << MeasureER(pNtk1, pNtk2, nFrame, seed) << endl;
-        cout << "MSE = " << MeasureMSE(pNtk1, pNtk2, nFrame, seed, isSign) << endl;
+        cout << "MSE = " << MeasureMSE(pNtk1, pNtk2, nFrame, seed, isSign, useEnum) << endl;
         // cout << "NMED = " << MeasureNMED(pNtk1, pNtk2, nFrame, seed) << endl;
         // cout << "MRED = " << MeasureMRED(pNtk1, pNtk2, nFrame, seed) << endl;
         Abc_NtkDelete(pNtk1);
