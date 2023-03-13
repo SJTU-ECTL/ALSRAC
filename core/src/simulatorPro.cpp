@@ -1403,17 +1403,19 @@ multiprecision::cpp_dec_float_100 GetMSE(Simulator_Pro_t * pSmlt1, Simulator_Pro
     int nFrame = pSmlt1->GetFrameNum();
     typedef multiprecision::cpp_dec_float_100 bigFlt;
     typedef multiprecision::int256_t bigInt;
-    bigFlt mse(0.0);
-    bigFlt oneDivNFrame = static_cast<bigFlt>(1.0) / static_cast<bigFlt>(nFrame);
+    bigInt sse(0);
     for (int k = 0; k < nFrame; ++k) {
-        auto tmp = (pSmlt1->GetOutput(0, nPo - 1, k, 0) - pSmlt2->GetOutput(0, nPo - 1, k, 0));
         auto halfVal = (bigInt(1) << (nPo - 1));
-        if (isSign && tmp >= halfVal)
-            tmp = -((halfVal << 1) - tmp);
-        mse += static_cast<bigFlt>(tmp) * static_cast<bigFlt>(tmp) * oneDivNFrame;
-        // cout << k << "\t" << tmp << "\t" << mse << endl;
+        auto out1 = pSmlt1->GetOutput(0, nPo - 1, k, 0);
+        if (isSign && out1 >= halfVal)
+            out1 = -((halfVal << 1) - out1);
+        auto out2 = pSmlt2->GetOutput(0, nPo - 1, k, 0);
+        if (isSign && out2 >= halfVal)
+            out2 = -((halfVal << 1) - out2);
+        sse += (out1 - out2) * (out1 - out2);
+        // cout << k << "\t" << (out1 - out2) << "\t" << sse << endl;
     }
-    return mse;
+    return static_cast<bigFlt>(sse) / static_cast<bigFlt>(nFrame);
 }
 
 
