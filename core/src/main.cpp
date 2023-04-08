@@ -88,7 +88,8 @@ int main(int argc, char * argv[])
     }
     else if (select == "measure") {
         command.str("");
-        command << "read_blif " << input << ";aig;";
+        // command << "read_blif " << input << ";aig;";
+        command << "read_blif " << input << ";";
         DASSERT(!Cmd_CommandExecute(pAbc, command.str().c_str()));
         Abc_Ntk_t * pNtk1 = Abc_NtkDup(Abc_FrameReadNtk(pAbc));
         command << "read_blif " << approx;
@@ -102,7 +103,7 @@ int main(int argc, char * argv[])
             cout << "size = " << Abc_NtkNodeNum(pNtk2) << endl;
             cout << "depth = " << Abc_NtkLevel(pNtk2) << endl;
         }
-        DASSERT(Abc_NtkToAig(pNtk2));
+        // DASSERT(Abc_NtkToAig(pNtk2));
 
         if (useEnum) {
             assert(IOChecker(pNtk1, pNtk2));
