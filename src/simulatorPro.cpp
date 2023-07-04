@@ -1303,7 +1303,7 @@ void Simulator_Pro_t::UpdateBoolDiff(IN Vec_Ptr_t * vNodes, INOUT vector <tVec> 
 }
 
 
-double MeasureAEMR(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
+double MeasureNMED(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
 {
     // check PI/PO
     if (isCheck)
@@ -1318,11 +1318,11 @@ double MeasureAEMR(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned se
     smlt2.Simulate();
 
     // compute
-    return GetAEMR(&smlt1, &smlt2, false, false);
+    return GetNMED(&smlt1, &smlt2, false, false);
 }
 
 
-double MeasureRAEM(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
+double MeasureMRED(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned seed, bool isCheck)
 {
     // check PI/PO
     if (isCheck)
@@ -1351,16 +1351,16 @@ double MeasureRAEM(Abc_Ntk_t * pNtk1, Abc_Ntk_t * pNtk2, int nFrame, unsigned se
 }
 
 
-double MeasureResubAEMR(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, Abc_Obj_t * pOldObj, void * pResubFunc, Vec_Ptr_t * vResubFanins, bool isCheck)
+double MeasureResubNMED(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, Abc_Obj_t * pOldObj, void * pResubFunc, Vec_Ptr_t * vResubFanins, bool isCheck)
 {
     if (isCheck)
         DASSERT(SmltChecker(pSmlt1, pSmlt2));
     pSmlt2->SimulateResub(pOldObj, pResubFunc, vResubFanins);
-    return GetAEMR(pSmlt1, pSmlt2, false, true);
+    return GetNMED(pSmlt1, pSmlt2, false, true);
 }
 
 
-double GetAEMR(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck, bool isResub)
+double GetNMED(Simulator_Pro_t * pSmlt1, Simulator_Pro_t * pSmlt2, bool isCheck, bool isResub)
 {
     if (isCheck)
         DASSERT(SmltChecker(pSmlt1, pSmlt2));
@@ -1421,7 +1421,7 @@ void GetOffset(IN Simulator_Pro_t * pOriSmlt, IN Simulator_Pro_t * pAppSmlt, IN 
 }
 
 
-double GetAEMRFromOffset(IN vector < vector <int8_t> > & offsets)
+double GetNMEDFromOffset(IN vector < vector <int8_t> > & offsets)
 {
     int nPo = offsets.size();
     DASSERT(nPo);

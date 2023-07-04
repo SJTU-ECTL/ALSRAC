@@ -5,7 +5,7 @@ using namespace std;
 using namespace boost;
 
 
-Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metricBound, Metric_t metricType, int mapType, string outPath)
+Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, double metricBound, Metric_t metricType, int mapType, string outPath)
 {
     DASSERT(nFrame > 0);
     DASSERT(pNtk != nullptr);
@@ -25,9 +25,8 @@ Dcals_Man_t::Dcals_Man_t(Abc_Ntk_t * pNtk, int nFrame, int cutSize, double metri
     this->mapType = mapType;
     this->roundId = 0;
     this->nFrame = nFrame;
-    this->cutSize = cutSize;
     this->nEvalFrame = 102400;
-    if (metricType == Metric_t::RAEM)
+    if (metricType == Metric_t::MRED)
         this->nEstiFrame = 1024;
     else
         this->nEstiFrame = 102400;
@@ -134,10 +133,10 @@ void Dcals_Man_t::LocalAppChange()
         // update and check error
         if (metricType == Metric_t::ER)
             realEr = MeasureER(pOriNtk, pAppNtk, nEvalFrame, seed, true);
-        else if (metricType == Metric_t::AEMR)
-            realEr = MeasureAEMR(pOriNtk, pAppNtk, nEvalFrame, seed, true);
-        else if (metricType == Metric_t::RAEM)
-            realEr = MeasureRAEM(pOriNtk, pAppNtk, nEvalFrame, seed, true);
+        else if (metricType == Metric_t::NMED)
+            realEr = MeasureNMED(pOriNtk, pAppNtk, nEvalFrame, seed, true);
+        else if (metricType == Metric_t::MRED)
+            realEr = MeasureMRED(pOriNtk, pAppNtk, nEvalFrame, seed, true);
         else
             DASSERT(0);
         cout << "estimated error = " << bestCand.GetError() << endl;
@@ -181,7 +180,7 @@ void Dcals_Man_t::LocalAppChange()
     delete pOriSmlt;
     delete pAppSmlt;
 
-    if (metricType == Metric_t::RAEM) {
+    if (metricType == Metric_t::MRED) {
         // evaluate the current approximate circuit
         Abc_NtkSweep(pAppNtk, 0);
         int size = Abc_NtkNodeNum(pAppNtk);
@@ -218,137 +217,6 @@ void Dcals_Man_t::LocalAppChange()
 }
 
 
-Hop_Obj_t * Dcals_Man_t::LocalAppChangeNode(Mfs_Man_t * p, Abc_Obj_t * pNode)
-{
-    // prepare data structure for this node
-    Mfs_ManClean(p);
-    // compute window roots, window support, and window nodes
-    p->vRoots = Abc_MfsComputeRoots(pNode, p->pPars->nWinTfoLevs, p->pPars->nFanoutsMax);
-    p->vSupp  = Abc_NtkNodeSupport(p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots));
-    p->vNodes = Abc_NtkDfsNodes(p->pNtk, (Abc_Obj_t **)Vec_PtrArray(p->vRoots), Vec_PtrSize(p->vRoots));
-    if (p->pPars->nWinMax && Vec_PtrSize(p->vNodes) > p->pPars->nWinMax) {
-        // cout << "Warning: window size reaches to the limitation" << endl;
-        return nullptr;
-    }
-    // compute the divisors of the window
-    p->vDivs  = Abc_MfsComputeDivisors(p, pNode, Abc_ObjRequiredLevel(pNode) - 1);
-    p->nTotalDivs += Vec_PtrSize(p->vDivs) - Abc_ObjFaninNum(pNode);
-    // construct AIG for the window
-    p->pAigWin = ConstructAppAig(p, pNode);
-    // translate it into CNF
-    p->pCnf = Cnf_DeriveSimple(p->pAigWin, 1 + Vec_PtrSize(p->vDivs));
-    // create the SAT problem
-    p->pSat = Abc_MfsCreateSolverResub(p, nullptr, 0, 0);
-    if (p->pSat == nullptr)
-        return nullptr;
-    // solve the SAT problem
-    return Ckt_NtkMfsResubNode(p, pNode);
-}
-
-
-Aig_Man_t * Dcals_Man_t::ConstructAppAig(Mfs_Man_t * p, Abc_Obj_t * pNode)
-{
-    // find local pi
-    Vec_Ptr_t * vCut = Ckt_FindCut(pNode, cutSize);
-    // uniform distribution
-    random::uniform_int_distribution <int> unf(0, nEstiFrame - 1);
-    random::mt19937 engine(seed);
-    variate_generator <random::mt19937, random::uniform_int_distribution <int> > genId(engine, unf);
-    // generate approximate care set
-    set <string> patterns;
-    for (int i = 0; i < nFrame; ++i) {
-        int frameId = genId();
-        int blockId = frameId >> 6;
-        int bitId = frameId % 64;
-        string pattern = "";
-        Abc_Obj_t * pObj = nullptr;
-        int k = 0;
-        Vec_PtrForEachEntry(Abc_Obj_t *, vCut, pObj, k)
-            pattern += pAppSmlt->GetValue(pObj, blockId, bitId) ? '1': '0';
-        patterns.insert(pattern);
-    }
-    // start the new manager
-    Aig_Man_t * pMan = Aig_ManStart( 1000 );
-    // construct the root node's AIG cone
-    Aig_Obj_t * pObjAig = Abc_NtkConstructAig_rec( p, pNode, pMan );
-    Aig_ObjCreateCo( pMan, pObjAig );
-    // add approximate care set
-    DASSERT(!patterns.empty());
-    Aig_Obj_t * pRoot = Aig_ManConst0(pMan);
-    for (auto pattern: patterns) {
-        Aig_Obj_t * pDC = Aig_ManConst1(pMan);
-        int k = 0;
-        Abc_Obj_t * pObj = nullptr;
-        Vec_PtrForEachEntry(Abc_Obj_t *, vCut, pObj, k) {
-            if (pattern[k] == '1')
-                pDC = Aig_And(pMan, pDC, (Aig_Obj_t *)pObj->pCopy);
-            else
-                pDC = Aig_And(pMan, pDC, Aig_Not((Aig_Obj_t *)pObj->pCopy));
-        }
-        pRoot = Aig_Or(pMan, pRoot, pDC);
-    }
-    Aig_ObjCreateCo(pMan, pRoot);
-    // construct the node
-    pObjAig = (Aig_Obj_t *)pNode->pCopy;
-    Aig_ObjCreateCo( pMan, pObjAig );
-    // construct the divisors
-    Abc_Obj_t * pFanin = nullptr;
-    int i = 0;
-    Vec_PtrForEachEntry(Abc_Obj_t *, p->vDivs, pFanin, i)
-    {
-        pObjAig = (Aig_Obj_t *)pFanin->pCopy;
-        Aig_ObjCreateCo(pMan, pObjAig);
-    }
-    // clean up
-    Vec_PtrFree(vCut);
-    Aig_ManCleanup(pMan);
-    return pMan;
-}
-
-
-void Dcals_Man_t::GenCand(IN bool genConst, INOUT vector <Lac_Cand_t> & cands)
-{
-    DASSERT(cands.empty());
-
-    // compute level
-    Abc_NtkLevel(pAppNtk);
-    Abc_NtkStartReverseLevels(pAppNtk, pPars->nGrowthLevel);
-
-    // start mfs manager
-    Mfs_Man_t * pMfsMan = Mfs_ManAlloc(pPars);
-    DASSERT(pMfsMan->pCare == nullptr);
-    pMfsMan->pNtk = pAppNtk;
-
-    // collect candidates
-    int i = 0;
-    Abc_Obj_t * pObj = nullptr;
-    Hop_Obj_t * pFunc = nullptr;
-    Hop_Man_t * pHopMan = static_cast <Hop_Man_t *> (pAppNtk->pManFunc);
-    Abc_NtkForEachNode(pAppNtk, pObj, i) {
-        // skip constant nodes
-        if (Abc_NodeIsConst(pObj))
-            continue;
-        // interpolation
-        pFunc = LocalAppChangeNode(pMfsMan, pObj);
-        if (pFunc != nullptr)
-            cands.emplace_back(pObj, pFunc, pMfsMan->vMfsFanins);
-        if (genConst) {
-            // const 0
-            Vec_PtrClear(pMfsMan->vMfsFanins);
-            pFunc = Hop_ManConst0(pHopMan);
-            cands.emplace_back(pObj, pFunc, pMfsMan->vMfsFanins);
-            // const 1
-            pFunc = Hop_ManConst1(pHopMan);
-            cands.emplace_back(pObj, pFunc, pMfsMan->vMfsFanins);
-        }
-    }
-
-    // clean up
-    Abc_NtkStopReverseLevels(pAppNtk);
-    Mfs_ManStop(pMfsMan);
-}
-
-
 void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
 {
     cands.clear();
@@ -356,8 +224,9 @@ void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
     Abc_NtkStartReverseLevels(pAppNtk, pPars->nGrowthLevel);
     Abc_Obj_t * pPivot = nullptr;
     int ii = 0;
-    const int nCandLimit = 1;
-    if (metricType == Metric_t::ER || metricType == Metric_t::AEMR) {
+    // const int nCandLimit = 1;
+    const int nCandLimit = 5;
+    if (metricType == Metric_t::ER || metricType == Metric_t::NMED) {
         Abc_NtkForEachNode(pAppNtk, pPivot, ii) {
             // skip nodes with less than one inputs
             if (Abc_ObjFaninNum(pPivot) < 1)
@@ -410,7 +279,7 @@ void Dcals_Man_t::GenCand(INOUT vector <Lac_Cand_t> & cands)
             Vec_PtrFree(vDivs);
         }
     }
-    if (metricType == Metric_t::AEMR || metricType == Metric_t::RAEM) {
+    if (metricType == Metric_t::NMED || metricType == Metric_t::MRED) {
         Abc_NtkForEachNode(pAppNtk, pPivot, ii) {
             // skip nodes with less than one inputs
             if (Abc_ObjFaninNum(pPivot) < 1)
@@ -685,7 +554,7 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
         }
         // cout << "evaluate candidate time = " << clock() - st << endl;
     }
-    else if (metricType == Metric_t::AEMR || metricType == Metric_t::RAEM) {
+    else if (metricType == Metric_t::NMED || metricType == Metric_t::MRED) {
         vector < vector <tVec> > bds(nPo);
         for (auto & bdPo: bds) {
             bdPo.resize(pAppSmlt->GetMaxId() + 1);
@@ -731,7 +600,7 @@ void Dcals_Man_t::BatchErrorEst(IN vector <Lac_Cand_t> & cands, OUT Lac_Cand_t &
                     ++frameId;
                 }
             }
-            double er = GetAEMRFromOffset(offsetsTmp);
+            double er = GetNMEDFromOffset(offsetsTmp);
             bestCand.UpdateBest(er, cand.GetObj(), cand.GetFunc(), cand.GetFanins());
         }
     }
