@@ -21,7 +21,7 @@ Additionally, you can use the docker image at https://hub.docker.com/r/changmeng
 ### Clone & Build ABC
 Clone `ABC` into `abc/`.
 ```
-git clone git@github.com:dbzxysmc/abc.git
+git clone git@github.com:changmg/abc.git
 ```
 
 Build a static library `libabc.a`.
@@ -34,7 +34,7 @@ cd ..
 ### Clone & Build ESPRESSO
 Clone `ESPRESSO` into `espresso/`.
 ```
-git clone git@github.com:dbzxysmc/espresso.git
+git clone git@github.com:changmg/espresso.git
 ```
 
 Build a static library `libespresso.a`.
