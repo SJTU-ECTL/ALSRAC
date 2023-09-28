@@ -65,15 +65,15 @@ int main(int argc, char * argv[])
             pos1 = -1;
         Ckt_NtkRename(pNtk, input.substr(pos1 + 1, pos0 - pos1 - 1).c_str());
 
-        if (metricType == "ER") {
+        if (metricType == "ER" || metricType == "er") {
             Dcals_Man_t alsEng(pNtk, nFrame, errorBound, Metric_t::ER, mapType, output);
             alsEng.DCALS();
         }
-        else if (metricType == "NMED") {
+        else if (metricType == "NMED" || metricType == "nmed") {
             Dcals_Man_t alsEng(pNtk, nFrame, errorBound, Metric_t::NMED, mapType, output);
             alsEng.DCALS();
         }
-        else if (metricType == "MRED") {
+        else if (metricType == "MRED" || metricType == "mred") {
             Dcals_Man_t alsEng(pNtk, nFrame, errorBound, Metric_t::MRED, mapType, output);
             alsEng.DCALS();
         }

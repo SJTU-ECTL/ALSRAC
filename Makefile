@@ -21,7 +21,7 @@ CXXFLAGS:= $(CFLAGS)
 
 #commands
 .PHONY : all objs rebuild clean init ctag
-all : ctag init $(TARGET)
+all : init $(TARGET)
 
 objs : init $(OBJS)
 
