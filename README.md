@@ -1,7 +1,13 @@
 # ALSRAC: Approximate Logic Synthesis by Resubstitution with Approximate Care Set
 
 ## Reference
+Initial conference version:
 * Chang Meng, Weikang Qian, and Alan Mishchenko, "[ALSRAC: approximate logic synthesis by resubstitution with approximate care set](http://umji.sjtu.edu.cn/~wkqian/papers/Meng_Qian_Mishchenko_ALSRAC_Approximate_Logic_Synthesis_by_Resubstitution_with_Approximate_Care_Set.pdf)", in *Proceedings of the 2020 Design Automation Conference (DAC)*, 2020, pp. 187:1-187:6.
+
+For the latest journal extension, please refer to the GitHub repository: [https://github.com/changmg/ResubALS](https://github.com/changmg/ResubALS).
+Publication for the journal extension:
+* Chang Meng, Alan Mishchenko, Weikang Qian, and Giovanni De Micheli,
+"[Efficient resubstitution-based approximate logic synthesis](https://ieeexplore.ieee.org/abstract/document/10772636/)", in *IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems (TCAD)*, 2024.
 
 ## Requirements
 Currently, ALSRAC only supports 64-bit machines, since the logic simulator uses 64-bit parallel simulation.
